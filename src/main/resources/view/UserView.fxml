@@ -3,17 +3,15 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane prefHeight="204.0" prefWidth="379.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <Label layoutX="12.0" layoutY="31.0" prefHeight="17.0" prefWidth="69.0" text="First name" />
-      <TextField fx:id="firstName" layoutX="14.0" layoutY="48.0" promptText="First name" />
-      <TextField fx:id="lastName" layoutX="208.0" layoutY="48.0" promptText="Last name" />
-      <Label layoutX="206.0" layoutY="31.0" prefHeight="17.0" prefWidth="79.0" text="Last name" />
-      <Label layoutX="14.0" layoutY="82.0" prefHeight="17.0" prefWidth="94.0" text="Company name" />
-      <Label layoutX="206.0" layoutY="82.0" prefHeight="17.0" prefWidth="69.0" text="Category" />
-      <ComboBox fx:id="companyName" layoutX="13.0" layoutY="102.0" prefWidth="150.0" />
-      <ComboBox fx:id="category" layoutX="207.0" layoutY="100.0" prefWidth="150.0" />
-      <Button fx:id="saveUser" layoutX="322.0" layoutY="166.0" mnemonicParsing="false" text="Save" />
-      <Button fx:id="cancelEditUser" layoutX="249.0" layoutY="166.0" mnemonicParsing="false" text="Cancel" />
-   </children>
+<Pane prefHeight="204.0" prefWidth="392.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <Label layoutX="12.0" layoutY="31.0" prefHeight="17.0" prefWidth="132.0" text="First name" />
+   <TextField fx:id="firstName" layoutX="14.0" layoutY="48.0" promptText="First name" />
+   <TextField fx:id="lastName" layoutX="208.0" layoutY="48.0" promptText="Last name" />
+   <Label layoutX="206.0" layoutY="31.0" prefHeight="17.0" prefWidth="140.0" text="Last name" />
+   <Label layoutX="14.0" layoutY="82.0" prefHeight="17.0" prefWidth="132.0" text="Company name" />
+   <Label layoutX="206.0" layoutY="82.0" prefHeight="17.0" prefWidth="107.0" text="Category" />
+   <ComboBox fx:id="companyName" layoutX="13.0" layoutY="102.0" prefHeight="26.0" prefWidth="170.0" />
+   <ComboBox fx:id="category" layoutX="208.0" layoutY="102.0" prefHeight="26.0" prefWidth="170.0" />
+   <Button fx:id="saveUser" layoutX="322.0" layoutY="166.0" mnemonicParsing="false" text="Save" />
+   <Button fx:id="cancelEditUser" layoutX="249.0" layoutY="166.0" mnemonicParsing="false" text="Cancel" />
 </Pane>

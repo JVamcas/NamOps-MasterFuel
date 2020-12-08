@@ -10,7 +10,7 @@ class HomeView : View("NamOps FuelMaster") {
     override val root: BorderPane by fxml("/view/HomeView.fxml")
 
     fun toUserView(actionEvent: ActionEvent) {
-        openInternalWindow<UserView>()
+        openInternalWindow<UserController>()
     }
 
 //    fun toVehicleView(actionEvent: ActionEvent){

@@ -3,16 +3,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="231.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane prefHeight="512.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
-                <Menu  mnemonicParsing="false" text="File">
-               <items>
-                  <MenuItem fx:id="userMenuItem" mnemonicParsing="false" text="Users" />
-               </items>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem fx:id="userMenuItem" mnemonicParsing="false" onAction="#toUserView" text="Users" />
+                        <MenuItem fx:id="vehiclesMenuItem" mnemonicParsing="false" text="Vehicles" />
+                    </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Vehicles" />
+
                 <Menu mnemonicParsing="false" text="Refuel">
                     <items>
                         <MenuItem mnemonicParsing="false" text="Storage Tank" />
@@ -23,4 +24,11 @@
             </menus>
         </MenuBar>
     </top>
+   <center>
+      <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+        </content>
+      </ScrollPane>
+   </center>
 </BorderPane>

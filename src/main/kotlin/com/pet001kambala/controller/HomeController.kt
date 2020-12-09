@@ -1,8 +1,8 @@
 package com.pet001kambala.controller
 
 import com.pet001kambala.model.FuelTransaction
-import javafx.beans.property.SimpleIntegerProperty
 import javafx.event.ActionEvent
+import javafx.scene.control.TableView
 import javafx.scene.layout.BorderPane
 import tornadofx.*
 
@@ -10,16 +10,14 @@ import tornadofx.*
 class HomeController : View("NamOps FuelMaster") {
 
     override val root: BorderPane by fxml("/view/HomeView.fxml")
+    private val tableView: TableView<FuelTransaction> by fxid("fuelTransactionTable")
 
-    val table =
+    init {
 
+        populateFuelTransactions()
+    }
 
-   init {
-
-       populateFuelTransactions()
-   }
-
-    fun toUserTableView(actionEvent: ActionEvent){
+    fun toUserTableView(actionEvent: ActionEvent) {
         openInternalWindow<UserTableController>()
     }
 
@@ -28,17 +26,21 @@ class HomeController : View("NamOps FuelMaster") {
 //    }
 
 
-    private fun populateFuelTransactions(){
+    private fun populateFuelTransactions() {
 
-        val tableView = tableview<FuelTransaction>() {
-            column("Date", FuelTransaction::date)
-            column("Plate No", FuelTransaction::plateNo)
-            column("Unit No", FuelTransaction::unitNo)
-            column("Driver Name", FuelTransaction::driverName)
-            column("Attendant Name", FuelTransaction::attendant)
-            column("Opening balance", FuelTransaction::balanceBroughtForward)
-            column("Quantity", FuelTransaction::quantity)
-            column("Available", FuelTransaction::currentBalance)
+        tableView.apply {
+            items = listOf(FuelTransaction(attendant = "Abrahams",date = "2020-10-12", plateNo = "N3292WB", unitNo = "H09", driverName = "Petrus Kambala")).asObservable()
+            placeholder = label("No filling records yet.")
+            smartResize()
+
+            column("Date", FuelTransaction::date).contentWidth(padding = 20.0, useAsMin = true)
+            column("Plate No", FuelTransaction::plateNo).contentWidth(padding = 20.0, useAsMin = true)
+            column("Unit No", FuelTransaction::unitNo).contentWidth(padding = 20.0, useAsMin = true)
+            column("Driver Name", FuelTransaction::driverName).contentWidth(padding = 20.0, useAsMin = true)
+            column("Attendant Name", FuelTransaction::attendant).contentWidth(padding = 20.0, useAsMin = true)
+            column("Opening balance", FuelTransaction::balanceBroughtForward).contentWidth(padding = 20.0, useAsMin = true)
+            column("Quantity", FuelTransaction::quantity).contentWidth(padding = 20.0, useAsMin = true)
+            column("Available", FuelTransaction::currentBalance).remainingWidth()
         }
     }
 }

@@ -11,7 +11,7 @@
                 <Menu mnemonicParsing="false" text="File">
                     <items>
                         <MenuItem fx:id="userMenuItem" mnemonicParsing="false" onAction="#toUserTableView" text="Users" />
-                        <MenuItem fx:id="vehiclesMenuItem" mnemonicParsing="false" text="Vehicles" />
+                        <MenuItem fx:id="vehiclesMenuItem" mnemonicParsing="false" onAction="#toVehicleTableView" text="Vehicles" />
                     </items>
                 </Menu>
 

@@ -40,10 +40,10 @@ class Vehicle(
 
 class VehicleModel : ItemViewModel<Vehicle> {
 
-    private var unitNumber: SimpleStringProperty
-    private var plateNumber: SimpleStringProperty
-    private var department: SimpleStringProperty
-    private var type: SimpleStringProperty
+     var unitNumber: SimpleStringProperty
+     var plateNumber: SimpleStringProperty
+     var department: SimpleStringProperty
+     var type: SimpleStringProperty
 
 
     constructor() : super() {

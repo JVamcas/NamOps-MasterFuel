@@ -2,18 +2,16 @@ package com.pet001kambala.controller
 
 import com.pet001kambala.model.CompanyName
 import com.pet001kambala.model.UserGroup
-import com.pet001kambala.model.UserModel
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
-import javafx.scene.layout.Pane
-import javafx.stage.Stage
 import tornadofx.*
 
-class UserController : View("User registration") {
+open class NewUserController : View("User registration") {
 
-    private val userModel: UserModel by inject()
+    val tableScope = super.scope as UserTableController.UserEditScope
+    val userModel = tableScope.userModel
 
     override val root: GridPane by fxml("/view/UserView.fxml")
 
@@ -22,8 +20,7 @@ class UserController : View("User registration") {
     private val companyName: ComboBox<String> by fxid("companyName")
     private val category: ComboBox<String> by fxid("category")
     private val cancelEditUser: Button by fxid("cancelEditUser")
-    private val saveUser: Button by fxid("saveUser")
-
+    val saveUser: Button by fxid("saveUser")
 
     init {
 
@@ -40,16 +37,18 @@ class UserController : View("User registration") {
             items = CompanyName.values().map { it.value }.asObservable()
         }
 
-
         saveUser.apply {
             enableWhen { userModel.dirty }
-            action { userModel.commit() }
-
-
+            action {
+                userModel.commit()
+                tableScope.tableData.add(userModel.item)
+                close()
+            }
             //push data to database
         }
 
         cancelEditUser.apply {
+            enableWhen { userModel.dirty }
             action { userModel.rollback()  }
         }
     }

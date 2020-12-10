@@ -3,29 +3,25 @@ package com.pet001kambala.controller
 import com.pet001kambala.model.User
 import com.pet001kambala.model.UserModel
 import javafx.collections.FXCollections
-import javafx.geometry.Pos
+import javafx.collections.ObservableList
 import javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY
 import javafx.scene.layout.Priority
 import tornadofx.*
 
 class UserTableController : View("Current Users") {
 
-    val users = FXCollections.observableArrayList(
-            User(firstName = "Petrus", lastName = "Kambala"),
-            User(firstName = "Martin", lastName = "Kapukare")
-    )
-
+    private var usersList = SortedFilteredList<User>()
 
     override val root = vbox(10.0) {
-        tableview<User>() {
+        tableview(usersList) {
 
-            isEditable = true
-            column("First Name", User::firstName)
-            column("Last Name", User::lastName)
-            column("Company", User::companyName)
-            column("Category", User::userGroup)
+            column("First Name", User::firstNameProperty)
+            column("Last Name", User::lastNameProperty)
+            column("Company", User::companyNameProperty)
+            column("Category", User::userGroupProperty)
             onUserSelect { editUser(it) }
-            asyncItems { users }
+            //load user data async
+            usersList.asyncItems { loadUsers() }
 
             setPrefSize(800.0, 400.0)
             columnResizePolicy = CONSTRAINED_RESIZE_POLICY
@@ -39,24 +35,56 @@ class UserTableController : View("Current Users") {
             region {
                 hgrow = Priority.ALWAYS
             }
+            button ("Refresh"){
+                action {
+                    onRefresh()
+                }
+            }
+
             button("New User") {
                 setOnAction {
-                    val editScope = Scope()
-                    val model = UserModel()
+                    val editScope = UserEditScope(usersList)
+                    val model = editScope.userModel
+
                     setInScope(model, editScope)
-                    alignment = Pos.BOTTOM_RIGHT
-                    find(UserController::class,editScope).openWindow()
+                    find(NewUserController::class, editScope).openWindow()
                 }
             }
         }
         paddingAll = 10.0
     }
 
+    override fun onDock() {
+        super.onDock()
+
+        onRefresh()
+    }
+
     private fun editUser(user: User) {
-        val editScope = Scope()
-        val model = UserModel()
-        model.item = user
-        setInScope(model, editScope)
-        find(UserController::class, editScope).openWindow()
+        val editScope = UserEditScope(usersList)
+        editScope.userModel.item = user// the user to be edited
+
+        setInScope(editScope.userModel, editScope)
+        find(UpdateUserController::class, editScope).openWindow()
+    }
+
+    private fun loadUsers() = FXCollections.observableArrayList(
+        User(firstName = "Petrus", lastName = "Kambala"),
+        User(firstName = "Martin", lastName = "Kapukare")
+    )
+
+    override fun onRefresh() {
+        super.onRefresh()
+
+        //load user data here from db
+        usersList.asyncItems { loadUsers() }
+    }
+
+    class UserEditScope(users: ObservableList<User>) : Scope() {
+
+        val userModel = UserModel().also { it.item = User() }
+
+        //default user
+        val tableData = users
     }
 }

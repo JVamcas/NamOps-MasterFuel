@@ -2,6 +2,7 @@ package com.pet001kambala.controller
 
 import com.pet001kambala.model.FuelTransaction
 import javafx.event.ActionEvent
+import javafx.scene.control.ScrollPane
 import javafx.scene.control.TableView
 import javafx.scene.layout.BorderPane
 import tornadofx.*
@@ -11,6 +12,7 @@ class HomeController : View("NamOps FuelMaster") {
 
     override val root: BorderPane by fxml("/view/HomeView.fxml")
     private val tableView: TableView<FuelTransaction> by fxid("fuelTransactionTable")
+    private val scrollPane: ScrollPane by fxid("tableViewScrollPane")
 
     init {
 
@@ -29,6 +31,10 @@ class HomeController : View("NamOps FuelMaster") {
     private fun populateFuelTransactions() {
 
         tableView.apply {
+            //ensure table dimensions match the enclosing ScrollPane
+            prefWidthProperty().bind(scrollPane.widthProperty())
+            prefHeightProperty().bind(scrollPane.heightProperty())
+
             items = listOf(FuelTransaction(attendant = "Abrahams",date = "2020-10-12", plateNo = "N3292WB", unitNo = "H09", driverName = "Petrus Kambala")).asObservable()
             placeholder = label("No filling records yet.")
             smartResize()

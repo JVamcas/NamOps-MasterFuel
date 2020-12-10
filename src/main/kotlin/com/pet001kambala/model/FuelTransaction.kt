@@ -16,28 +16,28 @@ class FuelTransaction(
         quantity: Float = 0f,
         currentBalance: Float = 0f
 ) {
-    val dateProperty = SimpleStringProperty(date)
+    private val dateProperty = SimpleStringProperty(date)
     var date: String? by dateProperty
 
-    val plateNoProperty = SimpleStringProperty(plateNo)
+    private val plateNoProperty = SimpleStringProperty(plateNo)
     var plateNo: String? by plateNoProperty
 
-    val unitNoProperty = SimpleObjectProperty(unitNo)
+    private val unitNoProperty = SimpleObjectProperty(unitNo)
     var unitNo: String? by unitNoProperty
 
-    val driverNameProperty = SimpleObjectProperty(driverName)
+    private val driverNameProperty = SimpleObjectProperty(driverName)
     var driverName: String? by driverNameProperty
 
-    val attendantProperty = SimpleStringProperty(attendant)
+    private val attendantProperty = SimpleStringProperty(attendant)
     var attendant: String? by attendantProperty
 
-    val balanceBroughtForwardProperty = SimpleFloatProperty(balanceBroughtForward)
+    private val balanceBroughtForwardProperty = SimpleFloatProperty(balanceBroughtForward)
     var balanceBroughtForward: Float by balanceBroughtForwardProperty
 
-    val quantityProperty = SimpleFloatProperty(quantity)
+    private val quantityProperty = SimpleFloatProperty(quantity)
     var quantity: Float by quantityProperty
 
-    val currentBalanceProperty = SimpleFloatProperty(currentBalance)
+    private val currentBalanceProperty = SimpleFloatProperty(currentBalance)
     var currentBalance: Float by currentBalanceProperty
 }
 

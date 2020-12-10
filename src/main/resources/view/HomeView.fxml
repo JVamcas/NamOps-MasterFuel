@@ -27,29 +27,27 @@
     </top>
     <center>
         <ScrollPane fx:id="tableViewScrollPane" pannable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <content>
-                <TableView fx:id="fuelTransactionTable" VBox.vgrow="ALWAYS">
-                    <VBox.margin>
-                        <Insets left="5.0" right="5.0" />
-                    </VBox.margin>
-               <padding>
-                  <Insets left="5.0" right="5.0" />
-               </padding>
-                </TableView>
-            </content>
-         <BorderPane.margin>
-            <Insets bottom="5.0" left="5.0" right="5.0" />
-         </BorderPane.margin>
-         <padding>
-            <Insets bottom="5.0" />
-         </padding>
+            <BorderPane.margin>
+                <Insets bottom="5.0" left="5.0" right="5.0" />
+            </BorderPane.margin>
+            <padding>
+                <Insets bottom="5.0" />
+            </padding>
+            <TableView fx:id="fuelTransactionTable" VBox.vgrow="ALWAYS">
+                <VBox.margin>
+                    <Insets left="5.0" right="5.0" />
+                </VBox.margin>
+                <padding>
+                    <Insets left="5.0" right="5.0" />
+                </padding>
+            </TableView>
         </ScrollPane>
     </center>
     <bottom>
         <HBox spacing="10.0">
             <Region HBox.hgrow="ALWAYS" />
             <Button fx:id="storageRefill" style="-fx-background-color: #C8D896; -fx-background-radius: 10;" text="Fill storage" />
-            <Button fx:id="vehicleRefill" style="-fx-background-color: B9E337; -fx-background-radius: 10;" text="Fill vehicle" textFill="WHITE" />
+            <Button fx:id="vehicleRefill" style="-fx-background-color: B9E337; -fx-background-radius: 10;" text="Fill vehicle" />
          <BorderPane.margin>
             <Insets bottom="5.0" right="5.0" />
          </BorderPane.margin>

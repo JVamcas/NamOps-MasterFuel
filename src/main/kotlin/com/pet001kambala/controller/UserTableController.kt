@@ -8,20 +8,23 @@ import javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY
 import javafx.scene.layout.Priority
 import tornadofx.*
 
-class UserTableController : View("Current Users") {
-
-    private var usersList = SortedFilteredList<User>()
+class UserTableController : AbstractModelTableController<User>("Current Users") {
 
     override val root = vbox(10.0) {
-        tableview(usersList) {
+        tableview(modelList) {
 
             column("First Name", User::firstNameProperty)
             column("Last Name", User::lastNameProperty)
             column("Company", User::companyNameProperty)
             column("Category", User::userGroupProperty)
-            onUserSelect { editUser(it) }
+
+            onUserSelect {
+                val scope = ModelEditScope(UserModel())
+                editModel(scope, it, UpdateUserController::class)
+            }
+
             //load user data async
-            usersList.asyncItems { loadUsers() }
+            modelList.asyncItems { loadModels() }
 
             setPrefSize(800.0, 400.0)
             columnResizePolicy = CONSTRAINED_RESIZE_POLICY
@@ -35,7 +38,7 @@ class UserTableController : View("Current Users") {
             region {
                 hgrow = Priority.ALWAYS
             }
-            button ("Refresh"){
+            button("Refresh") {
                 action {
                     onRefresh()
                 }
@@ -43,48 +46,46 @@ class UserTableController : View("Current Users") {
 
             button("New User") {
                 setOnAction {
-                    val editScope = UserEditScope(usersList)
-                    val model = editScope.userModel
-
-                    setInScope(model, editScope)
-                    find(NewUserController::class, editScope).openWindow()
+                    val scope = ModelEditScope(UserModel())
+                    editModel(scope, User(), NewUserController::class)
+//                    val editScope = UserEditScope(usersList)
+//                    val model = editScope.userModel
+//
+//                    setInScope(model, editScope)
+//                    find(NewUserController::class, editScope).openWindow()
                 }
             }
         }
         paddingAll = 10.0
     }
 
-    override fun onDock() {
-        super.onDock()
 
-        onRefresh()
+//    private fun editUser(user: User) {
+//        val editScope = UserEditScope(usersList)
+//        editScope.userModel.item = user// the user to be edited
+//
+//        setInScope(editScope.userModel, editScope)
+//        find(UpdateUserController::class, editScope).openWindow()
+//    }
+
+//    private fun loadUsers() = FXCollections.observableArrayList(
+//        User(firstName = "Petrus", lastName = "Kambala"),
+//        User(firstName = "Martin", lastName = "Kapukare")
+//    )
+
+    override fun loadModels(): ObservableList<User> {
+        return observableListOf(
+            User(firstName = "Petrus", lastName = "Kambala"),
+            User(firstName = "Martin", lastName = "Kapukare")
+        )
     }
 
-    private fun editUser(user: User) {
-        val editScope = UserEditScope(usersList)
-        editScope.userModel.item = user// the user to be edited
 
-        setInScope(editScope.userModel, editScope)
-        find(UpdateUserController::class, editScope).openWindow()
-    }
-
-    private fun loadUsers() = FXCollections.observableArrayList(
-        User(firstName = "Petrus", lastName = "Kambala"),
-        User(firstName = "Martin", lastName = "Kapukare")
-    )
-
-    override fun onRefresh() {
-        super.onRefresh()
-
-        //load user data here from db
-        usersList.asyncItems { loadUsers() }
-    }
-
-    class UserEditScope(users: ObservableList<User>) : Scope() {
-
-        val userModel = UserModel().also { it.item = User() }
-
-        //default user
-        val tableData = users
-    }
+//    class UserEditScope(users: ObservableList<User>) : Scope() {
+//
+//        val userModel = UserModel().also { it.item = User() }
+//
+//        //default user
+//        val tableData = users
+//    }
 }

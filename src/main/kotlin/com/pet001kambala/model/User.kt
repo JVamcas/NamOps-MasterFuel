@@ -28,7 +28,7 @@ class User(
      val companyNameProperty = SimpleStringProperty(companyName.value)
     var companyName: String by companyNameProperty
 
-     val userGroupProperty = SimpleObjectProperty(userGroup.name)
+     val userGroupProperty = SimpleStringProperty(userGroup.name)
     var userGroup: String by userGroupProperty
 
 }
@@ -38,9 +38,5 @@ class UserModel : ItemViewModel<User>() {
     var lastName = bind(User::lastName)
     var companyName = bind(User::companyName)
     var userGroup = bind(User::userGroup)
-}
-
-class UserScope: Scope(){
-    val model = UserModel()
 }
 

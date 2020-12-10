@@ -1,7 +1,9 @@
 package com.pet001kambala.controller
 
 import com.pet001kambala.model.CompanyName
+import com.pet001kambala.model.User
 import com.pet001kambala.model.UserGroup
+import com.pet001kambala.model.UserModel
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
@@ -10,8 +12,8 @@ import tornadofx.*
 
 open class NewUserController : View("User registration") {
 
-    val tableScope = super.scope as UserTableController.UserEditScope
-    val userModel = tableScope.userModel
+    private val tableScope = super.scope as AbstractModelTableController<User>.ModelEditScope
+    val userModel = tableScope.viewModel as UserModel
 
     override val root: GridPane by fxml("/view/UserView.fxml")
 

@@ -6,27 +6,18 @@ import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 
 class FuelTransaction(
-    id: String? = null,
-    date: String? = null,
-    plateNo: String? = null,
-    unitNo: String? = null,
-    driverName: String? = null,
-    attendant: String? = null,
-    openingBalance: Float = 0f,
-    quantity: Float = 0f,
-    currentBalance: Float = 0f
+        id: String? = null,
+        date: String? = null,
+        attendant: String? = null,
+        openingBalance: Float = 0f,
+        quantity: Float = 0f,
+        currentBalance: Float = 0f,
+        vehicle: String? = null,
+        driverName: String? = null
 ) {
+
     val dateProperty = SimpleStringProperty(date)
     var date: String? by dateProperty
-
-    val plateNoProperty = SimpleStringProperty(plateNo)
-    var plateNo: String? by plateNoProperty
-
-    val unitNoProperty = SimpleObjectProperty(unitNo)
-    var unitNo: String? by unitNoProperty
-
-    val driverNameProperty = SimpleObjectProperty(driverName)
-    var driverName: String? by driverNameProperty
 
     val attendantProperty = SimpleStringProperty(attendant)
     var attendant: String? by attendantProperty
@@ -39,13 +30,18 @@ class FuelTransaction(
 
     val currentBalanceProperty = SimpleFloatProperty(currentBalance)
     var currentBalance: Float by currentBalanceProperty
+
+    val vehicleProperty = SimpleStringProperty(vehicle)
+    var vehicle: String? by vehicleProperty
+
+    val driverNameProperty = SimpleObjectProperty(driverName)
+    var driverName: String? by driverNameProperty
 }
 
 class FuelTransactionModel : ItemViewModel<FuelTransaction>() {
 
     var date = bind(FuelTransaction::date)
-    var plateNo = bind(FuelTransaction::plateNo)
-    var unitNo = bind(FuelTransaction::unitNo)
+    var vehicle = bind(FuelTransaction::vehicle)
     var driverName = bind(FuelTransaction::driverName)
     var attendant = bind(FuelTransaction::attendant)
     var balanceBroughtForward = bind(FuelTransaction::openingBalance)

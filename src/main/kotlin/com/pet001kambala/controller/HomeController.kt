@@ -1,18 +1,20 @@
 package com.pet001kambala.controller
 
-import com.pet001kambala.model.FuelTransaction
+import com.pet001kambala.model.*
 import javafx.collections.ObservableList
 import javafx.event.ActionEvent
+import javafx.scene.control.Button
 import javafx.scene.control.ScrollPane
 import javafx.scene.control.TableView
 import javafx.scene.layout.BorderPane
 import tornadofx.*
 
-class HomeController : AbstractModelTableController<FuelTransaction>("NamOps FuelMaster") {
+class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Logistics Pty Ltd FuelMaster") {
 
     override val root: BorderPane by fxml("/view/HomeView.fxml")
     private val tableView: TableView<FuelTransaction> by fxid("fuelTransactionTable")
     private val scrollPane: ScrollPane by fxid("tableViewScrollPane")
+    private val refreshTransactionTable: Button by fxid("refresh")
 
 
     init {
@@ -28,8 +30,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Fue
             smartResize()
 
             column("Date", FuelTransaction::dateProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Plate No", FuelTransaction::plateNoProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Unit No", FuelTransaction::unitNoProperty).contentWidth(padding = 20.0, useAsMin = true)
+            column("Vehicle", FuelTransaction::vehicleProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Driver Name", FuelTransaction::driverNameProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Attendant Name", FuelTransaction::attendantProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Opening balance", FuelTransaction::openingBalanceProperty).contentWidth(
@@ -38,6 +39,10 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Fue
             )
             column("Quantity", FuelTransaction::quantityProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Available", FuelTransaction::currentBalanceProperty).remainingWidth()
+        }
+
+        refreshTransactionTable.apply {
+            onRefresh()
         }
     }
 
@@ -49,13 +54,21 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Fue
         openInternalWindow<VehicleTableController>()
     }
 
+    fun toStorageRefill(actionEvent: ActionEvent){
+        val scope = ModelEditScope(FuelTransactionModel())
+        editModel(scope, FuelTransaction(), FuelTopUpController::class)
+    }
+
+    fun toVehicleRefill(actionEvent: ActionEvent){
+//        openInternalWindow<FuelTopUpController>()
+    }
+
     override fun loadModels(): ObservableList<FuelTransaction> {
         return observableListOf(
             FuelTransaction(
-                attendant = "Junk Abrahams",
+                attendant = "Junk Abrafoso",
                 date = "2020-10-12",
-                plateNo = "N3292WB",
-                unitNo = "H09",
+                vehicle = Vehicle(plateNumber = "N4273WB",unitNumber = "H01",department = Department.DEPOT).toString(),
                 driverName = "Petrus Kambala"
             )
         ).asObservable()

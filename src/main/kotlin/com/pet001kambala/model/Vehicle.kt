@@ -36,6 +36,8 @@ class Vehicle(
 
     val typeProperty = SimpleStringProperty(type.value)
     var type: String by typeProperty
+
+    override fun toString() = "$unitNumber | $plateNumber | $department"
 }
 
 class VehicleModel : ItemViewModel<Vehicle> {
@@ -60,7 +62,3 @@ class VehicleModel : ItemViewModel<Vehicle> {
         type = bind { vehicle.typeProperty }
     }
 }
-
-//class VehicleEditScope: Scope(){
-//    val model: VehicleModel()
-//}

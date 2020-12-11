@@ -1,6 +1,7 @@
 package com.pet001kambala.model
 
 import javafx.beans.property.SimpleStringProperty
+import javafx.scene.control.ListCell
 import tornadofx.*
 
 
@@ -40,5 +41,16 @@ class UserModel : ItemViewModel<User>() {
     var lastName = bind(User::lastName)
     var companyName = bind(User::companyName)
     var userGroup = bind(User::userGroup)
+}
+
+/**
+ * Parse Users in the combobox
+ */
+class SimpleUserListCell: ListCell<User>(){
+
+    override fun updateItem(user: User?, empty: Boolean) {
+        super.updateItem(user, empty)
+        text = "${user?.firstName} ${user?.lastName}"
+    }
 }
 

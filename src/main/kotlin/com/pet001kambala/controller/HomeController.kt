@@ -73,10 +73,10 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
     override fun loadModels(): ObservableList<FuelTransaction> {
         return observableListOf(
             FuelTransaction(
-                attendant = "Junk Abrafoso",
+                attendant = User(firstName = "Petrus", lastName = "Kambala"),
                 date = today()._24(),
-                vehicle = Vehicle(plateNumber = "N4273WB",unitNumber = "H01",department = Department.DEPOT).toString(),
-                driverName = "Petrus Kambala"
+                vehicle = Vehicle(plateNumber = "N4273WB",unitNumber = "H01",department = Department.DEPOT),
+                driverName = User(firstName = "Petrus",lastName = "Kambala")
             )
         ).asObservable()
     }

@@ -1,6 +1,7 @@
 package com.pet001kambala.model
 
 import javafx.beans.property.SimpleStringProperty
+import javafx.scene.control.ListCell
 import tornadofx.*
 
 enum class Department(val value: String) {
@@ -38,6 +39,14 @@ class Vehicle(
     var type: String by typeProperty
 
     override fun toString() = "$unitNumber | $plateNumber | $department"
+
+    class SimpleVehicleListCell: ListCell<Vehicle>() {
+
+        override fun updateItem(vehicle: Vehicle?, empty: Boolean) {
+            super.updateItem(vehicle, empty)
+            text = "${vehicle?.unitNumber} | ${vehicle?.plateNumber} | ${vehicle?.department}"
+        }
+    }
 }
 
 class VehicleModel : ItemViewModel<Vehicle> {

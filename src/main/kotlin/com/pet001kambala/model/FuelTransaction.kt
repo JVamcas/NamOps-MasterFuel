@@ -12,12 +12,12 @@ enum class FuelTransactionType(val value: String){
 class FuelTransaction(
         id: String? = null,
         date: String? = null,
-        attendant: String? = null,
+        attendant: User? = null,
         openingBalance: Float = 0f,
         quantity: Float = 0f,
         currentBalance: Float = 0f,
-        vehicle: String? = null,
-        driverName: String? = null,
+        vehicle: Vehicle? = null,
+        driverName: User? = null,
         transactionType: String = FuelTransactionType.DISPENSE.value,
         odometer: String? = null,
         distanceTravelled: String? = null
@@ -29,8 +29,8 @@ class FuelTransaction(
     val dateProperty = SimpleStringProperty(date)
     var date: String? by dateProperty
 
-    val attendantProperty = SimpleStringProperty(attendant)
-    var attendant: String? by attendantProperty
+    val attendantProperty = SimpleObjectProperty(attendant)
+    var attendant: User? by attendantProperty
 
     val openingBalanceProperty = SimpleFloatProperty(openingBalance)
     var openingBalance: Float by openingBalanceProperty
@@ -41,11 +41,11 @@ class FuelTransaction(
     val currentBalanceProperty = SimpleFloatProperty(currentBalance)
     var currentBalance: Float by currentBalanceProperty
 
-    val vehicleProperty = SimpleStringProperty(vehicle)
-    var vehicle: String? by vehicleProperty
+    val vehicleProperty = SimpleObjectProperty(vehicle)
+    var vehicle: Vehicle? by vehicleProperty
 
     val driverNameProperty = SimpleObjectProperty(driverName)
-    var driverName: String? by driverNameProperty
+    var driverName: User? by driverNameProperty
 
     val transactionTypeProperty = SimpleObjectProperty(transactionType)
     var transactionType: String? by transactionTypeProperty

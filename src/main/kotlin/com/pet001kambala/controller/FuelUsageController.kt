@@ -7,15 +7,20 @@ import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
+import javafx.util.StringConverter
 import tornadofx.*
 
 class FuelUsageController : FuelTopUpController("Dispense fuel") {
 
+
+    private val tableScope = super.scope as AbstractModelTableController<FuelTransaction>.ModelEditScope
+    private val transactionModel = tableScope.viewModel as FuelTransactionModel
+
     override val root: GridPane by fxml("/view/FuelUsageView.fxml")
 
-    private val attendant: ComboBox<String> by fxid("attendant")
-    private val driver: ComboBox<String> by fxid("driver")
-    private val vehicle: ComboBox<String> by fxid("vehicle")
+    private val attendant: ComboBox<User> by fxid("attendant")
+    private val driver: ComboBox<User> by fxid("driver")
+    private val vehicle: ComboBox<Vehicle> by fxid("vehicle")
     private val quantity: TextField by fxid("quantity")
     private val vehicleOdometer: TextField by fxid("vehicleOdometer")
 
@@ -55,15 +60,21 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
         }
 
         attendant.asyncItems {
-            loadAttendants().map { it.toString() }
+
+            loadAttendants()
         }
 
-        vehicle.asyncItems {
-            loadVehicles().map { it.toString() }
+
+        vehicle.apply {
+            asyncItems { loadVehicles() }
+            setCellFactory { Vehicle.SimpleVehicleListCell() }
+            buttonCell = Vehicle.SimpleVehicleListCell()
         }
 
-        driver.asyncItems {
-            loadDrivers().map { it.toString() }
+        driver.apply {
+            asyncItems { loadDrivers() }
+            setCellFactory { SimpleUserListCell() }
+            buttonCell = SimpleUserListCell()
         }
     }
 

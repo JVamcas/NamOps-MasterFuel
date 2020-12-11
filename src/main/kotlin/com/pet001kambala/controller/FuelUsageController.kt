@@ -23,19 +23,25 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
     private val vehicle: ComboBox<Vehicle> by fxid("vehicle")
     private val quantity: TextField by fxid("quantity")
     private val vehicleOdometer: TextField by fxid("vehicleOdometer")
+    private val invoiceNo: TextField by fxid("invoiceNo")
 
     private val saveTransaction: Button by fxid("saveTransaction")
     private val cancelTransaction: Button by fxid("cancelTransaction")
 
     init {
 
+        root.setMaxSize(446.0,243.0)
+
         attendant.bind(transactionModel.attendant)
         driver.bind(transactionModel.driverName)
         vehicle.bind(transactionModel.vehicle)
         quantity.bind(transactionModel.quantity)
         vehicleOdometer.bind(transactionModel.odometer)
+        invoiceNo.bind(transactionModel.invoiceNo)
 
-        transactionModel.date.value = today()._24()
+        //todo this value will come from the database
+        //transactionModel.date.value = today()._24()
+
         transactionModel.transactionType.value = FuelTransactionType.DISPENSE.value
 
         saveTransaction.apply {
@@ -59,11 +65,11 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
             }
         }
 
-        attendant.asyncItems {
-
-            loadAttendants()
+        attendant.apply {
+            asyncItems { loadAttendants() }
+            setCellFactory { SimpleUserListCell() }
+            buttonCell = SimpleUserListCell()
         }
-
 
         vehicle.apply {
             asyncItems { loadVehicles() }
@@ -89,9 +95,9 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
     private fun loadVehicles(): List<Vehicle> {
 
         return listOf(
-                Vehicle(unitNumber = "H01",plateNumber = "N386WB"),
-                Vehicle(unitNumber = "H04",plateNumber = "N8346WB"),
-                Vehicle(unitNumber = "H02",plateNumber = "N24386WB")
+                Vehicle(unitNumber = "H01", plateNumber = "N386WB"),
+                Vehicle(unitNumber = "H04", plateNumber = "N8346WB"),
+                Vehicle(unitNumber = "H02", plateNumber = "N24386WB")
         )
     }
 }

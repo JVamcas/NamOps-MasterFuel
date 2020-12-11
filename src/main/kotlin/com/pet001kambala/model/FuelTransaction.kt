@@ -20,7 +20,8 @@ class FuelTransaction(
         driverName: User? = null,
         transactionType: String = FuelTransactionType.DISPENSE.value,
         odometer: String? = null,
-        distanceTravelled: String? = null
+        distanceTravelled: String? = null,
+        invoiceNo: String? = null
 ) {
 
     val odometerProperty = SimpleStringProperty(odometer)
@@ -52,6 +53,9 @@ class FuelTransaction(
 
     val distanceTravelledProperty = SimpleObjectProperty(distanceTravelled)
     var distanceTravelled: String? by distanceTravelledProperty
+
+    val invoiceNoProperty = SimpleStringProperty(invoiceNo)
+    var invoiceNo: String? by invoiceNoProperty
 }
 
 class FuelTransactionModel : ItemViewModel<FuelTransaction>() {
@@ -66,4 +70,5 @@ class FuelTransactionModel : ItemViewModel<FuelTransaction>() {
     var transactionType = bind(FuelTransaction::transactionType)
     val odometer = bind(FuelTransaction::odometer)
     val distanceTravelled = bind(FuelTransaction::distanceTravelled)
+    val invoiceNo = bind(FuelTransaction::invoiceNoProperty)
 }

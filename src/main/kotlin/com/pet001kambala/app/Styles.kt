@@ -18,4 +18,5 @@ class Styles : Stylesheet() {
             fontWeight = FontWeight.BOLD
         }
     }
+
 }

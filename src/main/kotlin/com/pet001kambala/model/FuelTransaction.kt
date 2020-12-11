@@ -5,6 +5,10 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 
+enum class FuelTransactionType(val value: String){
+    REFILL("Re-fill"), DISPENSE("Dispense")
+}
+
 class FuelTransaction(
         id: String? = null,
         date: String? = null,
@@ -13,7 +17,8 @@ class FuelTransaction(
         quantity: Float = 0f,
         currentBalance: Float = 0f,
         vehicle: String? = null,
-        driverName: String? = null
+        driverName: String? = null,
+        transactionType: String = FuelTransactionType.DISPENSE.value
 ) {
 
     val dateProperty = SimpleStringProperty(date)
@@ -36,6 +41,9 @@ class FuelTransaction(
 
     val driverNameProperty = SimpleObjectProperty(driverName)
     var driverName: String? by driverNameProperty
+
+    val transactionTypeProperty = SimpleObjectProperty(transactionType)
+    var transactionType: String? by transactionTypeProperty
 }
 
 class FuelTransactionModel : ItemViewModel<FuelTransaction>() {
@@ -47,4 +55,5 @@ class FuelTransactionModel : ItemViewModel<FuelTransaction>() {
     var balanceBroughtForward = bind(FuelTransaction::openingBalance)
     var quantity = bind(FuelTransaction::quantity)
     var currentBalance = bind(FuelTransaction::currentBalance)
+    var transactionType = bind(FuelTransaction::transactionType)
 }

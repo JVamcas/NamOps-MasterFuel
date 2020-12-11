@@ -2,6 +2,9 @@ package com.pet001kambala.controller
 
 import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.model.FuelTransactionModel
+import com.pet001kambala.model.User
+import javafx.collections.ObservableArray
+import javafx.collections.ObservableList
 
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
@@ -9,10 +12,10 @@ import javafx.scene.layout.GridPane
 import tornadofx.*
 import javafx.scene.control.Button
 
-class FuelTopUpController : View("Top up storage tank") {
+open class FuelTopUpController(title: String = "Top up storage tank") : View(title = title) {
 
-    private val tableScope = super.scope as AbstractModelTableController<FuelTransaction>.ModelEditScope
-    private val transactionModel = tableScope.viewModel as FuelTransactionModel
+    val tableScope = super.scope as AbstractModelTableController<FuelTransaction>.ModelEditScope
+    val transactionModel = tableScope.viewModel as FuelTransactionModel
 
     override val root: GridPane by fxml("/view/FuelTopUpView.fxml")
 
@@ -25,6 +28,10 @@ class FuelTopUpController : View("Top up storage tank") {
     init {
         topUpQuantity.bind(transactionModel.quantity)
         attendant.bind(transactionModel.attendant)
+
+        attendant.asyncItems {
+            loadAttendants().map { it.toString() }
+        }
 
         saveTransaction.apply {
             enableWhen { transactionModel.dirty }
@@ -42,5 +49,13 @@ class FuelTopUpController : View("Top up storage tank") {
                 transactionModel.rollback()
             }
         }
+    }
+
+    fun loadAttendants(): List<User> {
+
+        return listOf(
+                User(firstName = "Jeremiah", lastName = "Tomas"),
+                User(firstName = "James", lastName = "Ngapi")
+        )
     }
 }

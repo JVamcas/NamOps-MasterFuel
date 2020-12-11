@@ -31,6 +31,10 @@ class User(
      val userGroupProperty = SimpleStringProperty(userGroup.name)
     var userGroup: String by userGroupProperty
 
+    override fun toString(): String {
+        return "$firstName $lastName"
+    }
+
 }
 
 class UserModel : ItemViewModel<User>() {

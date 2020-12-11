@@ -29,6 +29,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
             placeholder = label("No filling records yet.")
             smartResize()
 
+            column("Type", FuelTransaction::transactionType).contentWidth(padding = 20.0, useAsMin = true)
             column("Date", FuelTransaction::dateProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Vehicle", FuelTransaction::vehicleProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Driver Name", FuelTransaction::driverNameProperty).contentWidth(padding = 20.0, useAsMin = true)
@@ -60,7 +61,9 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
     }
 
     fun toVehicleRefill(actionEvent: ActionEvent){
-//        openInternalWindow<FuelTopUpController>()
+
+        val scope = ModelEditScope(FuelTransactionModel())
+        editModel(scope, FuelTransaction(), FuelUsageController::class)
     }
 
     override fun loadModels(): ObservableList<FuelTransaction> {

@@ -1,6 +1,8 @@
 package com.pet001kambala.controller
 
 import com.pet001kambala.model.*
+import com.pet001kambala.utils.DateUtil.Companion._24
+import com.pet001kambala.utils.DateUtil.Companion.today
 import javafx.collections.ObservableList
 import javafx.event.ActionEvent
 import javafx.scene.control.Button
@@ -32,8 +34,10 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
             column("Type", FuelTransaction::transactionType).contentWidth(padding = 20.0, useAsMin = true)
             column("Date", FuelTransaction::dateProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Vehicle", FuelTransaction::vehicleProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Driver Name", FuelTransaction::driverNameProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Attendant Name", FuelTransaction::attendantProperty).contentWidth(padding = 20.0, useAsMin = true)
+            column("Driver Name", FuelTransaction::driverNameProperty).contentWidth(padding = 20.0, useAsMin = true)
+            column("Odometer", FuelTransaction::odometerProperty).contentWidth(padding = 20.0, useAsMin = true)
+            column("Distance travelled since last refill", FuelTransaction::distanceTravelled).contentWidth(padding = 20.0, useAsMin = true)
             column("Opening balance", FuelTransaction::openingBalanceProperty).contentWidth(
                 padding = 20.0,
                 useAsMin = true
@@ -70,7 +74,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
         return observableListOf(
             FuelTransaction(
                 attendant = "Junk Abrafoso",
-                date = "2020-10-12",
+                date = today()._24(),
                 vehicle = Vehicle(plateNumber = "N4273WB",unitNumber = "H01",department = Department.DEPOT).toString(),
                 driverName = "Petrus Kambala"
             )

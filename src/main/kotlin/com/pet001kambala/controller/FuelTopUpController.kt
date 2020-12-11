@@ -2,7 +2,10 @@ package com.pet001kambala.controller
 
 import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.model.FuelTransactionModel
+import com.pet001kambala.model.FuelTransactionType
 import com.pet001kambala.model.User
+import com.pet001kambala.utils.DateUtil.Companion._24
+import com.pet001kambala.utils.DateUtil.Companion.today
 import javafx.collections.ObservableArray
 import javafx.collections.ObservableList
 
@@ -19,7 +22,6 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
 
     override val root: GridPane by fxml("/view/FuelTopUpView.fxml")
 
-
     private val topUpQuantity: TextField by fxid("topUpQuantity")
     private val attendant: ComboBox<String> by fxid("attendant")
     private val saveTransaction: Button by fxid("saveTransaction")
@@ -28,6 +30,10 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
     init {
         topUpQuantity.bind(transactionModel.quantity)
         attendant.bind(transactionModel.attendant)
+        transactionModel.date.value = today()._24()
+        transactionModel.transactionType.value = FuelTransactionType.REFILL.value
+
+
 
         attendant.asyncItems {
             loadAttendants().map { it.toString() }

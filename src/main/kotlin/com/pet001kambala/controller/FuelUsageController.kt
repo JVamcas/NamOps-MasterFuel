@@ -1,9 +1,6 @@
 package com.pet001kambala.controller
 
-import com.pet001kambala.model.FuelTransaction
-import com.pet001kambala.model.FuelTransactionModel
-import com.pet001kambala.model.User
-import com.pet001kambala.model.Vehicle
+import com.pet001kambala.model.*
 import com.pet001kambala.utils.DateUtil.Companion._24
 import com.pet001kambala.utils.DateUtil.Companion.today
 import javafx.scene.control.Button
@@ -14,13 +11,13 @@ import tornadofx.*
 
 class FuelUsageController : FuelTopUpController("Dispense fuel") {
 
-
     override val root: GridPane by fxml("/view/FuelUsageView.fxml")
 
     private val attendant: ComboBox<String> by fxid("attendant")
     private val driver: ComboBox<String> by fxid("driver")
     private val vehicle: ComboBox<String> by fxid("vehicle")
     private val quantity: TextField by fxid("quantity")
+    private val vehicleOdometer: TextField by fxid("vehicleOdometer")
 
     private val saveTransaction: Button by fxid("saveTransaction")
     private val cancelTransaction: Button by fxid("cancelTransaction")
@@ -31,12 +28,20 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
         driver.bind(transactionModel.driverName)
         vehicle.bind(transactionModel.vehicle)
         quantity.bind(transactionModel.quantity)
+        vehicleOdometer.bind(transactionModel.odometer)
+
         transactionModel.date.value = today()._24()
+        transactionModel.transactionType.value = FuelTransactionType.DISPENSE.value
 
         saveTransaction.apply {
             enableWhen { transactionModel.dirty }
             action {
                 transactionModel.commit()
+
+                //TODO need to calculate here the distance travelled between refills
+                //transactionModel.distanceTravelled.value =
+
+
                 tableScope.tableData.add(transactionModel.item)
                 close()
             }

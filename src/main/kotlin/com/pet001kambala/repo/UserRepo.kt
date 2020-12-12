@@ -11,6 +11,7 @@ class UserRepo {
 
     private val session = SessionManager.newInstance?.openSession()
     fun addNewUser(user: User) {
+        println("user is $user")
         session?.apply {
             val transaction = session.beginTransaction()
             try {

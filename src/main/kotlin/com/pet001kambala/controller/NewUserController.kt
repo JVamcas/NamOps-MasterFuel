@@ -19,8 +19,8 @@ open class NewUserController : View("User registration") {
 
     private val firstName: TextField by fxid("firstName")
     private val lastName: TextField by fxid("lastName")
-    private val companyName: ComboBox<CompanyName> by fxid("companyName")
-    private val category: ComboBox<UserGroup> by fxid("category")
+    private val companyName: ComboBox<String> by fxid("companyName")
+    private val category: ComboBox<String> by fxid("category")
     private val cancelEditUser: Button by fxid("cancelEditUser")
     val saveUser: Button by fxid("saveUser")
 
@@ -30,24 +30,21 @@ open class NewUserController : View("User registration") {
         lastName.bind(userModel.lastName)
 
         category.apply {
-            setCellFactory { SimpleUserGroupListCell() }
-            buttonCell = SimpleUserGroupListCell()
             bind(userModel.userGroup)
-            items = UserGroup.values().toList().asObservable()
+            items = UserGroup.values().map { it.name }.asObservable()
         }
 
         companyName.apply {
-            setCellFactory { SimpleCompanyNameListCell() }
-            buttonCell = SimpleCompanyNameListCell()
             bind(userModel.companyName)
-            items = CompanyName.values().toList().asObservable()
+            items = CompanyName.values().map { it.value }.asObservable()
         }
 
         saveUser.apply {
             enableWhen { userModel.dirty }
             action {
                 userModel.commit()
-//                userRepo.addNewUser(userModel.item)
+                userRepo.addNewUser(userModel.item)
+                println("model item ${userModel.item}")
                 tableScope.tableData.add(userModel.item)
                 close()
             }

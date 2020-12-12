@@ -1,5 +1,6 @@
 package com.pet001kambala.model
 
+import com.pet001kambala.utils.SimpleStringConvertor
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ListCell
@@ -26,54 +27,32 @@ class User(
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Int? = null
 
-//    @Transient
-//    val firstNameProperty = SimpleStringProperty(firstName)
-//
-//    @Access(AccessType.PROPERTY)
-//    var firstName: String? by firstNameProperty
-
-    @Access(AccessType.PROPERTY)
+    @Column(name = "firstName")
+    @Convert(converter = SimpleStringConvertor::class)
     val firstNameProperty = SimpleStringProperty(firstName)
 
-
-//    @Column(name = "firstName")
-//    var firstName: String? = null
-//        get() = firstNameProperty.get()
-
-    @Transient
+    @Column(name = "lastName")
+    @Convert(converter = SimpleStringConvertor::class)
     val lastNameProperty = SimpleStringProperty(lastName)
 
-    @Column(name = "lastName")
-    var lastName: String? = null
-    get() = lastNameProperty.get()
-
-
-    @Transient
-    val companyNameProperty = SimpleObjectProperty(companyName)
-
     @Column(name = "companyName")
-    @Convert(converter = CompanyNameConvertor::class)
-    var companyName: CompanyName = CompanyName.NAMOPS
-        get() = companyNameProperty.get()
-
-    @Transient
-    val userGroupProperty = SimpleObjectProperty(userGroup)
+    @Convert(converter = SimpleStringConvertor::class)
+    val companyNameProperty = SimpleStringProperty(companyName.value)
 
     @Column(name = "userGroup")
-    @Convert(converter = UserGroupConvertor::class)
-    var userGroup: UserGroup = UserGroup.Attendant
-        get() = userGroupProperty.get()
+    @Convert(converter = SimpleStringConvertor::class)
+    val userGroupProperty = SimpleStringProperty(userGroup.name)
 
     override fun toString(): String {
-        return "$firstName $lastName"
+        return "$firstNameProperty $lastNameProperty"
     }
 }
 
 class UserModel : ItemViewModel<User>() {
-    var firstName = bind(User::firstName)
-    var lastName = bind(User::lastName)
-    var companyName = bind(User::companyName)
-    var userGroup = bind(User::userGroup)
+    var firstName = bind(User::firstNameProperty)
+    var lastName = bind(User::lastNameProperty)
+    var companyName = bind(User::companyNameProperty)
+    var userGroup = bind(User::userGroupProperty)
 }
 
 /**
@@ -83,42 +62,6 @@ class SimpleUserListCell : ListCell<User>() {
 
     override fun updateItem(user: User?, empty: Boolean) {
         super.updateItem(user, empty)
-        text = "${user?.firstName} ${user?.lastName}"
-    }
-}
-
-class SimpleCompanyNameListCell : ListCell<CompanyName>() {
-
-    override fun updateItem(name: CompanyName?, empty: Boolean) {
-        super.updateItem(name, empty)
-        text = "${name?.value}"
-    }
-}
-
-class SimpleUserGroupListCell : ListCell<UserGroup>() {
-
-    override fun updateItem(group: UserGroup?, empty: Boolean) {
-        super.updateItem(group, empty)
-        text = "${group?.name}"
-    }
-}
-
-class CompanyNameConvertor : AttributeConverter<CompanyName, Int> {
-    override fun convertToDatabaseColumn(p0: CompanyName): Int {
-        return p0.ordinal
-    }
-
-    override fun convertToEntityAttribute(p0: Int): CompanyName {
-        return CompanyName.values()[p0]
-    }
-}
-
-class UserGroupConvertor : AttributeConverter<UserGroup, Int> {
-    override fun convertToDatabaseColumn(p0: UserGroup): Int {
-        return p0.ordinal
-    }
-
-    override fun convertToEntityAttribute(p0: Int): UserGroup {
-        return UserGroup.values()[p0]
+        text = "${user?.firstNameProperty} ${user?.lastNameProperty}"
     }
 }

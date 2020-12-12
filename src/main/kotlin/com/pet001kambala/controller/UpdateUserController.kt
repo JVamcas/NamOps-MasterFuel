@@ -1,5 +1,6 @@
 package com.pet001kambala.controller
 
+import com.pet001kambala.model.User
 import tornadofx.action
 
 class UpdateUserController : NewUserController() {

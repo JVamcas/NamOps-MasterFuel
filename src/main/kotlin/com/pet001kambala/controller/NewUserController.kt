@@ -43,7 +43,7 @@ open class NewUserController : View("User registration") {
             enableWhen { userModel.dirty }
             action {
                 userModel.commit()
-                userRepo.addNewUser(userModel.item)
+                userRepo.addNewModel(userModel.item)
                 println("model item ${userModel.item}")
                 tableScope.tableData.add(userModel.item)
                 close()

@@ -1,9 +1,10 @@
 package com.pet001kambala.model
 
 import com.pet001kambala.utils.SimpleStringConvertor
-import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ListCell
+import org.hibernate.annotations.Cascade
+import org.hibernate.annotations.CascadeType
 import tornadofx.*
 import javax.persistence.*
 import javax.persistence.Id
@@ -25,21 +26,22 @@ class User(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Cascade(CascadeType.DELETE)
     var id: Int? = null
 
-    @Column(name = "firstName")
+    @Column(name = "firstName",nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
     val firstNameProperty = SimpleStringProperty(firstName)
 
-    @Column(name = "lastName")
+    @Column(name = "lastName", nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
     val lastNameProperty = SimpleStringProperty(lastName)
 
-    @Column(name = "companyName")
+    @Column(name = "companyName",nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
     val companyNameProperty = SimpleStringProperty(companyName.value)
 
-    @Column(name = "userGroup")
+    @Column(name = "userGroup",nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
     val userGroupProperty = SimpleStringProperty(userGroup.name)
 

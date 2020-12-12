@@ -1,6 +1,7 @@
 package com.pet001kambala.controller
 
 import com.pet001kambala.model.*
+import com.pet001kambala.repo.VehicleRepo
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
@@ -8,6 +9,8 @@ import javafx.scene.layout.GridPane
 import tornadofx.*
 
 open class NewVehicleController : View("Vehicle registration") {
+
+    val vehicleRepo = VehicleRepo()
 
     private val tableScope = super.scope as AbstractModelTableController<Vehicle>.ModelEditScope
     val vehicleModel = tableScope.viewModel as VehicleModel
@@ -39,6 +42,7 @@ open class NewVehicleController : View("Vehicle registration") {
             enableWhen { vehicleModel.dirty }
             action {
                 vehicleModel.commit()
+                vehicleRepo.addNewModel(vehicleModel.item)
                 tableScope.tableData.add(vehicleModel.item)
                 close()
             }

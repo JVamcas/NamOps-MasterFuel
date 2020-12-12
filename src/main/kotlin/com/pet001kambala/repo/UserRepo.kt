@@ -7,35 +7,17 @@ import tornadofx.asObservable
 import tornadofx.observableListOf
 
 
-class UserRepo {
+class UserRepo : AbstractRepo<User>() {
 
-    private val session = SessionManager.newInstance?.openSession()
-    fun addNewUser(user: User) {
-        println("user is $user")
-        session?.apply {
-            val transaction = session.beginTransaction()
-            try {
-                session.persist(user)
-                transaction.commit()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                transaction.rollback()
-            }
-        }
-    }
 
-    fun updateUser(user: User){
-        session?.apply {
-            val transaction = session.beginTransaction()
-            try {
-                session.update(user)
-                transaction.commit()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                transaction.rollback()
-            }
-        }
-    }
+
+//    fun deleteUser(user: User){
+//        session?.apply {
+//            val results =  createQuery("DELETE FROM User WHERE", User::class.java).resultList
+//            return results.asObservable()
+//        }
+//        return observableListOf()
+//    }
 
     fun loadAllUsers(): ObservableList<User>{
         session?.apply {

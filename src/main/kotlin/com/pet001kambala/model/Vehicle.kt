@@ -1,8 +1,12 @@
 package com.pet001kambala.model
 
+import com.pet001kambala.utils.SimpleStringConvertor
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ListCell
+import org.hibernate.annotations.Cascade
+import org.hibernate.annotations.CascadeType
 import tornadofx.*
+import javax.persistence.*
 
 enum class Department(val value: String) {
     LOCAL("Local Transport"),
@@ -18,56 +22,52 @@ enum class VehicleType(val value: String) {
     FORKLIFT("ForkLift")
 }
 
+@Entity
+@Table(name = "Vehicles")
 class Vehicle(
-    id: String? = null,
     unitNumber: String? = null,
     plateNumber: String? = null,
     department: Department = Department.LOCAL,
     type: VehicleType = VehicleType.TRUCK,
 
     ) {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Cascade(CascadeType.DELETE)
+    var id: Int? = null
+
+    @Column(name = "unit_number", nullable = false)
+    @Convert(converter = SimpleStringConvertor::class)
     val unitNumberProperty = SimpleStringProperty(unitNumber)
-    var unitNumber: String? by unitNumberProperty
 
+    @Column(name = "plate_number", nullable = false)
+    @Convert(converter = SimpleStringConvertor::class)
     val plateNumberProperty = SimpleStringProperty(plateNumber)
-    var plateNumber: String? by plateNumberProperty
 
+    @Column(name = "department", nullable = false)
+    @Convert(converter = SimpleStringConvertor::class)
     val departmentProperty = SimpleStringProperty(department.value)
-    var department: String by departmentProperty
 
+    @Column(name = "vehicle_type", nullable = false)
+    @Convert(converter = SimpleStringConvertor::class)
     val typeProperty = SimpleStringProperty(type.value)
-    var type: String by typeProperty
 
-    override fun toString() = "$unitNumber | $plateNumber | $department"
+    override fun toString() = "$unitNumberProperty | $plateNumberProperty | $departmentProperty"
 
-    class SimpleVehicleListCell: ListCell<Vehicle>() {
+    class SimpleVehicleListCell : ListCell<Vehicle>() {
 
         override fun updateItem(vehicle: Vehicle?, empty: Boolean) {
             super.updateItem(vehicle, empty)
-            text = "${vehicle?.unitNumber} | ${vehicle?.plateNumber} | ${vehicle?.department}"
+            text = "${vehicle?.unitNumberProperty} | ${vehicle?.plateNumberProperty} | ${vehicle?.departmentProperty}"
         }
     }
 }
 
-class VehicleModel : ItemViewModel<Vehicle> {
+class VehicleModel : ItemViewModel<Vehicle>() {
 
-     var unitNumber: SimpleStringProperty
-     var plateNumber: SimpleStringProperty
-     var department: SimpleStringProperty
-     var type: SimpleStringProperty
-
-
-    constructor() : super() {
-        unitNumber = bind(Vehicle::unitNumber)
-        plateNumber = bind(Vehicle::plateNumber)
-        department = bind(Vehicle::department)
-        type = bind(Vehicle::type)
-    }
-
-    constructor(vehicle: Vehicle) : super() {
-        unitNumber = bind { vehicle.unitNumberProperty }
-        plateNumber = bind { vehicle.plateNumberProperty }
-        department = bind { vehicle.departmentProperty }
-        type = bind { vehicle.typeProperty }
-    }
+    var unitNumber = bind(Vehicle::unitNumberProperty)
+    var plateNumber = bind(Vehicle::plateNumberProperty)
+    var department = bind(Vehicle::departmentProperty)
+    var type = bind(Vehicle::typeProperty)
 }

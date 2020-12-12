@@ -11,6 +11,7 @@ class UpdateVehicleController: NewVehicleController() {
         saveVehicle.apply {
             action {
                 vehicleModel.commit()
+                vehicleRepo.updateModel(vehicleModel.item)
                 //write update to database
                 close()
             }

@@ -1,9 +1,7 @@
 package com.pet001kambala.controller
 
-import com.pet001kambala.model.CompanyName
-import com.pet001kambala.model.User
-import com.pet001kambala.model.UserGroup
-import com.pet001kambala.model.UserModel
+import com.pet001kambala.model.*
+import com.pet001kambala.repo.UserRepo
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
@@ -15,12 +13,14 @@ open class NewUserController : View("User registration") {
     private val tableScope = super.scope as AbstractModelTableController<User>.ModelEditScope
     val userModel = tableScope.viewModel as UserModel
 
+    val userRepo = UserRepo()
+
     override val root: GridPane by fxml("/view/UserView.fxml")
 
     private val firstName: TextField by fxid("firstName")
     private val lastName: TextField by fxid("lastName")
-    private val companyName: ComboBox<String> by fxid("companyName")
-    private val category: ComboBox<String> by fxid("category")
+    private val companyName: ComboBox<CompanyName> by fxid("companyName")
+    private val category: ComboBox<UserGroup> by fxid("category")
     private val cancelEditUser: Button by fxid("cancelEditUser")
     val saveUser: Button by fxid("saveUser")
 
@@ -30,19 +30,24 @@ open class NewUserController : View("User registration") {
         lastName.bind(userModel.lastName)
 
         category.apply {
+            setCellFactory { SimpleUserGroupListCell() }
+            buttonCell = SimpleUserGroupListCell()
             bind(userModel.userGroup)
-            items = UserGroup.values().map { it.name }.asObservable()
+            items = UserGroup.values().toList().asObservable()
         }
 
         companyName.apply {
+            setCellFactory { SimpleCompanyNameListCell() }
+            buttonCell = SimpleCompanyNameListCell()
             bind(userModel.companyName)
-            items = CompanyName.values().map { it.value }.asObservable()
+            items = CompanyName.values().toList().asObservable()
         }
 
         saveUser.apply {
             enableWhen { userModel.dirty }
             action {
                 userModel.commit()
+//                userRepo.addNewUser(userModel.item)
                 tableScope.tableData.add(userModel.item)
                 close()
             }

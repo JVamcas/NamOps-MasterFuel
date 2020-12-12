@@ -10,6 +10,7 @@ class UpdateUserController : NewUserController() {
         saveUser.apply {
             action {
                 userModel.commit()
+                userRepo.updateUser(userModel.item)
                 //write update to database
                 close()
             }

@@ -18,17 +18,14 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
     private val scrollPane: ScrollPane by fxid("tableViewScrollPane")
     private val refreshTransactionTable: Button by fxid("refresh")
 
-
     init {
-
-
 
         tableView.apply {
             //ensure table dimensions match the enclosing ScrollPane
             prefWidthProperty().bind(scrollPane.widthProperty())
             prefHeightProperty().bind(scrollPane.heightProperty())
 
-            items = loadModels()
+            items = modelList
 
             placeholder = label("No filling records yet.")
             smartResize()

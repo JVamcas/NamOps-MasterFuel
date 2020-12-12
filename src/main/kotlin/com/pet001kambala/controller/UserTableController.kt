@@ -2,6 +2,7 @@ package com.pet001kambala.controller
 
 import com.pet001kambala.model.User
 import com.pet001kambala.model.UserModel
+import com.pet001kambala.repo.UserRepo
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.Label
@@ -10,6 +11,8 @@ import javafx.scene.layout.Priority
 import tornadofx.*
 
 class UserTableController : AbstractModelTableController<User>("Current Users") {
+
+    private val userRepo = UserRepo()
 
     override val root = vbox(10.0) {
         tableview(modelList) {
@@ -25,9 +28,6 @@ class UserTableController : AbstractModelTableController<User>("Current Users") 
             }
 
             placeholder = Label("No users here yet.")
-
-            //load user data async
-            modelList.asyncItems { loadModels() }
 
             setPrefSize(800.0, 400.0)
             columnResizePolicy = CONSTRAINED_RESIZE_POLICY
@@ -58,9 +58,6 @@ class UserTableController : AbstractModelTableController<User>("Current Users") 
     }
 
     override fun loadModels(): ObservableList<User> {
-        return observableListOf(
-            User(firstName = "Petrus", lastName = "Kambala"),
-            User(firstName = "Martin", lastName = "Kapukare")
-        )
+       return userRepo.loadAllUsers()
     }
 }

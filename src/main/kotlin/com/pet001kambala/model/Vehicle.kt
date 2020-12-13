@@ -34,14 +34,14 @@ class Vehicle(
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Cascade(CascadeType.DELETE)
+    @Cascade(CascadeType.ALL)
     var id: Int? = null
 
-    @Column(name = "unit_number", nullable = false)
+    @Column(name = "unit_number", nullable = false,unique = true)
     @Convert(converter = SimpleStringConvertor::class)
     val unitNumberProperty = SimpleStringProperty(unitNumber)
 
-    @Column(name = "plate_number", nullable = false)
+    @Column(name = "plate_number", nullable = false,unique = true)
     @Convert(converter = SimpleStringConvertor::class)
     val plateNumberProperty = SimpleStringProperty(plateNumber)
 

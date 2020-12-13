@@ -26,7 +26,7 @@ class User(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Cascade(CascadeType.DELETE)
+    @Cascade(CascadeType.ALL)
     var id: Int? = null
 
     @Column(name = "firstName",nullable = false)

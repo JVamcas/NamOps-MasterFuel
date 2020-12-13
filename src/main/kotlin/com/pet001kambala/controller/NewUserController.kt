@@ -2,6 +2,7 @@ package com.pet001kambala.controller
 
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.UserRepo
+import javafx.beans.value.ObservableValue
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
@@ -26,34 +27,49 @@ open class NewUserController : View("User registration") {
 
     init {
 
-        firstName.bind(userModel.firstName)
-        lastName.bind(userModel.lastName)
+        firstName.apply {
+            bind(userModel.firstName)
+            required(
+                ValidationTrigger.OnBlur,
+                "Enter your first name."
+            )
+        }
+        lastName.apply {
+            bind(userModel.lastName)
+            required(
+                ValidationTrigger.OnBlur,
+                "Enter your last name."
+            )
+        }
 
         category.apply {
             bind(userModel.userGroup)
             items = UserGroup.values().map { it.name }.asObservable()
+            required(ValidationTrigger.OnBlur,
+                "Select user category.")
         }
 
         companyName.apply {
             bind(userModel.companyName)
             items = CompanyName.values().map { it.value }.asObservable()
+            required(ValidationTrigger.OnBlur,
+                "Select your company.")
         }
 
         saveUser.apply {
-            enableWhen { userModel.dirty }
+            enableWhen { userModel.valid }
             action {
                 userModel.commit()
                 userRepo.addNewModel(userModel.item)
-                println("model item ${userModel.item}")
                 tableScope.tableData.add(userModel.item)
                 close()
             }
-            //push data to database
         }
 
         cancelEditUser.apply {
             enableWhen { userModel.dirty }
             action { userModel.rollback()  }
         }
+        userModel.validate(decorateErrors = false)
     }
 }

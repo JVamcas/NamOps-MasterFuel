@@ -53,13 +53,13 @@ class Vehicle(
     @Convert(converter = SimpleStringConvertor::class)
     val typeProperty = SimpleStringProperty(type.value)
 
-    override fun toString() = "$unitNumberProperty | $plateNumberProperty | $departmentProperty"
+    override fun toString() = "${unitNumberProperty.get()} | ${plateNumberProperty.get()} | ${departmentProperty.get()}"
 
     class SimpleVehicleListCell : ListCell<Vehicle>() {
 
         override fun updateItem(vehicle: Vehicle?, empty: Boolean) {
             super.updateItem(vehicle, empty)
-            text = "${vehicle?.unitNumberProperty} | ${vehicle?.plateNumberProperty} | ${vehicle?.departmentProperty}"
+            text = "${vehicle?.unitNumberProperty?.get()} | ${vehicle?.plateNumberProperty?.get()} | ${vehicle?.departmentProperty?.get()}"
         }
     }
 }

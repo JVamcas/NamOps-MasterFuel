@@ -3,6 +3,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <GridPane maxHeight="243.0" maxWidth="446.0" minHeight="183.0" minWidth="446.0" prefHeight="243.0" prefWidth="446.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
@@ -65,15 +66,21 @@
                 <Insets top="10.0" />
             </padding>
             <Region HBox.hgrow="ALWAYS" />
-            <Button fx:id="cancelTransaction" mnemonicParsing="false" style="-fx-background-color: #E51E11; -fx-background-radius: 10;" text="Cancel">
+            <Button fx:id="cancelTransaction" mnemonicParsing="false" style="-fx-background-color: #E51E11; -fx-background-radius: 10;" text="Cancel" textFill="WHITE">
                 <HBox.margin>
                     <Insets right="20.0" />
                 </HBox.margin>
+            <font>
+               <Font name="System Bold Italic" size="13.0" />
+            </font>
         </Button>
-            <Button fx:id="saveTransaction" mnemonicParsing="false" style="-fx-background-color: #759906; -fx-background-radius: 10;" text="Save">
+            <Button fx:id="saveTransaction" mnemonicParsing="false" style="-fx-background-color: #759906; -fx-background-radius: 10;" text="Save" textFill="WHITE">
             <HBox.margin>
                <Insets right="10.0" />
-            </HBox.margin></Button>
+            </HBox.margin>
+            <font>
+               <Font name="System Bold" size="13.0" />
+            </font></Button>
         </HBox>
       <Label prefHeight="17.0" prefWidth="56.0" text="Vehicle" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <GridPane.margin>

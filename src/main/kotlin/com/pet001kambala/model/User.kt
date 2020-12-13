@@ -46,7 +46,7 @@ class User(
     val userGroupProperty = SimpleStringProperty(userGroup.name)
 
     override fun toString(): String {
-        return "$firstNameProperty $lastNameProperty"
+        return "${firstNameProperty.get()} ${lastNameProperty.get()}"
     }
 }
 
@@ -64,6 +64,6 @@ class SimpleUserListCell : ListCell<User>() {
 
     override fun updateItem(user: User?, empty: Boolean) {
         super.updateItem(user, empty)
-        text = "${user?.firstNameProperty} ${user?.lastNameProperty}"
+        text = "${user?.firstNameProperty?.get()} ${user?.lastNameProperty?.get()}"
     }
 }

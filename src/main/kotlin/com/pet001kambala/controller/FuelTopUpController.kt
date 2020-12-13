@@ -1,17 +1,24 @@
 package com.pet001kambala.controller
 
 import com.pet001kambala.model.*
+import com.pet001kambala.repo.FuelTransactionRepo
+import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.utils.DateUtil.Companion._24
 import com.pet001kambala.utils.DateUtil.Companion.today
+import javafx.beans.property.SimpleObjectProperty
 
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
 import tornadofx.*
 import javafx.scene.control.Button
+import java.sql.Timestamp
 
 
 open class FuelTopUpController(title: String = "Top up storage tank") : View(title = title) {
+
+    val userRepo = UserRepo()
+    val transactionRepo = FuelTransactionRepo()
 
     private val tableScope = super.scope as AbstractModelTableController<FuelTransaction>.ModelEditScope
     private val transactionModel = tableScope.viewModel as FuelTransactionModel
@@ -24,15 +31,16 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
     private val cancelTransaction: Button by fxid("cancelTransaction")
 
     init {
+
         topUpQuantity.bind(transactionModel.quantity)
-        attendant.bind(transactionModel.attendant)
-        transactionModel.date.value = today()._24()
-        transactionModel.transactionType.value = FuelTransactionType.REFILL.value
-
-
+        transactionModel.item.apply {
+            dateProperty.set(today())
+            transactionTypeProperty.set(FuelTransactionType.REFILL.value)
+        }
 
         attendant.apply {
-            asyncItems { loadAttendants() }
+            bindSelected(transactionModel.attendant)
+            asyncItems { userRepo.loadAttendants() }
             setCellFactory { SimpleUserListCell() }
             buttonCell = SimpleUserListCell()
         }
@@ -42,7 +50,9 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
             enableWhen { transactionModel.dirty }
             action {
                 transactionModel.commit()
+                transactionRepo.addNewModel(transactionModel.item)
                 tableScope.tableData.add(transactionModel.item)
+
                 //write to database
                 close()
             }
@@ -54,13 +64,5 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
                 transactionModel.rollback()
             }
         }
-    }
-
-    fun loadAttendants(): List<User> {
-
-        return listOf(
-                User(firstName = "Jeremiah", lastName = "Tomas"),
-                User(firstName = "James", lastName = "Ngapi")
-        )
     }
 }

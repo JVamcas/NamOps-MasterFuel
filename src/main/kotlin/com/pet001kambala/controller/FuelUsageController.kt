@@ -1,6 +1,8 @@
 package com.pet001kambala.controller
 
 import com.pet001kambala.model.*
+import com.pet001kambala.repo.FuelTransactionRepo
+import com.pet001kambala.repo.VehicleRepo
 import com.pet001kambala.utils.DateUtil.Companion._24
 import com.pet001kambala.utils.DateUtil.Companion.today
 import javafx.scene.control.Button
@@ -11,7 +13,7 @@ import javafx.util.StringConverter
 import tornadofx.*
 
 class FuelUsageController : FuelTopUpController("Dispense fuel") {
-
+    private val vehicleRepo = VehicleRepo()
 
     private val tableScope = super.scope as AbstractModelTableController<FuelTransaction>.ModelEditScope
     private val transactionModel = tableScope.viewModel as FuelTransactionModel
@@ -30,10 +32,10 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
 
     init {
 
-        root.setMaxSize(446.0,243.0)
+        root.setMaxSize(446.0, 243.0)
 
         attendant.bind(transactionModel.attendant)
-        driver.bind(transactionModel.driverName)
+        driver.bind(transactionModel.driver)
         vehicle.bind(transactionModel.vehicle)
         quantity.bind(transactionModel.quantity)
         vehicleOdometer.bind(transactionModel.odometer)
@@ -48,7 +50,8 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
             enableWhen { transactionModel.dirty }
             action {
                 transactionModel.commit()
-
+                //todo this should be async with a progress bar
+                transactionRepo.addNewModel(transactionModel.item)
                 //TODO need to calculate here the distance travelled between refills
                 //transactionModel.distanceTravelled.value =
 
@@ -66,38 +69,24 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
         }
 
         attendant.apply {
-            asyncItems { loadAttendants() }
+            bindSelected(transactionModel.attendant)
+            asyncItems { userRepo.loadAttendants() }
             setCellFactory { SimpleUserListCell() }
             buttonCell = SimpleUserListCell()
         }
 
         vehicle.apply {
-            asyncItems { loadVehicles() }
+            bindSelected(transactionModel.vehicle)
+            asyncItems { vehicleRepo.loadAllVehicles() }
             setCellFactory { Vehicle.SimpleVehicleListCell() }
             buttonCell = Vehicle.SimpleVehicleListCell()
         }
 
         driver.apply {
-            asyncItems { loadDrivers() }
+            bindSelected(transactionModel.driver)
+            asyncItems { userRepo.loadDrivers() }
             setCellFactory { SimpleUserListCell() }
             buttonCell = SimpleUserListCell()
         }
-    }
-
-    private fun loadDrivers(): List<User> {
-
-        return listOf(
-                User(firstName = "Jeremiah", lastName = "Tomas"),
-                User(firstName = "James", lastName = "Ngapi")
-        )
-    }
-
-    private fun loadVehicles(): List<Vehicle> {
-
-        return listOf(
-                Vehicle(unitNumber = "H01", plateNumber = "N386WB"),
-                Vehicle(unitNumber = "H04", plateNumber = "N8346WB"),
-                Vehicle(unitNumber = "H02", plateNumber = "N24386WB")
-        )
     }
 }

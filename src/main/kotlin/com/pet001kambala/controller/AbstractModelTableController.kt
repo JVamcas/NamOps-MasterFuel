@@ -8,10 +8,6 @@ abstract class AbstractModelTableController<T>(title: String) : View(title) {
 
     val modelList = SortedFilteredList<T>()
 
-//    init {
-//        modelList.asyncItems { loadModels() }
-//    }
-
     override fun onDock() {
         super.onDock()
         onRefresh()

@@ -56,7 +56,7 @@ open class NewVehicleController : View("Vehicle registration") {
             enableWhen { vehicleModel.valid }
             action {
                 vehicleModel.commit()
-                if(isDuplicateVehicle()){
+                if(vehicleRepo.isDuplicate(vehicleModel.item)){
                     Platform.runLater {
                         Alert(Alert.AlertType.ERROR).apply {
                             title = "Error"
@@ -82,13 +82,13 @@ open class NewVehicleController : View("Vehicle registration") {
         }
     }
 
-    private fun isDuplicateVehicle(): Boolean {
-        val plateNo = vehicleModel.plateNumber.get().toLowerCase().trim()
-        val unitNo = vehicleModel.unitNumber.get().toLowerCase().trim()
-        return tableScope.tableData
-            .any { it.unitNumberProperty.get().toLowerCase().trim() == unitNo
-                    || it.plateNumberProperty.get().toLowerCase().trim() == plateNo }
-
-    }
+//    private fun isDuplicateVehicle(): Boolean {
+//        val plateNo = vehicleModel.plateNumber.get().toLowerCase().trim()
+//        val unitNo = vehicleModel.unitNumber.get().toLowerCase().trim()
+//        return tableScope.tableData
+//            .any { it.unitNumberProperty.get().toLowerCase().trim() == unitNo
+//                    || it.plateNumberProperty.get().toLowerCase().trim() == plateNo }
+//
+//    }
 }
 

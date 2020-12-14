@@ -1,10 +1,13 @@
 package com.pet001kambala.model
 
 import com.pet001kambala.utils.SimpleStringConvertor
+import com.pet001kambala.utils.StringPrefixedSequenceIdGenerator
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ListCell
 import org.hibernate.annotations.Cascade
 import org.hibernate.annotations.CascadeType
+import org.hibernate.annotations.GenericGenerator
+import org.hibernate.annotations.Parameter
 import tornadofx.*
 import javax.persistence.*
 import javax.persistence.Id
@@ -22,7 +25,8 @@ class User(
     firstName: String? = null,
     lastName: String? = null,
     companyName: CompanyName = CompanyName.NAMOPS,
-    userGroup: UserGroup = UserGroup.Attendant
+    userGroup: UserGroup = UserGroup.Attendant,
+    userIdCode: String? = null
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,6 +49,21 @@ class User(
     @Convert(converter = SimpleStringConvertor::class)
     val userGroupProperty = SimpleStringProperty(userGroup.name)
 
+
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "user_code_gen")
+    @GenericGenerator(
+            name = "user_code_gen",
+            strategy = "com.pet001kambala.utils.StringPrefixedSequenceIdGenerator",
+            parameters = [
+                Parameter(name = StringPrefixedSequenceIdGenerator.INCREMENT_PARAM, value = "50"),
+                Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "B_"),
+                Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
+    ])
+
+    @Column(name = "userIdCode",nullable = false)
+    @Convert(converter = SimpleStringConvertor::class)
+    val userIdCodeProperty = SimpleStringProperty(userIdCode)
+
     override fun toString(): String {
         return "${firstNameProperty.get()} ${lastNameProperty.get()}"
     }
@@ -55,6 +74,7 @@ class UserModel : ItemViewModel<User>() {
     var lastName = bind(User::lastNameProperty)
     var companyName = bind(User::companyNameProperty)
     var userGroup = bind(User::userGroupProperty)
+    val userIdCode = bind(User::userIdCodeProperty)
 }
 
 /**

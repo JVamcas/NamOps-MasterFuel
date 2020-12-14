@@ -5,6 +5,7 @@ import com.pet001kambala.repo.FuelTransactionRepo
 import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.utils.DateUtil.Companion._24
 import com.pet001kambala.utils.DateUtil.Companion.today
+import com.pet001kambala.utils.ParseUtil.Companion.isNumeric
 import javafx.beans.property.SimpleObjectProperty
 
 import javafx.scene.control.ComboBox
@@ -12,6 +13,8 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
 import tornadofx.*
 import javafx.scene.control.Button
+import java.lang.Double.parseDouble
+import java.lang.Exception
 import java.sql.Timestamp
 
 
@@ -27,12 +30,21 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
 
     private val topUpQuantity: TextField by fxid("topUpQuantity")
     private val attendant: ComboBox<User> by fxid("attendant")
+    private val wayBillNo: TextField by fxid("waybillNo")
     private val saveTransaction: Button by fxid("saveTransaction")
     private val cancelTransaction: Button by fxid("cancelTransaction")
 
     init {
 
-        topUpQuantity.bind(transactionModel.quantity)
+        wayBillNo.apply {
+            bind(transactionModel.waybillNo)
+            isNumeric("Invalid waybill number.")
+        }
+
+        topUpQuantity.apply {
+            bind(transactionModel.quantity)
+            isNumeric("Invalid quantity.")
+        }
         transactionModel.item.apply {
             dateProperty.set(today())
             transactionTypeProperty.set(FuelTransactionType.REFILL.value)
@@ -45,9 +57,8 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
             buttonCell = SimpleUserListCell()
         }
 
-
         saveTransaction.apply {
-            enableWhen { transactionModel.dirty }
+            enableWhen { transactionModel.valid }
             action {
                 transactionModel.commit()
                 transactionRepo.addNewModel(transactionModel.item)
@@ -64,5 +75,6 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
                 transactionModel.rollback()
             }
         }
+        transactionModel.validate(decorateErrors = false)
     }
 }

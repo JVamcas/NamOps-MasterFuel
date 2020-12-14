@@ -27,7 +27,8 @@ class FuelTransaction(
     transactionType: FuelTransactionType = FuelTransactionType.DISPENSE,
     odometer: Int = 0,
     distanceTravelled: Int = 0,
-    invoiceNo: String? = null
+    waybillNo: String? = null,
+    driverIdCode: Int = 0
 ) {
 
     @Id
@@ -37,6 +38,14 @@ class FuelTransaction(
     @Column(name = "odometer")
     @Convert(converter = SimpleIntegerConvertor::class)
     val odometerProperty = SimpleIntegerProperty(odometer)
+
+    @Column(name = "driverIdCode",)
+    @Convert(converter = SimpleIntegerConvertor::class)
+    val driverIdCodeProperty = SimpleIntegerProperty(driverIdCode)
+
+    @Column(name = "waybillNo")
+    @Convert(converter = SimpleStringConvertor::class)
+    val waybillNoProperty = SimpleStringProperty(waybillNo)
 
     @Column(name = "transactionDate", nullable = false)
     @Convert(converter = SimpleDateConvertor::class)
@@ -99,9 +108,6 @@ class FuelTransaction(
     @Convert(converter = SimpleIntegerConvertor::class)
     val distanceTravelledProperty = SimpleIntegerProperty(distanceTravelled)
 
-    @Column(name = "invoiceNumber")
-    @Convert(converter = SimpleStringConvertor::class)
-    val invoiceNoProperty = SimpleStringProperty(invoiceNo)
 }
 
 class FuelTransactionModel : ItemViewModel<FuelTransaction>() {
@@ -117,5 +123,7 @@ class FuelTransactionModel : ItemViewModel<FuelTransaction>() {
     var transactionType = bind(FuelTransaction::transactionTypeProperty)
     val odometer = bind(FuelTransaction::odometerProperty)
     val distanceTravelled = bind(FuelTransaction::distanceTravelledProperty)
-    val invoiceNo = bind(FuelTransaction::invoiceNoProperty)
+    val waybillNo = bind(FuelTransaction::waybillNoProperty)
+    val driverIdCode = bind(FuelTransaction::driverIdCodeProperty)
+
 }

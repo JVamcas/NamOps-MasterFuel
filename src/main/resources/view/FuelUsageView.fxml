@@ -27,22 +27,22 @@
             <Insets left="10.0" />
          </GridPane.margin>
         </Label>
-        <Label prefHeight="17.0" prefWidth="136.0" text="Vehicle Odometer" GridPane.rowIndex="4">
+        <Label prefHeight="17.0" prefWidth="136.0" text="Vehicle Odometer" GridPane.columnIndex="1" GridPane.rowIndex="4">
             <padding>
                 <Insets left="10.0" />
             </padding>
         </Label>
-        <Label text="Quantity dispensed" GridPane.columnIndex="1" GridPane.rowIndex="4">
+        <Label text="Driver ID" GridPane.columnIndex="1" GridPane.rowIndex="2">
             <GridPane.margin>
                 <Insets left="10.0" />
             </GridPane.margin>
         </Label>
-        <ComboBox fx:id="vehicle" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="205.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <ComboBox fx:id="vehicle" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="205.0" GridPane.columnIndex="0" GridPane.rowIndex="5">
             <GridPane.margin>
                 <Insets left="10.0" right="10.0" />
             </GridPane.margin>
         </ComboBox>
-        <TextField fx:id="quantity" promptText="Amount of fuel dispensed." GridPane.columnIndex="1" GridPane.rowIndex="5">
+        <TextField fx:id="driverIdCode" promptText="Driver identification code." GridPane.columnIndex="1" GridPane.rowIndex="3">
          <GridPane.margin>
             <Insets left="10.0" right="10.0" />
          </GridPane.margin></TextField>
@@ -82,22 +82,32 @@
                <Font name="System Bold" size="13.0" />
             </font></Button>
         </HBox>
-      <Label prefHeight="17.0" prefWidth="56.0" text="Vehicle" GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <Label prefHeight="17.0" prefWidth="56.0" text="Vehicle" GridPane.columnIndex="0" GridPane.rowIndex="4">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin>
       </Label>
-      <TextField fx:id="vehicleOdometer" promptText="Current odometer readings" GridPane.rowIndex="5">
+      <TextField fx:id="vehicleOdometer" promptText="Current odometer readings." GridPane.columnIndex="1" GridPane.rowIndex="5">
          <GridPane.margin>
             <Insets left="10.0" right="10.0" />
          </GridPane.margin>
       </TextField>
-      <Label prefHeight="17.0" prefWidth="108.0" text="Invoice Number" GridPane.rowIndex="6">
+        <Label prefHeight="17.0" prefWidth="108.0" text="Quantity dispensed" GridPane.columnIndex="0" GridPane.rowIndex="6">
+            <GridPane.margin>
+                <Insets left="10.0" />
+            </GridPane.margin>
+        </Label>
+        <TextField fx:id="quantity" promptText="Amount of fuel dispensed." GridPane.columnIndex="0" GridPane.rowIndex="7">
+            <GridPane.margin>
+                <Insets left="10.0" right="10.0" />
+            </GridPane.margin>
+        </TextField>
+      <Label prefHeight="17.0" prefWidth="108.0" text="Waybill Number" GridPane.columnIndex="1" GridPane.rowIndex="6">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin>
       </Label>
-      <TextField fx:id="invoiceNo" promptText="Enter invoice number for your reference." GridPane.columnSpan="2" GridPane.rowIndex="7">
+      <TextField fx:id="waybillNo" promptText="Way bill number for your reference." GridPane.columnIndex="1" GridPane.rowIndex="7">
          <GridPane.margin>
             <Insets left="10.0" right="10.0" />
          </GridPane.margin>

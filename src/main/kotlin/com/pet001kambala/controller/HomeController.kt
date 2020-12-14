@@ -25,6 +25,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
 
         tableView.apply {
             //ensure table dimensions match the enclosing ScrollPane
+            smartResize()
             prefWidthProperty().bind(scrollPane.widthProperty())
             prefHeightProperty().bind(scrollPane.heightProperty())
 
@@ -33,7 +34,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
             placeholder = label("No filling records yet.")
             smartResize()
             column("Date", FuelTransaction::dateProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Invoice Number", FuelTransaction::invoiceNoProperty).contentWidth(padding = 20.0, useAsMin = true)
+            column("Waybill Number", FuelTransaction::waybillNoProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Type", FuelTransaction::transactionTypeProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Vehicle", FuelTransaction::vehicle).contentWidth(padding = 20.0, useAsMin = true)
             column("Attendant Name", FuelTransaction::attendant).contentWidth(padding = 20.0, useAsMin = true)
@@ -45,7 +46,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
                 useAsMin = true
             )
             column("Quantity", FuelTransaction::quantityProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Available", FuelTransaction::currentBalanceProperty).remainingWidth()
+            column("Available", FuelTransaction::currentBalanceProperty).contentWidth(padding = 20.0, useAsMin = true).remainingWidth()
         }
 
         refreshTransactionTable.apply {

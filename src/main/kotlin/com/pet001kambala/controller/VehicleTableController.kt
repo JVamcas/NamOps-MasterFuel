@@ -14,9 +14,9 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Current Ve
     override val root = vbox(10.0) {
         tableview(modelList) {
 
-            column("Type of Vehicle", Vehicle::typeProperty)
             column("Unit Number", Vehicle::unitNumberProperty)
             column("Plate Number", Vehicle::plateNumberProperty)
+            column("Type of Vehicle", Vehicle::typeProperty)
             column("Department", Vehicle::departmentProperty)
 
             onUserSelect {

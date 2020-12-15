@@ -1,7 +1,10 @@
 package com.pet001kambala.controller
 
 import com.pet001kambala.model.User
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import tornadofx.action
+import javax.xml.bind.JAXBElement
 
 class UpdateUserController : NewUserController() {
 
@@ -11,8 +14,9 @@ class UpdateUserController : NewUserController() {
         saveUser.apply {
             action {
                 userModel.commit()
-                userRepo.updateModel(userModel.item)
-                //write update to database
+                GlobalScope.launch {
+                    userRepo.updateModel(userModel.item)
+                }
                 close()
             }
         }

@@ -1,8 +1,10 @@
 package com.pet001kambala.controller
 
+import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.model.User
 import com.pet001kambala.model.UserModel
 import com.pet001kambala.repo.UserRepo
+import com.pet001kambala.utils.Results
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.Label
@@ -57,7 +59,10 @@ class UserTableController : AbstractModelTableController<User>("Current Users") 
         paddingAll = 10.0
     }
 
-    override fun loadModels(): ObservableList<User> {
-       return userRepo.loadAllUsers()
+    override suspend fun loadModels(): ObservableList<User> {
+        val loadResults = userRepo.loadAllUsers()
+        if (loadResults is Results.Success<*>)
+            return loadResults.data as ObservableList<User>
+        return observableListOf()
     }
 }

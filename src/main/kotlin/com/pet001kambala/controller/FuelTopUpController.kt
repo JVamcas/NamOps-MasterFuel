@@ -52,7 +52,7 @@ open class FuelTopUpController(title: String = "Top up storage tank", transactio
 
         attendant.apply {
             bindSelected(transactionModel.attendant)
-            asyncItems { userRepo.loadAttendants() }
+//            asyncItems { userRepo.loadAttendants() }
             setCellFactory { SimpleUserListCell() }
             buttonCell = SimpleUserListCell()
         }

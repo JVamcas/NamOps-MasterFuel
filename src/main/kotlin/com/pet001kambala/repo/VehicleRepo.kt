@@ -1,18 +1,25 @@
 package com.pet001kambala.repo
 
 import com.pet001kambala.model.Vehicle
-import javafx.collections.ObservableList
+import com.pet001kambala.utils.Results
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import tornadofx.*
 
 class VehicleRepo : AbstractRepo<Vehicle>() {
 
-
-    fun loadAllVehicles(): ObservableList<Vehicle> {
-        sessionFactory?.openSession()?.apply  {
-            val results = createQuery("SELECT a FROM Vehicle a", Vehicle::class.java).resultList
-            return results.asObservable()
+    suspend fun loadAllVehicles(): Results {
+        return try{
+            withContext(Dispatchers.Default){
+                val session = sessionFactory!!.openSession()
+                val results =  session.createQuery("SELECT a FROM Vehicle a", Vehicle::class.java).resultList
+                val data =  results.filterNotNull().asObservable()
+                Results.Success(data = data,code = Results.Success.CODE.LOAD_SUCCESS)
+            }
         }
-        return observableListOf()
+        catch (e: Exception){
+            Results.Error(e)
+        }
     }
 
     fun isDuplicate(vehicle: Vehicle): Boolean {
@@ -26,7 +33,7 @@ class VehicleRepo : AbstractRepo<Vehicle>() {
                     vehicle.unitNumberProperty.get().toLowerCase()
                 )
             )
-            return createQuery(criteriaQuery).resultList.isNotEmpty()
+            return createQuery(criteriaQuery).resultList.filterNotNull().isNotEmpty()
         }
         return false
     }

@@ -54,7 +54,7 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Current Ve
         paddingAll = 10.0
     }
 
-    override fun loadModels(): ObservableList<Vehicle> {
+    override suspend fun loadModels(): ObservableList<Vehicle> {
         return vehicleRepo.loadAllVehicles()
     }
 }

@@ -7,6 +7,10 @@ import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tornadofx.*
 
 open class NewUserController : View("User registration") {
@@ -27,18 +31,19 @@ open class NewUserController : View("User registration") {
 
     init {
 
+        modalStage?.isResizable = false
         firstName.apply {
             bind(userModel.firstName)
             required(
-                ValidationTrigger.OnBlur,
-                "Enter your first name."
+                    ValidationTrigger.OnBlur,
+                    "Enter your first name."
             )
         }
         lastName.apply {
             bind(userModel.lastName)
             required(
-                ValidationTrigger.OnBlur,
-                "Enter your last name."
+                    ValidationTrigger.OnBlur,
+                    "Enter your last name."
             )
         }
 
@@ -46,29 +51,33 @@ open class NewUserController : View("User registration") {
             bind(userModel.userGroup)
             items = UserGroup.values().map { it.name }.asObservable()
             required(ValidationTrigger.OnBlur,
-                "Select user category.")
+                    "Select user category.")
         }
 
         companyName.apply {
             bind(userModel.companyName)
             items = CompanyName.values().map { it.value }.asObservable()
             required(ValidationTrigger.OnBlur,
-                "Select your company.")
+                    "Select your company.")
         }
 
         saveUser.apply {
             enableWhen { userModel.valid }
             action {
                 userModel.commit()
-                userRepo.addNewModel(userModel.item)
-                tableScope.tableData.add(userModel.item)
-                close()
+                GlobalScope.launch {
+                    //todo progress bar here
+                    userRepo.addNewModel(userModel.item)
+                    //todo end progress bar here
+                    tableScope.tableData.add(userModel.item)
+                    close()
+                }
             }
         }
 
         cancelEditUser.apply {
             enableWhen { userModel.dirty }
-            action { userModel.rollback()  }
+            action { userModel.rollback() }
         }
         userModel.validate(decorateErrors = false)
     }

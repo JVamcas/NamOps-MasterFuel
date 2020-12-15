@@ -10,6 +10,8 @@ import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import tornadofx.*
 import javax.management.Notification
 
@@ -56,7 +58,7 @@ open class NewVehicleController : View("Vehicle registration") {
             enableWhen { vehicleModel.valid }
             action {
                 vehicleModel.commit()
-                if(isDuplicateVehicle()){
+                if (isDuplicateVehicle()) {
                     Platform.runLater {
                         Alert(Alert.AlertType.ERROR).apply {
                             title = "Error"
@@ -68,9 +70,11 @@ open class NewVehicleController : View("Vehicle registration") {
                     }
                     return@action
                 }
-                vehicleRepo.addNewModel(vehicleModel.item)
-                tableScope.tableData.add(vehicleModel.item)
-                close()
+                GlobalScope.launch {
+                    vehicleRepo.addNewModel(vehicleModel.item)
+                    tableScope.tableData.add(vehicleModel.item)
+                    close()
+                }
             }
             //push data to database
         }
@@ -86,8 +90,10 @@ open class NewVehicleController : View("Vehicle registration") {
         val plateNo = vehicleModel.plateNumber.get().toLowerCase().trim()
         val unitNo = vehicleModel.unitNumber.get().toLowerCase().trim()
         return tableScope.tableData
-            .any { it.unitNumberProperty.get().toLowerCase().trim() == unitNo
-                    || it.plateNumberProperty.get().toLowerCase().trim() == plateNo }
+                .any {
+                    it.unitNumberProperty.get().toLowerCase().trim() == unitNo
+                            || it.plateNumberProperty.get().toLowerCase().trim() == plateNo
+                }
 
     }
 }

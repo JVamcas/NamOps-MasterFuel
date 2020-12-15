@@ -4,13 +4,16 @@ import com.pet001kambala.model.*
 import com.pet001kambala.repo.FuelTransactionRepo
 import com.pet001kambala.utils.DateUtil.Companion._24
 import com.pet001kambala.utils.DateUtil.Companion.today
+import com.pet001kambala.utils.Results
+import javafx.application.Application.launch
 import javafx.collections.ObservableList
 import javafx.event.ActionEvent
-import javafx.scene.control.Button
-import javafx.scene.control.ScrollPane
-import javafx.scene.control.TableView
+import javafx.scene.control.*
 import javafx.scene.layout.BorderPane
+import javafx.scene.layout.Priority
+import kotlinx.coroutines.coroutineScope
 import tornadofx.*
+import javax.xml.bind.JAXBElement
 
 class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Logistics Pty Ltd FuelMaster") {
 
@@ -19,8 +22,8 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
     private val scrollPane: ScrollPane by fxid("tableViewScrollPane")
     private val refreshTransactionTable: Button by fxid("refresh")
 
-
     private val transactionRepo = FuelTransactionRepo()
+
     init {
 
         tableView.apply {
@@ -42,8 +45,8 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
             column("Odometer", FuelTransaction::odometerProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Distance travelled since last refill", FuelTransaction::distanceTravelledProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Opening balance", FuelTransaction::openingBalanceProperty).contentWidth(
-                padding = 20.0,
-                useAsMin = true
+                    padding = 20.0,
+                    useAsMin = true
             )
             column("Quantity", FuelTransaction::quantityProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Available", FuelTransaction::currentBalanceProperty).contentWidth(padding = 20.0, useAsMin = true).remainingWidth()
@@ -51,6 +54,41 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
 
         refreshTransactionTable.apply {
             action { onRefresh() }
+        }
+        root.apply {
+            vbox {
+                left {
+                    squeezebox {
+                        fold("Filters", expanded = true) {
+                            tooltip("Filter data.")
+                            hbox(10.0) {
+                                checkbox("Re-fill") {
+                                    tooltip("Filter out fuel re-fills.")
+                                    action {
+                                        modelList.predicate = {
+                                            if (isSelected)
+                                                it.transactionTypeProperty.get() == FuelTransactionType.REFILL.value
+                                            else
+                                                true
+                                        }
+                                    }
+                                }
+                                checkbox("Dispense") {
+                                    tooltip("Filter out fuel dispenses.")
+                                    action {
+                                        modelList.predicate = {
+                                            if (isSelected)
+                                                it.transactionTypeProperty.get() == FuelTransactionType.DISPENSE.value
+                                            else
+                                                true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -62,18 +100,21 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
         openInternalWindow<VehicleTableController>()
     }
 
-    fun toStorageRefill(actionEvent: ActionEvent){
+    fun toStorageRefill(actionEvent: ActionEvent) {
         val scope = ModelEditScope(FuelTransactionModel())
         editModel(scope, FuelTransaction(), FuelTopUpController::class)
     }
 
-    fun toVehicleRefill(actionEvent: ActionEvent){
+    fun toVehicleRefill(actionEvent: ActionEvent) {
 
         val scope = ModelEditScope(FuelTransactionModel())
         editModel(scope, FuelTransaction(), FuelUsageController::class)
     }
 
-    override fun loadModels(): ObservableList<FuelTransaction> {
-        return  transactionRepo.loadAllTransactions()
+    override suspend fun loadModels(): ObservableList<FuelTransaction> {
+        val loadResults = transactionRepo.loadAllTransactions()
+        if (loadResults is Results.Success<*>)
+            return loadResults.data as ObservableList<FuelTransaction>
+        return observableListOf()
     }
 }

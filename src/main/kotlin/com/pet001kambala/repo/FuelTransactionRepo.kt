@@ -14,4 +14,16 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>(){
         }
         return observableListOf()
     }
+
+    fun loadOpeningBalance(): Float{
+        session?.apply {
+
+            val qryStr = "select sum(if(transactionType=\"Re-fill\", quantityDispensed,-quantityDispensed)) as current_balance from fueltransactions"
+            val results = createNativeQuery(qryStr).resultList
+            println("results $results")
+
+            return if (results.filterNotNull().isNullOrEmpty()) 0f else results[0].toString().toFloat()
+        }
+        return 0f
+    }
 }

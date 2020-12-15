@@ -2,6 +2,7 @@ package com.pet001kambala.controller
 
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.VehicleRepo
+import javafx.beans.property.SimpleFloatProperty
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
@@ -18,7 +19,6 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
 
     private val attendant: ComboBox<User> by fxid("attendant")
     private val driver: ComboBox<User> by fxid("driver")
-    private val driverIdCode: TextField by fxid("driverIdCode")
     private val vehicle: ComboBox<Vehicle> by fxid("vehicle")
     private val quantity: TextField by fxid("quantity")
     private val vehicleOdometer: TextField by fxid("vehicleOdometer")
@@ -37,12 +37,9 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
         quantity.bind(transactionModel.quantity)
         vehicleOdometer.bind(transactionModel.odometer)
         waybillNo.bind(transactionModel.waybillNo)
-        driverIdCode.bind(transactionModel.driverIdCode)
-
-        //todo this value will come from the database
-        //transactionModel.date.value = today()._24()
 
         transactionModel.transactionType.value = FuelTransactionType.DISPENSE.value
+
 
         saveTransaction.apply {
             enableWhen { transactionModel.dirty }
@@ -87,10 +84,6 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
             asyncItems { userRepo.loadDrivers() }
             setCellFactory { SimpleUserListCell() }
             buttonCell = SimpleUserListCell()
-        }
-        driverIdCode.apply {
-            required(ValidationTrigger.OnBlur,"Please input driver ID code.")
-            bind(transactionModel.driverIdCode)
         }
         transactionModel.validate(decorateErrors = false)
     }

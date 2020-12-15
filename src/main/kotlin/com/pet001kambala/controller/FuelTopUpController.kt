@@ -48,6 +48,9 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
         transactionModel.item.apply {
             dateProperty.set(today())
             transactionTypeProperty.set(FuelTransactionType.REFILL.value)
+            runAsync {
+                openingBalanceProperty.set(transactionRepo.loadOpeningBalance())
+            }
         }
 
         attendant.apply {
@@ -61,8 +64,12 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
             enableWhen { transactionModel.valid }
             action {
                 transactionModel.commit()
-                transactionRepo.addNewModel(transactionModel.item)
-                tableScope.tableData.add(transactionModel.item)
+                val item = transactionModel.item
+
+                item.currentBalanceProperty.set(item.quantityProperty.get() + item.openingBalanceProperty.get())
+
+                transactionRepo.addNewModel(item)
+                tableScope.tableData.add(item)
 
                 //write to database
                 close()

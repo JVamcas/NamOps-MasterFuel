@@ -2,14 +2,13 @@ package com.pet001kambala.repo
 
 import com.pet001kambala.model.Vehicle
 import javafx.collections.ObservableList
-import tornadofx.asObservable
-import tornadofx.observableListOf
+import tornadofx.*
 
 class VehicleRepo : AbstractRepo<Vehicle>() {
 
 
     fun loadAllVehicles(): ObservableList<Vehicle> {
-        session?.apply {
+        sessionFactory?.openSession()?.apply  {
             val results = createQuery("SELECT a FROM Vehicle a", Vehicle::class.java).resultList
             return results.asObservable()
         }
@@ -17,7 +16,7 @@ class VehicleRepo : AbstractRepo<Vehicle>() {
     }
 
     fun isDuplicate(vehicle: Vehicle): Boolean {
-        session?.apply {
+        sessionFactory?.openSession()?.apply  {
             val criteriaQuery = criteriaBuilder.createQuery(Vehicle::class.java)
             val vehicleRoot = criteriaQuery.from(Vehicle::class.java)
             criteriaQuery.select(vehicleRoot)

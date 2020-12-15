@@ -9,7 +9,7 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
 import tornadofx.*
 
-class FuelUsageController : FuelTopUpController("Dispense fuel") {
+class FuelUsageController : FuelTopUpController("Dispense fuel",FuelTransactionType.DISPENSE ) {
     private val vehicleRepo = VehicleRepo()
 
     private val tableScope = super.scope as AbstractModelTableController<FuelTransaction>.ModelEditScope
@@ -38,20 +38,14 @@ class FuelUsageController : FuelTopUpController("Dispense fuel") {
         vehicleOdometer.bind(transactionModel.odometer)
         waybillNo.bind(transactionModel.waybillNo)
 
-        transactionModel.transactionType.value = FuelTransactionType.DISPENSE.value
-
-
         saveTransaction.apply {
             enableWhen { transactionModel.dirty }
             action {
                 transactionModel.commit()
-                //todo this should be async with a progress bar
-                transactionRepo.addNewModel(transactionModel.item)
-                //TODO need to calculate here the distance travelled between refills
-                //transactionModel.distanceTravelled.value =
 
-
-                tableScope.tableData.add(transactionModel.item)
+                val item = transactionModel.item
+                transactionRepo.dispenseFuel(item)
+                tableScope.tableData.add(item)
                 close()
             }
         }

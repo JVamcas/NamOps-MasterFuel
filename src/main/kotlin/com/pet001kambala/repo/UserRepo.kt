@@ -2,11 +2,9 @@ package com.pet001kambala.repo
 
 import com.pet001kambala.model.User
 import com.pet001kambala.model.UserGroup
-import com.pet001kambala.utils.SessionManager
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
-import tornadofx.asObservable
-import tornadofx.observableListOf
+import tornadofx.*
 
 
 class UserRepo : AbstractRepo<User>() {
@@ -22,7 +20,7 @@ class UserRepo : AbstractRepo<User>() {
 //    }
 
     fun loadAllUsers(): ObservableList<User>{
-        session?.apply {
+        sessionFactory?.openSession()?.apply  {
             val results =  createQuery("SELECT a FROM User a", User::class.java).resultList
             return results.asObservable()
         }
@@ -30,7 +28,7 @@ class UserRepo : AbstractRepo<User>() {
     }
 
     fun loadAttendants(): ObservableList<User>{
-        session?.apply {
+        sessionFactory?.openSession()?.apply  {
             return createQuery("FROM User a WHERE a.userGroupProperty = :userGroup",User::class.java)
                 .setParameter("userGroup",SimpleStringProperty(UserGroup.Attendant.name))
                 .resultList.asObservable()
@@ -39,7 +37,7 @@ class UserRepo : AbstractRepo<User>() {
     }
 
     fun loadDrivers(): ObservableList<User>{
-        session?.apply {
+        sessionFactory?.openSession()?.apply  {
             return createQuery("FROM User a WHERE a.userGroupProperty = :userGroup",User::class.java)
                 .setParameter("userGroup",SimpleStringProperty(UserGroup.Driver.name))
                 .resultList.asObservable()

@@ -18,7 +18,7 @@ import java.lang.Exception
 import java.sql.Timestamp
 
 
-open class FuelTopUpController(title: String = "Top up storage tank") : View(title = title) {
+open class FuelTopUpController(title: String = "Top up storage tank", transactionType: FuelTransactionType = FuelTransactionType.REFILL) : View(title = title) {
 
     val userRepo = UserRepo()
     val transactionRepo = FuelTransactionRepo()
@@ -47,10 +47,7 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
         }
         transactionModel.item.apply {
             dateProperty.set(today())
-            transactionTypeProperty.set(FuelTransactionType.REFILL.value)
-            runAsync {
-                openingBalanceProperty.set(transactionRepo.loadOpeningBalance())
-            }
+            transactionTypeProperty.set(transactionType.value)
         }
 
         attendant.apply {
@@ -66,9 +63,7 @@ open class FuelTopUpController(title: String = "Top up storage tank") : View(tit
                 transactionModel.commit()
                 val item = transactionModel.item
 
-                item.currentBalanceProperty.set(item.quantityProperty.get() + item.openingBalanceProperty.get())
-
-                transactionRepo.addNewModel(item)
+                transactionRepo.topUpFuel(item)
                 tableScope.tableData.add(item)
 
                 //write to database

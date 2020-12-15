@@ -4,13 +4,13 @@ import com.pet001kambala.utils.SessionManager
 
 abstract class AbstractRepo<T> {
 
-    val session by lazy { SessionManager.newInstance?.openSession() }
+    val sessionFactory by lazy { SessionManager.newInstance }
 
-    fun addNewModel(model: T) {
-        session?.apply {
-            val transaction = session.beginTransaction()
+    open fun addNewModel(model: T) {
+        sessionFactory?.openSession()?.apply {
+            val transaction = beginTransaction()
             try {
-                session.persist(model)
+                persist(model)
                 transaction.commit()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -20,10 +20,10 @@ abstract class AbstractRepo<T> {
     }
 
     fun updateModel(model: T) {
-        session?.apply {
-            val transaction = session.beginTransaction()
+        sessionFactory?.openSession()?.apply  {
+            val transaction = beginTransaction()
             try {
-                session.update(model)
+                update(model)
                 transaction.commit()
             } catch (e: Exception) {
                 e.printStackTrace()

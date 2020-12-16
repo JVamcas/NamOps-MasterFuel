@@ -34,18 +34,16 @@ open class NewUserController : AbstractView("User registration") {
         modalStage?.isResizable = false
         firstName.apply {
             bind(userModel.firstName)
-            validator(ValidationTrigger.OnBlur){
-                if(it.isNullOrEmpty()) error("Enter your first name.") else null
-            }
-//            required(
-//                    ValidationTrigger.OnBlur,
-//                    "Enter your first name."
-//            )
+
+            required(
+                    ValidationTrigger.OnChange(),
+                    "Enter your first name."
+            )
         }
         lastName.apply {
             bind(userModel.lastName)
             required(
-                    ValidationTrigger.OnBlur,
+                    ValidationTrigger.OnChange(),
                     "Enter your last name."
             )
         }
@@ -53,20 +51,24 @@ open class NewUserController : AbstractView("User registration") {
         category.apply {
             bindCombo(userModel.userGroup)
             items = UserGroup.values().map { it.name }.asObservable()
-            required(ValidationTrigger.OnBlur,
+            required(ValidationTrigger.OnChange(),
                     "Select user category.")
         }
 
         companyName.apply {
             bindCombo(userModel.companyName)
             items = CompanyName.values().map { it.value }.asObservable()
-            required(ValidationTrigger.OnBlur,
+            required(ValidationTrigger.OnChange(),
                     "Select your company.")
         }
 
 
         saveUser.apply {
-            enableWhen { userModel.valid }
+
+            enableWhen {
+                println("called here")
+                userModel.valid
+            }
             action {
                 userModel.commit() //flush UI data through to model
                 GlobalScope.launch {

@@ -5,89 +5,83 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<?import tornadofx.ButtonBarField?>
-<BorderPane fx:id="homePane" minHeight="512.0" minWidth="1024.0" prefHeight="512.0" prefWidth="1024.0"
-            xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="homePane" minHeight="512.0" minWidth="1024.0" prefHeight="512.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <MenuBar style="-fx-background-color: #BDC3C7;" BorderPane.alignment="CENTER">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="userMenuItem" mnemonicParsing="false" onAction="#toUserTableView"
-                                  text="Users"/>
-                        <MenuItem fx:id="vehiclesMenuItem" mnemonicParsing="false" onAction="#toVehicleTableView"
-                                  text="Vehicles"/>
+                        <MenuItem fx:id="userMenuItem" mnemonicParsing="false" onAction="#toUserTableView" text="Users" />
+                        <MenuItem fx:id="vehiclesMenuItem" mnemonicParsing="false" onAction="#toVehicleTableView" text="Vehicles" />
                     </items>
                 </Menu>
 
                 <Menu mnemonicParsing="false" text="Edit">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Find"/>
-                        <MenuItem mnemonicParsing="false" text="Undo"/>
+                        <MenuItem mnemonicParsing="false" text="Find" />
+                        <MenuItem mnemonicParsing="false" text="Undo" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Charts"/>
+                <Menu mnemonicParsing="false">
+                    <graphic>
+                        <Label fx:id="charts" text="Charts" onMouseClicked="#toCharts"/>
+                    </graphic>
+                </Menu>
             </menus>
         </MenuBar>
     </top>
     <center>
-        <ScrollPane fx:id="tableViewScrollPane" pannable="true" prefHeight="200.0" prefWidth="200.0"
-                    BorderPane.alignment="CENTER">
+        <ScrollPane fx:id="tableViewScrollPane" pannable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <BorderPane.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0"/>
+                <Insets bottom="5.0" left="5.0" right="5.0" />
             </BorderPane.margin>
             <padding>
-                <Insets bottom="5.0"/>
+                <Insets bottom="5.0" />
             </padding>
             <TableView fx:id="fuelTransactionTable" VBox.vgrow="ALWAYS">
                 <VBox.margin>
-                    <Insets left="5.0" right="5.0"/>
+                    <Insets left="5.0" right="5.0" />
                 </VBox.margin>
                 <padding>
-                    <Insets left="5.0" right="5.0"/>
+                    <Insets left="5.0" right="5.0" />
                 </padding>
             </TableView>
         </ScrollPane>
     </center>
     <bottom>
         <HBox spacing="10.0" style="-fx-background-color: #2E4053;">
-            <Button fx:id="refresh" style="-fx-background-radius: 10; -fx-background-color: #21618C;" text="Refresh"
-                    textFill="WHITE">
+            <Button fx:id="refresh" style="-fx-background-radius: 10; -fx-background-color: #21618C;" text="Refresh" textFill="WHITE">
                 <HBox.margin>
-                    <Insets left="5.0"/>
+                    <Insets left="5.0" />
                 </HBox.margin>
                 <font>
-                    <Font name="System Bold Italic" size="12.0"/>
+                    <Font name="System Bold Italic" size="12.0" />
                 </font>
             </Button>
-            <Button fx:id="export" style="-fx-background-radius: 10; -fx-background-color: #6B6D64;" text="Export"
-                    textFill="WHITE">
+            <Button fx:id="export" style="-fx-background-radius: 10; -fx-background-color: #6B6D64;" text="Export" textFill="WHITE">
                 <font>
-                    <Font name="System Bold Italic" size="12.0"/>
+                    <Font name="System Bold Italic" size="12.0" />
                 </font>
             </Button>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="storageRefill" onAction="#toStorageRefill"
-                    style="-fx-background-color: #0E6251; -fx-background-radius: 10;" text="Fill storage"
-                    textFill="WHITE">
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="storageRefill" onAction="#toStorageRefill" style="-fx-background-color: #0E6251; -fx-background-radius: 10;" text="Fill storage" textFill="WHITE">
                 <font>
-                    <Font name="System Bold Italic" size="12.0"/>
+                    <Font name="System Bold Italic" size="12.0" />
                 </font>
             </Button>
-            <Button fx:id="vehicleRefill" onAction="#toVehicleRefill"
-                    style="-fx-background-color: #1D8348; -fx-background-radius: 10;" text="Dispense" textFill="WHITE">
+            <Button fx:id="vehicleRefill" onAction="#toVehicleRefill" style="-fx-background-color: #1D8348; -fx-background-radius: 10;" text="Dispense" textFill="WHITE">
                 <HBox.margin>
-                    <Insets right="5.0"/>
+                    <Insets right="5.0" />
                 </HBox.margin>
                 <font>
-                    <Font name="System Bold Italic" size="12.0"/>
+                    <Font name="System Bold Italic" size="12.0" />
                 </font>
             </Button>
             <BorderPane.margin>
-                <Insets bottom="5.0" right="5.0"/>
+                <Insets bottom="5.0" right="5.0" />
             </BorderPane.margin>
             <padding>
-                <Insets bottom="5.0" top="5.0"/>
+                <Insets bottom="5.0" top="5.0" />
             </padding>
         </HBox>
     </bottom>

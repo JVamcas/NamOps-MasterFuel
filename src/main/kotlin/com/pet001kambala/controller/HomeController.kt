@@ -1,19 +1,18 @@
 package com.pet001kambala.controller
 
-import com.pet001kambala.model.*
+import com.pet001kambala.model.FuelTransaction
+import com.pet001kambala.model.FuelTransactionModel
+import com.pet001kambala.model.FuelTransactionType
 import com.pet001kambala.repo.FuelTransactionRepo
-import com.pet001kambala.utils.DateUtil.Companion._24
-import com.pet001kambala.utils.DateUtil.Companion.today
 import com.pet001kambala.utils.Results
-import javafx.application.Application.launch
 import javafx.collections.ObservableList
 import javafx.event.ActionEvent
-import javafx.scene.control.*
+import javafx.event.Event
+import javafx.scene.control.Button
+import javafx.scene.control.ScrollPane
+import javafx.scene.control.TableView
 import javafx.scene.layout.BorderPane
-import javafx.scene.layout.Priority
-import kotlinx.coroutines.coroutineScope
 import tornadofx.*
-import javax.xml.bind.JAXBElement
 
 class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Logistics Pty Ltd FuelMaster") {
 
@@ -116,5 +115,15 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
         if (loadResults is Results.Success<*>)
             return loadResults.data as ObservableList<FuelTransaction>
         return observableListOf()
+    }
+
+    fun toCharts(action: Event){
+
+//        replaceWith(ChartsController::class, ViewTransition.Slide(0.3.seconds, ViewTransition.Direction.LEFT))
+    }
+
+    override fun onDock() {
+        super.onDock()
+        currentWindow?.sizeToScene()
     }
 }

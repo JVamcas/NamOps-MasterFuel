@@ -124,6 +124,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
 
     override fun onDock() {
         super.onDock()
+        workspace.headingContainer.hide()
         currentWindow?.sizeToScene()
     }
 }

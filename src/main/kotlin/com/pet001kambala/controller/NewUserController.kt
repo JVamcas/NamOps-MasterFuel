@@ -49,14 +49,14 @@ open class NewUserController : AbstractView("User registration") {
         }
 
         category.apply {
-            bindCombo(userModel.userGroup)
+            bind(userModel.userGroup)
             items = UserGroup.values().map { it.name }.asObservable()
             required(ValidationTrigger.OnChange(),
                     "Select user category.")
         }
 
         companyName.apply {
-            bindCombo(userModel.companyName)
+            bind(userModel.companyName)
             items = CompanyName.values().map { it.value }.asObservable()
             required(ValidationTrigger.OnChange(),
                     "Select your company.")

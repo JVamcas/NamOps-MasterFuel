@@ -37,22 +37,22 @@ open class NewVehicleController : AbstractView("Vehicle registration") {
 
         unitNo.apply {
             bind(vehicleModel.unitNumber)
-            validator(ValidationTrigger.OnBlur) { if (it.isValidVehicleNo()) null else error("Invalid unit number.") }
+            validator(ValidationTrigger.OnChange()) { if (it.isValidVehicleNo()) null else error("Invalid unit number.") }
         }
         plateNo.apply {
             bind(vehicleModel.plateNumber)
-            validator(ValidationTrigger.OnBlur) { if (it.isValidPlateNo()) null else error("Invalid plate number.") }
+            validator(ValidationTrigger.OnChange()) { if (it.isValidPlateNo()) null else error("Invalid plate number.") }
         }
 
         department.apply {
             bind(vehicleModel.department)
             asyncItems { Department.values().map { it.value } }
-            required(ValidationTrigger.OnBlur, "Select the vehicle department.")
+            required(ValidationTrigger.OnChange(), "Select the vehicle department.")
         }
         type.apply {
             bind(vehicleModel.type)
             asyncItems { VehicleType.values().map { it.value } }
-            required(ValidationTrigger.OnBlur, "Select the type of the vehicle.")
+            required(ValidationTrigger.OnChange(), "Select the type of the vehicle.")
         }
 
         saveVehicle.apply {
@@ -66,7 +66,7 @@ open class NewVehicleController : AbstractView("Vehicle registration") {
                         if (results.data != null)
                             showError(
                                     header = "Duplicate Vehicles",
-                                    msg = "A vehicle is already registered under that plate number or unit number, or both."
+                                    msg = "A vehicle is already registered under that plate/ unit number, or both."
                             )
                         else {
                             vehicleRepo.addNewModel(item)

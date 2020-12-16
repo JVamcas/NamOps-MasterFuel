@@ -22,15 +22,20 @@ class ParseUtil {
             return !this.isNullOrEmpty() && pattern.matcher(this).matches()
         }
 
-        fun TextField.isNumeric(msg: String) =
-            validator(ValidationTrigger.OnBlur){
-                try {
-                    parseDouble(it)
-                    null
-                }catch (e: Exception){
-                    error(msg)
+        fun TextField.numberValidation(msg: String) =
+                validator(ValidationTrigger.OnChange()) {
+                    if (it.isNumber())
+                        null else error(msg)
                 }
-            }
+
+        fun String?.isNumber() =
+                !this.isNullOrEmpty() &&
+                        try {
+                            parseDouble(this)
+                            true
+                        } catch (e: Exception) {
+                            false
+                        }
 
     }
 }

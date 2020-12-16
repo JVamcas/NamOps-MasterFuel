@@ -2,6 +2,7 @@ package com.pet001kambala.controller
 
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.UserRepo
+import com.pet001kambala.utils.Results
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
@@ -73,10 +74,14 @@ open class NewUserController : AbstractView("User registration") {
                 userModel.commit() //flush UI data through to model
                 GlobalScope.launch {
                     //todo progress bar here
-                    userRepo.addNewModel(userModel.item)
+                    val result = userRepo.addNewModel(userModel.item)
                     //todo end progress bar here
-                    tableScope.tableData.add(userModel.item)
-                    closeView()
+                    if(result is Results.Success<*>){
+                        tableScope.tableData.add(userModel.item)
+                        closeView()
+                        return@launch
+                    }
+                    parseResults(result)
                 }
             }
         }

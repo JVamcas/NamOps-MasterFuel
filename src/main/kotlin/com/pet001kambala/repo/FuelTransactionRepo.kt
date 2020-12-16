@@ -5,7 +5,7 @@ import com.pet001kambala.utils.Results
 import javafx.collections.ObservableList
 import kotlinx.coroutines.*
 import tornadofx.*
-import javax.xml.bind.JAXBElement
+
 
 class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
 
@@ -22,40 +22,32 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
     }
 
     private suspend fun loadOpeningBalance(): Float {
-//        return try {
         var openingBalance = 0f
-            withContext(Dispatchers.Default) {
-                val session = sessionFactory!!.openSession()
-                val qryStr = "select sum(if(transactionType=\"Re-fill\", quantityDispensed,-quantityDispensed)) as current_balance from fueltransactions"
-                val results = session.createNativeQuery(qryStr).resultList
-                openingBalance = if (results.filterNotNull().isNullOrEmpty()) 0f else results[0].toString().toFloat()
-            }
-//        } catch (e: Exception) {
-//            Results.Error(e)
-//        }
+        withContext(Dispatchers.Default) {
+            val session = sessionFactory!!.openSession()
+            val qryStr = "select sum(if(transactionType=\"Re-fill\", quantityDispensed,-quantityDispensed)) as current_balance from fueltransactions"
+            val results = session.createNativeQuery(qryStr).resultList
+            openingBalance = if (results.filterNotNull().isNullOrEmpty()) 0f else results[0].toString().toFloat()
+        }
         return openingBalance
     }
 
     private suspend fun loadDistanceTravelledSinceLastRefill(currOdometer: Int, vehicleId: Int): Int {
-//        return try {
         var distanceTravelled = 0
-            withContext(Dispatchers.Default) {
-                val session = sessionFactory!!.openSession()
-                val qryStr = "select odometer from fueltransactions where vehicleId =:vehicleId  order by transactionDate desc limit 1"
-                val results = session.createNativeQuery(qryStr)
-                        .setParameter("vehicleId", vehicleId).resultList
+        withContext(Dispatchers.Default) {
+            val session = sessionFactory!!.openSession()
+            val qryStr = "select odometer from fueltransactions where vehicleId =:vehicleId  order by transactionDate desc limit 1"
+            val results = session.createNativeQuery(qryStr)
+                    .setParameter("vehicleId", vehicleId).resultList
 
-                distanceTravelled = when (val lastOdometer = if (results.filterNotNull().isNullOrEmpty()) 0 else results[0].toString().toInt()) {
-                    0 -> 0
-                    else -> currOdometer - lastOdometer
-                }
-                if(distanceTravelled < 0)
-                    throw Results.Error.InvalidOdoMeterException()
-//                Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
+            distanceTravelled = when (val lastOdometer = if (results.filterNotNull().isEmpty()) 0 else results[0].toString().toInt()) {
+                0 -> 0
+                else -> currOdometer - lastOdometer
             }
-//        } catch (e: Exception) {
-//            Results.Error(e)
-//        }
+            if (distanceTravelled < 0)
+                throw Results.Error.InvalidOdoMeterException()
+
+        }
         return distanceTravelled
     }
 
@@ -63,7 +55,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         val vehicleId = model.vehicle?.id
         return try {
             coroutineScope {
-                val distanceDeferred  = async { loadDistanceTravelledSinceLastRefill(model.odometerProperty.get(), vehicleId!!) }
+                val distanceDeferred = async { loadDistanceTravelledSinceLastRefill(model.odometerProperty.get(), vehicleId!!) }
                 val balanceDeferred = async { loadOpeningBalance() }
 
                 val distanceTravelled = distanceDeferred.await()
@@ -74,25 +66,22 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
                 model.currentBalanceProperty.set(openingBalance - model.quantityProperty.get())
                 addNewModel(model)
             }
-        }catch ( e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             Results.Error(e)
         }
     }
 
-        suspend fun topUpFuel(model: FuelTransaction): Results {
-            return  try {
-                val openingBalance = loadOpeningBalance()
-//
-//                if (loadOpeningBalanceResults is Results.Success<*>) {
-//                    val openingBalance = loadOpeningBalanceResults.data as Float
-                    model.openingBalanceProperty.set(openingBalance)
-                    model.currentBalanceProperty.set(model.quantityProperty.get() + openingBalance)
-                    addNewModel(model)
-                Results.Success<Float>(code = Results.Success.CODE.WRITE_SUCCESS)
-//                } else loadOpeningBalanceResults
-            }catch (e: Exception){
-                Results.Error(e)
-            }
+    suspend fun topUpFuel(model: FuelTransaction): Results {
+        return try {
+            val openingBalance = loadOpeningBalance()
+
+            model.openingBalanceProperty.set(openingBalance)
+            model.currentBalanceProperty.set(model.quantityProperty.get() + openingBalance)
+            addNewModel(model)
+            Results.Success<Float>(code = Results.Success.CODE.WRITE_SUCCESS)
+        } catch (e: Exception) {
+            Results.Error(e)
         }
     }
+}

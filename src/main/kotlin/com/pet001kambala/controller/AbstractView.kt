@@ -3,11 +3,9 @@ package com.pet001kambala.controller
 import com.pet001kambala.utils.Results
 import javafx.application.Platform
 import javafx.beans.property.Property
-import javafx.beans.value.ObservableValue
 import javafx.scene.control.Alert
 import javafx.scene.control.ComboBox
 import tornadofx.*
-import javax.persistence.PersistenceProperty
 
 abstract class AbstractView(title: String) : View(title) {
 
@@ -33,8 +31,13 @@ abstract class AbstractView(title: String) : View(title) {
         if (results is Results.Success<*>) {
 
         } else if (results is Results.Error) {
+
             when (results.code) {
-                Results.Error.CODE.DUPLICATE_ENTITY -> {
+                Results.Error.CODE.DUPLICATE_VEHICLE -> {
+                    showError(
+                            header = "Duplicate Vehicles",
+                            msg = "A vehicle is already registered under that plate/ unit number, or both."
+                    )
                 }
                 Results.Error.CODE.ODOMETER_LESS_PREVIOUS -> {
                     showError(header = "Invalid vehicle odometer."

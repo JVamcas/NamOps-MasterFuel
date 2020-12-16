@@ -1,12 +1,13 @@
 package com.pet001kambala.controller
 
-import com.pet001kambala.model.*
+import com.pet001kambala.model.Department
+import com.pet001kambala.model.Vehicle
+import com.pet001kambala.model.VehicleModel
+import com.pet001kambala.model.VehicleType
 import com.pet001kambala.repo.VehicleRepo
 import com.pet001kambala.utils.ParseUtil.Companion.isValidPlateNo
 import com.pet001kambala.utils.ParseUtil.Companion.isValidVehicleNo
 import com.pet001kambala.utils.Results
-import javafx.application.Platform
-import javafx.scene.control.Alert
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
@@ -14,7 +15,6 @@ import javafx.scene.layout.GridPane
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tornadofx.*
-import javax.management.Notification
 
 open class NewVehicleController : AbstractView("Vehicle registration") {
 
@@ -73,7 +73,9 @@ open class NewVehicleController : AbstractView("Vehicle registration") {
                             tableScope.tableData.add(item)
                             closeView()
                         }
-                    }//todo unknown error has occurred
+                        return@launch
+                    }
+                    parseResults(results)
                 }
             }
         }

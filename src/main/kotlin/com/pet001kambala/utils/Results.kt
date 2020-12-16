@@ -23,18 +23,18 @@ sealed class Results {
 
     class Error(e: Exception) : Results() {
         enum class CODE {
-            DUPLICATE_ENTITY,
+            DUPLICATE_VEHICLE,
             ODOMETER_LESS_PREVIOUS,
             UNKNOWN
         }
 
         val code: CODE = when (e) {
-            is DuplicateEntityException -> CODE.DUPLICATE_ENTITY
+            is DuplicateVehicleException -> CODE.DUPLICATE_VEHICLE
             is InvalidOdoMeterException -> CODE.ODOMETER_LESS_PREVIOUS
             else -> CODE.UNKNOWN
         }
 
-        class DuplicateEntityException : Exception()
+        class DuplicateVehicleException : Exception()
         class InvalidOdoMeterException : Exception()
     }
 }

@@ -1,7 +1,11 @@
 package com.pet001kambala.controller
 
 import com.pet001kambala.model.*
+import com.pet001kambala.repo.FuelTransactionRepo
+import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.repo.VehicleRepo
+import com.pet001kambala.utils.DateUtil
+import com.pet001kambala.utils.ParseUtil.Companion.isNumber
 import com.pet001kambala.utils.Results
 import javafx.collections.ObservableList
 import javafx.scene.control.Button
@@ -12,8 +16,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tornadofx.*
 
-class FuelUsageController : FuelTopUpController("Dispense fuel", FuelTransactionType.DISPENSE) {
+class FuelUsageController : AbstractView("Dispense fuel" ) {
     private val vehicleRepo = VehicleRepo()
+    private val userRepo = UserRepo()
+    private val transactionRepo = FuelTransactionRepo()
 
     private val tableScope = super.scope as AbstractModelTableController<FuelTransaction>.ModelEditScope
     private val transactionModel = tableScope.viewModel as FuelTransactionModel
@@ -23,7 +29,7 @@ class FuelUsageController : FuelTopUpController("Dispense fuel", FuelTransaction
     private val attendant: ComboBox<User> by fxid("attendant")
     private val driver: ComboBox<User> by fxid("driver")
     private val vehicle: ComboBox<Vehicle> by fxid("vehicle")
-    private val quantity: TextField by fxid("quantity")
+    private val dispenseQuantity: TextField by fxid("dispenseQuantity")
     private val vehicleOdometer: TextField by fxid("vehicleOdometer")
     private val waybillNo: TextField by fxid("waybillNo")
 
@@ -32,10 +38,15 @@ class FuelUsageController : FuelTopUpController("Dispense fuel", FuelTransaction
 
     init {
 
+        transactionModel.item.apply {
+            dateProperty.set(DateUtil.today())
+            transactionTypeProperty.set(FuelTransactionType.DISPENSE.value)
+        }
+
         root.setMaxSize(446.0, 243.0)
 
         attendant.apply {
-            bindCombo(transactionModel.attendant)
+            bind(transactionModel.attendant)
             setCellFactory { SimpleUserListCell() }
             buttonCell = SimpleUserListCell()
             GlobalScope.launch {
@@ -45,8 +56,8 @@ class FuelUsageController : FuelTopUpController("Dispense fuel", FuelTransaction
         }
 
         vehicle.apply {
-            bindCombo(transactionModel.vehicle)
-            required(ValidationTrigger.OnBlur, "Please select vehicle.")
+            bind(transactionModel.vehicle)
+            required(ValidationTrigger.OnChange(), "Please select vehicle.")
             setCellFactory { Vehicle.SimpleVehicleListCell() }
             buttonCell = Vehicle.SimpleVehicleListCell()
             GlobalScope.launch {
@@ -56,8 +67,8 @@ class FuelUsageController : FuelTopUpController("Dispense fuel", FuelTransaction
         }
 
         driver.apply {
-            bindCombo(transactionModel.driver)
-            required(ValidationTrigger.OnBlur, "Please select driver.")
+            bind(transactionModel.driver)
+            required(ValidationTrigger.OnChange(), "Please select driver.")
             setCellFactory { SimpleUserListCell() }
             buttonCell = SimpleUserListCell()
             GlobalScope.launch {
@@ -68,18 +79,23 @@ class FuelUsageController : FuelTopUpController("Dispense fuel", FuelTransaction
 
         waybillNo.apply {
             bind(transactionModel.waybillNo)
-            required(ValidationTrigger.OnBlur,"Please input waybill number.")
+            required(ValidationTrigger.OnChange(), "Please input waybill number.")
         }
 
-        quantity.apply {
+        dispenseQuantity.apply {
             bind(transactionModel.quantity)
-            required(ValidationTrigger.OnBlur,"Please enter amount of fuel dispensed.")
-            //todo to be replace by the API
+            validator(ValidationTrigger.OnChange()) {
+                val value = dispenseQuantity.text.toString()
+                if (value.isNumber() && value.toFloat() > 1)
+                    null
+                else error("Quantity should be greater than 1L.")
+            }
+            //todo to be replaced by the API call
         }
 
         vehicleOdometer.apply {
             bind(transactionModel.odometer)
-            required(ValidationTrigger.OnBlur,"Please enter current odometer reading.")
+            required(ValidationTrigger.OnChange(), "Please enter current odometer reading.")
         }
 
         saveTransaction.apply {

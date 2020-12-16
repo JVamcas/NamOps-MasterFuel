@@ -19,25 +19,30 @@ import kotlinx.coroutines.launch
 
 
 open class FuelTopUpController(
-        title: String = "Top up storage tank",
-        transactionType: FuelTransactionType = FuelTransactionType.REFILL) :
+        title: String = "Top up storage tank")
+         :
         AbstractView(title = title) {
 
-    val userRepo = UserRepo()
-    val transactionRepo = FuelTransactionRepo()
+    private val userRepo = UserRepo()
+    private val transactionRepo = FuelTransactionRepo()
 
     private val tableScope = super.scope as AbstractModelTableController<FuelTransaction>.ModelEditScope
     private val transactionModel = tableScope.viewModel as FuelTransactionModel
 
     override val root: GridPane by fxml("/view/FuelTopUpView.fxml")
 
-    private val topUpQuantity: TextField by fxid("topUpQuantity")
+    private val topUpQuantity: TextField by fxid("quantity")
     private val attendant: ComboBox<User> by fxid("attendant")
     private val wayBillNo: TextField by fxid("waybillNo")
     private val saveTransaction: Button by fxid("saveTransaction")
     private val cancelTransaction: Button by fxid("cancelTransaction")
 
     init {
+
+        transactionModel.item.apply {
+            dateProperty.set(today())
+            transactionTypeProperty.set(FuelTransactionType.REFILL.value)
+        }
 
         wayBillNo.apply {
             bind(transactionModel.waybillNo)
@@ -52,10 +57,6 @@ open class FuelTopUpController(
                     null
                 else error("Quantity should be greater than 100L.")
             }
-        }
-        transactionModel.item.apply {
-            dateProperty.set(today())
-            transactionTypeProperty.set(transactionType.value)
         }
 
         attendant.apply {

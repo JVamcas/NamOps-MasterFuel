@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tornadofx.*
 
-open class NewUserController : View("User registration") {
+open class NewUserController : AbstractView("User registration") {
 
     private val tableScope = super.scope as AbstractModelTableController<User>.ModelEditScope
     val userModel = tableScope.viewModel as UserModel
@@ -34,10 +34,13 @@ open class NewUserController : View("User registration") {
         modalStage?.isResizable = false
         firstName.apply {
             bind(userModel.firstName)
-            required(
-                    ValidationTrigger.OnBlur,
-                    "Enter your first name."
-            )
+            validator(ValidationTrigger.OnBlur){
+                if(it.isNullOrEmpty()) error("Enter your first name.") else null
+            }
+//            required(
+//                    ValidationTrigger.OnBlur,
+//                    "Enter your first name."
+//            )
         }
         lastName.apply {
             bind(userModel.lastName)
@@ -48,29 +51,30 @@ open class NewUserController : View("User registration") {
         }
 
         category.apply {
-            bind(userModel.userGroup)
+            bindCombo(userModel.userGroup)
             items = UserGroup.values().map { it.name }.asObservable()
             required(ValidationTrigger.OnBlur,
                     "Select user category.")
         }
 
         companyName.apply {
-            bind(userModel.companyName)
+            bindCombo(userModel.companyName)
             items = CompanyName.values().map { it.value }.asObservable()
             required(ValidationTrigger.OnBlur,
                     "Select your company.")
         }
 
+
         saveUser.apply {
             enableWhen { userModel.valid }
             action {
-                userModel.commit()
+                userModel.commit() //flush UI data through to model
                 GlobalScope.launch {
                     //todo progress bar here
                     userRepo.addNewModel(userModel.item)
                     //todo end progress bar here
                     tableScope.tableData.add(userModel.item)
-                    close()
+                    closeView()
                 }
             }
         }

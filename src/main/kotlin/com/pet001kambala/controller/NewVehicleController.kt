@@ -4,6 +4,7 @@ import com.pet001kambala.model.*
 import com.pet001kambala.repo.VehicleRepo
 import com.pet001kambala.utils.ParseUtil.Companion.isValidPlateNo
 import com.pet001kambala.utils.ParseUtil.Companion.isValidVehicleNo
+import com.pet001kambala.utils.Results
 import javafx.application.Platform
 import javafx.scene.control.Alert
 import javafx.scene.control.Button
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 import tornadofx.*
 import javax.management.Notification
 
-open class NewVehicleController : View("Vehicle registration") {
+open class NewVehicleController : AbstractView("Vehicle registration") {
 
     val vehicleRepo = VehicleRepo()
 
@@ -40,7 +41,7 @@ open class NewVehicleController : View("Vehicle registration") {
         }
         plateNo.apply {
             bind(vehicleModel.plateNumber)
-            validator(ValidationTrigger.OnBlur) { if (it.isValidPlateNo()) null else error("Invalid unit number.") }
+            validator(ValidationTrigger.OnBlur) { if (it.isValidPlateNo()) null else error("Invalid plate number.") }
         }
 
         department.apply {
@@ -58,25 +59,23 @@ open class NewVehicleController : View("Vehicle registration") {
             enableWhen { vehicleModel.valid }
             action {
                 vehicleModel.commit()
-                if (isDuplicateVehicle()) {
-                    Platform.runLater {
-                        Alert(Alert.AlertType.ERROR).apply {
-                            title = "Error"
-                            headerText = "Duplicate Vehicles"
-                            contentText = "A vehicle is already registered under that plate number or unit number, or both."
-
-                            showAndWait()
-                        }
-                    }
-                    return@action
-                }
                 GlobalScope.launch {
-                    vehicleRepo.addNewModel(vehicleModel.item)
-                    tableScope.tableData.add(vehicleModel.item)
-                    close()
+                    val item = vehicleModel.item
+                    val results = vehicleRepo.checkDuplicate(item)
+                    if (results is Results.Success<*>) {
+                        if (results.data != null)
+                            showError(
+                                    header = "Duplicate Vehicles",
+                                    msg = "A vehicle is already registered under that plate number or unit number, or both."
+                            )
+                        else {
+                            vehicleRepo.addNewModel(item)
+                            tableScope.tableData.add(item)
+                            closeView()
+                        }
+                    }//todo unknown error has occurred
                 }
             }
-            //push data to database
         }
         vehicleModel.validate(decorateErrors = false)
 
@@ -84,17 +83,6 @@ open class NewVehicleController : View("Vehicle registration") {
             enableWhen { vehicleModel.dirty }
             action { vehicleModel.rollback() }
         }
-    }
-
-    private fun isDuplicateVehicle(): Boolean {
-        val plateNo = vehicleModel.plateNumber.get().toLowerCase().trim()
-        val unitNo = vehicleModel.unitNumber.get().toLowerCase().trim()
-        return tableScope.tableData
-                .any {
-                    it.unitNumberProperty.get().toLowerCase().trim() == unitNo
-                            || it.plateNumberProperty.get().toLowerCase().trim() == plateNo
-                }
-
     }
 }
 

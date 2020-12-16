@@ -9,32 +9,34 @@ import tornadofx.*
 class VehicleRepo : AbstractRepo<Vehicle>() {
 
     suspend fun loadAllVehicles(): Results {
-        return try{
-            withContext(Dispatchers.Default){
+        return try {
+            withContext(Dispatchers.Default) {
                 val session = sessionFactory!!.openSession()
-                val results =  session.createQuery("SELECT a FROM Vehicle a", Vehicle::class.java).resultList
-                val data =  results.filterNotNull().asObservable()
-                Results.Success(data = data,code = Results.Success.CODE.LOAD_SUCCESS)
+                val results = session.createQuery("SELECT a FROM Vehicle a", Vehicle::class.java).resultList
+                val data = results.filterNotNull().asObservable()
+                Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             Results.Error(e)
         }
     }
 
-    fun isDuplicate(vehicle: Vehicle): Boolean {
-        sessionFactory?.openSession()?.apply  {
-            val criteriaQuery = criteriaBuilder.createQuery(Vehicle::class.java)
-            val vehicleRoot = criteriaQuery.from(Vehicle::class.java)
-            criteriaQuery.select(vehicleRoot)
-            criteriaQuery.where(
-                criteriaBuilder.equal(
-                    criteriaBuilder.lower(vehicleRoot.get("Vehicle.unitNumberProperty")),
-                    vehicle.unitNumberProperty.get().toLowerCase()
-                )
-            )
-            return createQuery(criteriaQuery).resultList.filterNotNull().isNotEmpty()
+    suspend fun checkDuplicate(vehicle: Vehicle): Results {
+        return try {
+            val qryStr = "select * from vehicles a where  lower(a.unit_number) = :unitNo" +
+                    " or lower(a.plate_number) = :plateNo"
+            withContext(Dispatchers.Default) {
+                val session = sessionFactory!!.openSession()
+                val results = session.createNativeQuery(qryStr)
+                        .setParameter("unitNo", vehicle.unitNumberProperty.get())
+                        .setParameter("plateNo", vehicle.plateNumberProperty.get())
+                        .resultList
+                val data = if(results.filterNotNull().isEmpty()) null else results[0]
+                Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Results.Error(e)
         }
-        return false
     }
 }

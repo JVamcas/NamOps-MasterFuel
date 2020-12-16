@@ -6,7 +6,7 @@ import kotlinx.coroutines.launch
 import tornadofx.*
 import kotlin.reflect.KClass
 
-abstract class AbstractModelTableController<T>(title: String) : View(title) {
+abstract class AbstractModelTableController<T>(title: String) : AbstractView(title) {
 
     val modelList = SortedFilteredList<T>()
 

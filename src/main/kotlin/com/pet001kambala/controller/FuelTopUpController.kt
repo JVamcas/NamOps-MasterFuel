@@ -6,19 +6,27 @@ import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.utils.DateUtil.Companion._24
 import com.pet001kambala.utils.DateUtil.Companion.today
 import com.pet001kambala.utils.ParseUtil.Companion.isNumeric
+import com.pet001kambala.utils.Results
 import javafx.beans.property.SimpleObjectProperty
+import javafx.collections.ObservableList
 
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
 import tornadofx.*
 import javafx.scene.control.Button
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.lang.Double.parseDouble
 import java.lang.Exception
 import java.sql.Timestamp
 
 
-open class FuelTopUpController(title: String = "Top up storage tank", transactionType: FuelTransactionType = FuelTransactionType.REFILL) : View(title = title) {
+open class FuelTopUpController(
+        title: String = "Top up storage tank",
+        transactionType: FuelTransactionType = FuelTransactionType.REFILL) :
+        AbstractView(title = title) {
 
     val userRepo = UserRepo()
     val transactionRepo = FuelTransactionRepo()
@@ -51,8 +59,11 @@ open class FuelTopUpController(title: String = "Top up storage tank", transactio
         }
 
         attendant.apply {
-            bindSelected(transactionModel.attendant)
-//            asyncItems { userRepo.loadAttendants() }
+            bindCombo(transactionModel.attendant)
+            GlobalScope.launch {
+                val results = userRepo.loadAttendants()
+                asyncItems { if (results is Results.Success<*>) results.data as ObservableList<User> else observableListOf() }
+            }
             setCellFactory { SimpleUserListCell() }
             buttonCell = SimpleUserListCell()
         }
@@ -61,13 +72,15 @@ open class FuelTopUpController(title: String = "Top up storage tank", transactio
             enableWhen { transactionModel.valid }
             action {
                 transactionModel.commit()
-                val item = transactionModel.item
+                GlobalScope.launch {
+                    val item = transactionModel.item
 
-                transactionRepo.topUpFuel(item)
-                tableScope.tableData.add(item)
-
-                //write to database
-                close()
+                    //TODO start of progress indicator
+                    transactionRepo.topUpFuel(item)
+                    //TODO end of progress indicator
+                    tableScope.tableData.add(item)
+                    closeView()
+                }
             }
         }
 

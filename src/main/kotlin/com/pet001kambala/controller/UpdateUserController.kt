@@ -15,9 +15,10 @@ class UpdateUserController : NewUserController() {
             action {
                 userModel.commit()
                 GlobalScope.launch {
+
                     userRepo.updateModel(userModel.item)
+                    closeView()
                 }
-                close()
             }
         }
     }

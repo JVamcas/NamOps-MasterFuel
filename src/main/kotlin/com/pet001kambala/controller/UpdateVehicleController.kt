@@ -1,5 +1,7 @@
 package com.pet001kambala.controller
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import tornadofx.action
 
 class UpdateVehicleController: NewVehicleController() {
@@ -11,9 +13,11 @@ class UpdateVehicleController: NewVehicleController() {
         saveVehicle.apply {
             action {
                 vehicleModel.commit()
-                vehicleRepo.updateModel(vehicleModel.item)
-                //write update to database
-                close()
+                GlobalScope.launch {
+                    vehicleRepo.updateModel(vehicleModel.item)
+                    //write update to database
+                    closeView()
+                }
             }
         }
     }

@@ -35,8 +35,16 @@ class DateUtil {
             return Date(cal.time.time)
         }
 
+        fun thisYearEndDate(): Date{
+            val cal = Calendar.getInstance()
+            cal.set(Calendar.MONTH, 0)
+            cal.set(Calendar.DAY_OF_YEAR, 31)
+            return Date(cal.time.time)
+        }
+
         fun thisYear() = Calendar.getInstance().get(Calendar.YEAR).toString()
 
         fun lastYear() = (Calendar.getInstance().get(Calendar.YEAR) - 1).toString()
+
     }
 }

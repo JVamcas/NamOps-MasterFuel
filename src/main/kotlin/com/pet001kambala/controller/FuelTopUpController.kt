@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 open class FuelTopUpController(
         title: String = "Top up storage tank")
          :
-        AbstractView(title = title) {
+        AbstractView(viewTitle = title) {
 
     private val userRepo = UserRepo()
     private val transactionRepo = FuelTransactionRepo()

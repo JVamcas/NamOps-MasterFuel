@@ -1,11 +1,13 @@
 package com.pet001kambala.repo
 
 import com.pet001kambala.model.FuelTransaction
+import com.pet001kambala.model.FuelTransactionType
 import com.pet001kambala.utils.Results
 import javafx.collections.ObservableList
 import kotlinx.coroutines.*
 import tornadofx.*
-
+import java.sql.Date
+import java.sql.Timestamp
 
 class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
 
@@ -33,7 +35,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
     }
 
     private suspend fun loadDistanceTravelledSinceLastRefill(currOdometer: Int, vehicleId: Int): Int {
-        var distanceTravelled = 0
+        var distanceTravelled: Int
         withContext(Dispatchers.Default) {
             val session = sessionFactory!!.openSession()
             val qryStr = "select odometer from fueltransactions where vehicleId =:vehicleId  order by transactionDate desc limit 1"
@@ -81,6 +83,61 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
             addNewModel(model)
             Results.Success<Float>(code = Results.Success.CODE.WRITE_SUCCESS)
         } catch (e: Exception) {
+            Results.Error(e)
+        }
+    }
+
+    suspend fun loadLeastEfficientVehicle(dateSince: Timestamp): Results {
+        return try {
+            withContext(Dispatchers.Default) {
+                val session = sessionFactory!!.openSession()
+                val qryStr = "select v.unit_number,v.plate_number, sum(t.quantityDispensed) as Total_dispensed from fueltransactions t" +
+                        "  join vehicles v on v.id = t.vehicleId where t.transactionType = :transactionType and t.transactionDate >= :date group by v.unit_number order by Total_dispensed limit 3"
+                val data = session.createNativeQuery(qryStr)
+                        .setParameter("date", dateSince)
+                        .setParameter("transactionType", FuelTransactionType.DISPENSE.value)
+                        .resultList.filterNotNull().asObservable()
+                Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
+            }
+        } catch (e: Exception) {
+            Results.Error(e)
+        }
+    }
+
+    suspend fun loadMostEfficientVehicle(dateSince: Timestamp): Results {
+        return try {
+            withContext(Dispatchers.Default) {
+                val session = sessionFactory!!.openSession()
+                val qryStr = "select v.unit_number,v.plate_number, sum(t.quantityDispensed) as Total_dispensed from fueltransactions t" +
+                        "  join vehicles v on v.id = t.vehicleId where t.transactionType = :transactionType and t.transactionDate >= :date group by v.unit_number order by Total_dispensed desc limit 3"
+                val data = session.createNativeQuery(qryStr)
+                        .setParameter("date", dateSince)
+                        .setParameter("transactionType", FuelTransactionType.DISPENSE.value)
+                        .resultList.filterNotNull()
+                Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
+            }
+        } catch (e: Exception) {
+            Results.Error(e)
+        }
+    }
+
+    suspend fun loadMonthlyFuelUsage(startDate: Date, endDate: Date): Results {
+        return try {
+            withContext(Dispatchers.Default) {
+                val session = sessionFactory!!.openSession()
+                val qryStr = "select sum(t.quantityDispensed) as Total,MONTH(t.transactionDate) as \"Month\" " +
+                        "from fueltransactions t where t.transactionType = :transactionType and t.transactionDate BETWEEN :startDate and :endDate" +
+                        " group by  MONTH(t.transactionDate) order by MONTH(t.transactionDate)"
+                val data = session.createNativeQuery(qryStr)
+                        .setParameter("transactionType", FuelTransactionType.DISPENSE.value)
+                        .setParameter("startDate", startDate)
+                        .setParameter("endDate", endDate)
+                        .resultList.filterNotNull()
+                println(data.toString())
+                Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
             Results.Error(e)
         }
     }

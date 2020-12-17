@@ -14,16 +14,19 @@ import javafx.scene.control.TableView
 import javafx.scene.layout.BorderPane
 import tornadofx.*
 
-class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Logistics Pty Ltd FuelMaster") {
+class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Usage") {
 
     override val root: BorderPane by fxml("/view/HomeView.fxml")
     private val tableView: TableView<FuelTransaction> by fxid("fuelTransactionTable")
     private val scrollPane: ScrollPane by fxid("tableViewScrollPane")
-    private val refreshTransactionTable: Button by fxid("refresh")
 
     private val transactionRepo = FuelTransactionRepo()
 
     init {
+
+        disableDelete()
+        disableSave()
+        disableCreate()
 
         tableView.apply {
             //ensure table dimensions match the enclosing ScrollPane
@@ -34,7 +37,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
             items = modelList
 
             placeholder = label("No filling records yet.")
-            smartResize()
+
             column("Date", FuelTransaction::dateProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Waybill Number", FuelTransaction::waybillNoProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Type", FuelTransaction::transactionTypeProperty).contentWidth(padding = 20.0, useAsMin = true)
@@ -51,9 +54,6 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
             column("Available", FuelTransaction::currentBalanceProperty).contentWidth(padding = 20.0, useAsMin = true).remainingWidth()
         }
 
-        refreshTransactionTable.apply {
-            action { onRefresh() }
-        }
         root.apply {
             vbox {
                 left {
@@ -91,14 +91,6 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
         }
     }
 
-    fun toUserTableView(actionEvent: ActionEvent) {
-        openInternalWindow<UserTableController>()
-    }
-
-    fun toVehicleTableView(actionEvent: ActionEvent) {
-        openInternalWindow<VehicleTableController>()
-    }
-
     fun toStorageRefill(actionEvent: ActionEvent) {
         val scope = ModelEditScope(FuelTransactionModel())
         editModel(scope, FuelTransaction(), FuelTopUpController::class)
@@ -117,14 +109,4 @@ class HomeController : AbstractModelTableController<FuelTransaction>("NamOps Log
         return observableListOf()
     }
 
-    fun toCharts(action: Event){
-
-//        replaceWith(ChartsController::class, ViewTransition.Slide(0.3.seconds, ViewTransition.Direction.LEFT))
-    }
-
-    override fun onDock() {
-        super.onDock()
-        workspace.headingContainer.hide()
-        currentWindow?.sizeToScene()
-    }
 }

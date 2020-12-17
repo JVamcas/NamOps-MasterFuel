@@ -29,7 +29,8 @@ abstract class AbstractModelTableController<T>(title: String) : AbstractView(tit
         editScope.viewModel.item = model// the model to be edited
 
         setInScope(editScope.viewModel, editScope)
-        find(tClass, editScope).openWindow()
+
+        find(tClass, editScope).openModal()
     }
 
     abstract suspend fun loadModels(): ObservableList<T>

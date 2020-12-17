@@ -32,6 +32,11 @@ open class NewUserController : AbstractView("User registration") {
 
     init {
 
+        root.apply {
+            prefHeight = 400.0
+            prefWidth = 500.0
+        }
+
         modalStage?.isResizable = false
         firstName.apply {
             bind(userModel.firstName)

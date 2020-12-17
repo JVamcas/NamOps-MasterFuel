@@ -7,6 +7,10 @@ import tornadofx.*
 
 class NamOpsMasterFuel: App(MainWorkspace::class, Styles::class){
 
+    init {
+        reloadStylesheetsOnFocus()
+    }
+
     override fun onBeforeShow(view: UIComponent) {
         workspace.dock<HomeController>()
     }

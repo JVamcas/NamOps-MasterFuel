@@ -5,6 +5,7 @@ import javafx.scene.control.TextField
 import tornadofx.*
 import java.lang.Double.parseDouble
 import java.lang.Exception
+import java.util.*
 import java.util.regex.Pattern
 
 class ParseUtil {

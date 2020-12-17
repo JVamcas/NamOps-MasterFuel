@@ -7,7 +7,7 @@ import javafx.scene.control.Alert
 import javafx.scene.control.ComboBox
 import tornadofx.*
 
-abstract class AbstractView(title: String) : View(title) {
+abstract class AbstractView(private val viewTitle: String) : View(viewTitle) {
 
 
     fun UIComponent.closeView() {
@@ -55,5 +55,11 @@ abstract class AbstractView(title: String) : View(title) {
     fun <T> ComboBox<T>.bindCombo(property: Property<T>){
         bind(property)
         bindSelected(property)
+    }
+
+    override fun onDock() {
+        super.onDock()
+        title = "NamOps Logistics Pty Ltd FuelMaster"
+        heading = viewTitle
     }
 }

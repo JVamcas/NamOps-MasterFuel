@@ -74,5 +74,6 @@
                 <Insets top="20.0" />
             </GridPane.margin>
         </Pane>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" />
     </children>
 </GridPane>

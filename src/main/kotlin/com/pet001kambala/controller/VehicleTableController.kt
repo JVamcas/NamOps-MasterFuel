@@ -9,12 +9,16 @@ import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import tornadofx.*
 
-class VehicleTableController : AbstractModelTableController<Vehicle>("Current Vehicles") {
+class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles") {
 
     private val vehicleRepo = VehicleRepo()
     override val root = scrollpane {
-        vbox(10.0) {
+        vbox(5.0) {
             tableview(modelList) {
+
+                smartResize()
+                prefWidthProperty().bind(this@scrollpane.widthProperty())
+                prefHeightProperty().bind(this@scrollpane.heightProperty())
 
                 column("Unit Number", Vehicle::unitNumberProperty)
                 column("Plate Number", Vehicle::plateNumberProperty)
@@ -28,32 +32,17 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Current Ve
 
                 placeholder = Label("No vehicles here yet.")
 
-                setPrefSize(800.0, 400.0)
                 columnResizePolicy = TableView.CONSTRAINED_RESIZE_POLICY
                 vgrow = Priority.ALWAYS
             }
-
             hbox(8.0) {
                 textfield {
-                    promptText = "Search by unit number."
+                    promptText = "Search user by unit number. Ctrl+S"
                 }
                 region {
                     hgrow = Priority.ALWAYS
                 }
-                button("Refresh") {
-                    action {
-                        onRefresh()
-                    }
-                }
-
-                button("New Vehicle") {
-                    setOnAction {
-                        val scope = ModelEditScope(VehicleModel())
-                        editModel(scope, Vehicle(), NewVehicleController::class)
-                    }
-                }
             }
-            paddingAll = 10.0
         }
     }
 
@@ -62,5 +51,11 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Current Ve
         if(loadResults is Results.Success<*>)
             return loadResults.data as ObservableList<Vehicle>
         return observableListOf()
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        val scope = ModelEditScope(VehicleModel())
+        editModel(scope, Vehicle(), NewVehicleController::class)
     }
 }

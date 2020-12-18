@@ -1,17 +1,10 @@
 package com.pet001kambala.controller
 
 import com.pet001kambala.repo.FuelTransactionRepo
-import com.pet001kambala.utils.DateUtil.Companion.lastYear
-import com.pet001kambala.utils.DateUtil.Companion.lastYearFirstDate
 import com.pet001kambala.utils.DateUtil.Companion.thisYear
-import com.pet001kambala.utils.DateUtil.Companion.thisYearEndDate
-import com.pet001kambala.utils.DateUtil.Companion.thisYearFirstDate
-import com.pet001kambala.utils.Results
-import javafx.application.Platform
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.NumberAxis
 import javafx.scene.layout.BorderPane
-import kotlinx.coroutines.*
 import tornadofx.*
 
 class ChartsController : AbstractView("Fuel Statistics") {
@@ -26,6 +19,7 @@ class ChartsController : AbstractView("Fuel Statistics") {
     }
 
     override val root: BorderPane = borderpane {
+
         right {
             vbox {
 
@@ -72,6 +66,8 @@ class ChartsController : AbstractView("Fuel Statistics") {
         }
         bottom {
             barchart("${thisYear()} - Monthly Fuel Usage", CategoryAxis(), NumberAxis()) {
+
+
 //
 //                GlobalScope.launch {
 //                    val resultsList = transactionRepo.loadMonthlyFuelUsage()

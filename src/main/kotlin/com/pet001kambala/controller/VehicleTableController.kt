@@ -12,9 +12,10 @@ import tornadofx.*
 class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles") {
 
     private val vehicleRepo = VehicleRepo()
+    private lateinit var table: TableView<Vehicle>
     override val root = scrollpane {
         vbox(5.0) {
-            tableview(modelList) {
+            table = tableview(modelList) {
 
                 smartResize()
                 prefWidthProperty().bind(this@scrollpane.widthProperty())

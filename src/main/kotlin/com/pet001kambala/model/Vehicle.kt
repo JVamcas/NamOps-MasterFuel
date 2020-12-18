@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ListCell
 import org.hibernate.annotations.Cascade
 import org.hibernate.annotations.CascadeType
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import tornadofx.*
 import javax.persistence.*
 
@@ -34,7 +36,6 @@ class Vehicle(
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Cascade(CascadeType.ALL)
     var id: Int? = null
 
     @Column(name = "unit_number", nullable = false,unique = true)
@@ -61,6 +62,11 @@ class Vehicle(
             super.updateItem(vehicle, empty)
             text = "${vehicle?.unitNumberProperty?.get()} | ${vehicle?.plateNumberProperty?.get()} | ${vehicle?.departmentProperty?.get()}"
         }
+    }
+    override fun equals(other: Any?): Boolean {
+        if(other == null || other !is Vehicle)
+            return false
+        return other.id == id
     }
 }
 

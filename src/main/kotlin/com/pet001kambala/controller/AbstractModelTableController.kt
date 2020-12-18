@@ -1,6 +1,7 @@
 package com.pet001kambala.controller
 
 import javafx.collections.ObservableList
+import javafx.scene.control.TableView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tornadofx.*
@@ -32,6 +33,7 @@ abstract class AbstractModelTableController<T>(title: String) : AbstractView(tit
 
         find(tClass, editScope).openModal()
     }
+
 
     abstract suspend fun loadModels(): ObservableList<T>
 

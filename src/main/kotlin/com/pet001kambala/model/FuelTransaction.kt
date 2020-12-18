@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleFloatProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import tornadofx.*
 import java.sql.Timestamp
 import javax.persistence.*
@@ -17,19 +19,19 @@ enum class FuelTransactionType(val value: String) {
 @Table(name = "FuelTransactions")
 class FuelTransaction(
 
-    date: Timestamp? = null,
-    attendant: User? = null,
-    openingBalance: Float = 0f,
-    quantity: Float = 0f,
-    currentBalance: Float = 0f,
-    vehicle: Vehicle? = null,
-    driverName: User? = null,
-    transactionType: FuelTransactionType = FuelTransactionType.DISPENSE,
-    odometer: Int = 0,
-    distanceTravelled: Int = 0,
-    waybillNo: String? = null,
+        date: Timestamp? = null,
+        attendant: User? = null,
+        openingBalance: Float = 0f,
+        quantity: Float = 0f,
+        currentBalance: Float = 0f,
+        vehicle: Vehicle? = null,
+        driverName: User? = null,
+        transactionType: FuelTransactionType = FuelTransactionType.DISPENSE,
+        odometer: Int = 0,
+        distanceTravelled: Int = 0,
+        waybillNo: String? = null,
 
-) {
+        ) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -64,6 +66,7 @@ class FuelTransaction(
     val driverProperty = SimpleObjectProperty<User>()
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "driverId")
     var driver: User? = null
         set(value) {
@@ -77,6 +80,7 @@ class FuelTransaction(
     val attendantProperty = SimpleObjectProperty<User>()
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "attendantId", nullable = false)
     var attendant: User? = null
         set(value) {
@@ -89,6 +93,7 @@ class FuelTransaction(
     val vehicleProperty = SimpleObjectProperty<Vehicle>()
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "vehicleId")
     var vehicle: Vehicle? = null
         set(value) {

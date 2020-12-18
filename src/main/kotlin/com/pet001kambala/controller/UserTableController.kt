@@ -6,16 +6,21 @@ import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.utils.Results
 import javafx.collections.ObservableList
 import javafx.scene.control.Label
+import javafx.scene.control.TableView
 import javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY
 import javafx.scene.layout.Priority
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import tornadofx.*
+import javax.xml.bind.JAXBElement
 
 class UserTableController : AbstractModelTableController<User>("Users") {
 
     private val userRepo = UserRepo()
+    private lateinit var tableView: TableView<User>
     override val root = scrollpane {
         vbox(5.0) {
-            tableview(modelList) {
+            tableView = tableview(modelList) {
 
 
                 smartResize()
@@ -47,6 +52,21 @@ class UserTableController : AbstractModelTableController<User>("Users") {
                 }
             }
             paddingAll = 5.0
+        }
+    }
+
+    override fun onDelete() {
+        super.onDelete()
+        GlobalScope.launch {
+            val selected = tableView.selectionModel?.selectedItem
+            selected?.let {
+                val results = userRepo.deleteModel(it)
+                if (results is Results.Success<*>) {
+                    modelList.remove(it)
+                    return@launch
+                }
+                parseResults(results)
+            }
         }
     }
 

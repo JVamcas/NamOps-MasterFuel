@@ -12,16 +12,6 @@ import tornadofx.*
 
 class UserRepo : AbstractRepo<User>() {
 
-
-
-//    fun deleteUser(user: User){
-//        session?.apply {
-//            val results =  createQuery("DELETE FROM User WHERE", User::class.java).resultList
-//            return results.asObservable()
-//        }
-//        return observableListOf()
-//    }
-
     suspend fun loadAllUsers():Results {
        return try{
            withContext(Dispatchers.Default){

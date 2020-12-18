@@ -39,8 +39,5 @@ class ParseUtil {
                             false
                         }
 
-        fun monthByName(index: Int): String = DateFormatSymbols().months[index - 1]
     }
-
-
 }

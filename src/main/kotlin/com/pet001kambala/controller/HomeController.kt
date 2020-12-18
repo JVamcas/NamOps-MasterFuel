@@ -17,7 +17,7 @@ import tornadofx.*
 class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Usage") {
 
     override val root: BorderPane by fxml("/view/HomeView.fxml")
-    private val tableView: TableView<FuelTransaction> by fxid("fuelTransactionTable")
+    private val table: TableView<FuelTransaction> by fxid("fuelTransactionTable")
     private val scrollPane: ScrollPane by fxid("tableViewScrollPane")
 
     private val transactionRepo = FuelTransactionRepo()
@@ -28,7 +28,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Usage
         disableSave()
         disableCreate()
 
-        tableView.apply {
+        table.apply {
             //ensure table dimensions match the enclosing ScrollPane
             smartResize()
             prefWidthProperty().bind(scrollPane.widthProperty())
@@ -108,5 +108,4 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Usage
             return loadResults.data as ObservableList<FuelTransaction>
         return observableListOf()
     }
-
 }

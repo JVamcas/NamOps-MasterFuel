@@ -2,9 +2,10 @@ package com.pet001kambala.controller
 
 import com.pet001kambala.repo.FuelTransactionRepo
 import com.pet001kambala.utils.DateUtil.Companion.lastYear
+import com.pet001kambala.utils.DateUtil.Companion.monthByName
 import com.pet001kambala.utils.DateUtil.Companion.thisMonthBeginning
+import com.pet001kambala.utils.DateUtil.Companion.thisMonthByName
 import com.pet001kambala.utils.DateUtil.Companion.thisYear
-import com.pet001kambala.utils.ParseUtil.Companion.monthByName
 import com.pet001kambala.utils.Results
 import javafx.application.Platform
 import javafx.scene.chart.CategoryAxis
@@ -35,7 +36,7 @@ class ChartsController : AbstractView("Fuel Statistics") {
                         val dataList = leastEfficientResult.data as List<*>
 
                         Platform.runLater {
-                            piechart("December ${thisYear()} - Least efficient vehicles") {
+                            piechart("${thisMonthByName()} ${thisYear()} - Least efficient vehicles") {
                                 dataList.forEach {
                                     val entry = it as Array<*>
                                     val vehicle = "${entry[0].toString()} - ${entry[1].toString()}"
@@ -54,7 +55,7 @@ class ChartsController : AbstractView("Fuel Statistics") {
                         val dataList = mostEfficientResult.data as List<*>
 
                         Platform.runLater {
-                            piechart("December ${thisYear()} - Most efficient vehicles") {
+                            piechart("${thisMonthByName()} ${thisYear()} - Most efficient vehicles") {
                                 dataList.forEach {
                                     val entry = it as Array<*>
                                     val vehicle = "${entry[0].toString()} - ${entry[1].toString()}"

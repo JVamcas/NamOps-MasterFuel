@@ -3,6 +3,7 @@ package com.pet001kambala.utils
 
 import java.sql.Date
 import java.sql.Timestamp
+import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -45,6 +46,13 @@ class DateUtil {
             cal.set(Calendar.DAY_OF_YEAR, thisMonthStartDate)
             return Date(cal.time.time)
         }
+
+        fun thisMonthByName(): String {
+            val cal = Calendar.getInstance()
+            return monthByName(cal.get(Calendar.MONTH) + 1)
+        }
+
+        fun monthByName(index: Int): String = DateFormatSymbols().months[index - 1]
 
         fun thisYear() = Calendar.getInstance().get(Calendar.YEAR).toString()
 

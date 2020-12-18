@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ListCell
 import org.hibernate.annotations.Cascade
 import org.hibernate.annotations.CascadeType
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import tornadofx.*
 import javax.persistence.*
 
@@ -22,10 +24,11 @@ class User(
     lastName: String? = null,
     companyName: CompanyName = CompanyName.NAMOPS,
     userGroup: UserGroup = UserGroup.Attendant,
+    username: String? = null,
+    password: String? = null
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Cascade(CascadeType.ALL)
     var id: Int? = null
 
     @Column(name = "firstName",nullable = false)
@@ -44,8 +47,22 @@ class User(
     @Convert(converter = SimpleStringConvertor::class)
     val userGroupProperty = SimpleStringProperty(userGroup.name)
 
+    @Column(name = "username", nullable = false)
+    @Convert(converter = SimpleStringConvertor::class)
+    val usernameProperty = SimpleStringProperty(username)
+
+    @Column(name = "password", nullable = false)
+    @Convert(converter = SimpleStringConvertor::class)
+    val passwordProperty = SimpleStringProperty(password)
+
     override fun toString(): String {
         return "${firstNameProperty.get()} ${lastNameProperty.get()}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if(other == null || other !is User)
+            return false
+        return other.id == id
     }
 }
 

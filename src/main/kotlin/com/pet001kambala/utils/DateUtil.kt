@@ -7,15 +7,15 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class DateUtil {
-    companion object{
+    companion object {
         const val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 
         fun today(): Timestamp {
             val date = Date()
-           return Timestamp(date.time)
+            return Timestamp(date.time)
         }
 
-        fun Date._24(): String{
+        fun Date._24(): String {
             return SimpleDateFormat(DATE_FORMAT, Locale.US).format(this)
         }
 
@@ -28,17 +28,21 @@ class DateUtil {
 
         fun lastYearFirstDate(): Date {
             val cal = Calendar.getInstance()
-            val lastYear = cal.get(Calendar.YEAR) - 1
-            cal.set(Calendar.YEAR, lastYear)
-            cal.set(Calendar.MONDAY, 0)
+            cal.set(Calendar.YEAR, lastYear().toInt())
             cal.set(Calendar.DAY_OF_YEAR, 1)
             return Date(cal.time.time)
         }
 
-        fun thisYearEndDate(): Date{
+        fun thisYearEndDate(): Date {
             val cal = Calendar.getInstance()
-            cal.set(Calendar.MONTH, 0)
-            cal.set(Calendar.DAY_OF_YEAR, 31)
+            cal.set(Calendar.DAY_OF_YEAR, 366)
+            return Date(cal.time.time)
+        }
+
+        fun thisMonthBeginning(): Date {
+            val cal = Calendar.getInstance()
+            val thisMonthStartDate = cal.get(Calendar.DAY_OF_YEAR) - cal.get(Calendar.DAY_OF_MONTH)
+            cal.set(Calendar.DAY_OF_YEAR, thisMonthStartDate)
             return Date(cal.time.time)
         }
 

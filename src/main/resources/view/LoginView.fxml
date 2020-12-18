@@ -33,11 +33,6 @@
             <Font name="System Italic" size="24.0" />
          </font>
       </TextField>
-      <ProgressBar fx:id="password" minHeight="-Infinity" minWidth="-Infinity" prefHeight="52.0" prefWidth="580.0" progress="0.0" style="-fx-border-color: #575755; -fx-border-radius: 5; -fx-border-width: 2;" GridPane.columnSpan="2" GridPane.rowIndex="2">
-         <GridPane.margin>
-            <Insets left="10.0" right="10.0" />
-         </GridPane.margin>
-      </ProgressBar>
       <Button fx:id="login" alignment="CENTER" mnemonicParsing="false" prefHeight="51.0" prefWidth="124.0" style="-fx-background-color: #18C6F0; -fx-background-radius: 50;" text="Login" textFill="WHITE" underline="true" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
          <GridPane.margin>
             <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
@@ -46,5 +41,13 @@
             <Font name="System Bold Italic" size="24.0" />
          </font>
       </Button>
+      <PasswordField fx:id="password" minHeight="-Infinity" minWidth="-Infinity" prefHeight="52.0" prefWidth="580.0" promptText="Password" style="-fx-border-color: #575755; -fx-border-radius: 5; -fx-border-width: 2;" GridPane.columnSpan="2" GridPane.rowIndex="2">
+         <GridPane.margin>
+            <Insets left="10.0" right="10.0" />
+         </GridPane.margin>
+         <font>
+            <Font name="System Italic" size="24.0" />
+         </font>
+      </PasswordField>
    </children>
 </GridPane>

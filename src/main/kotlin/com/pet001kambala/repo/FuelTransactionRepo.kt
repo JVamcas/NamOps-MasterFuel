@@ -92,15 +92,15 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         return try {
             withContext(Dispatchers.Default) {
                 val session = sessionFactory!!.openSession()
-                val qryStr = "select v.unit_number,v.plate_number, sum(t.quantityDispensed/) as Total_dispensed from fueltransactions t" +
+                val qryStr = "select v.unit_number,v.plate_number, avg(t.distanceTravelled/t.quantityDispensed) as Total_dispensed from fueltransactions t" +
                         "  join vehicles v on v.id = t.vehicleId " +
                         "WHERE t.transactionType = :transactionType and t.transactionDate >= :startDate " +
                         "group by v.unit_number " +
-                        "order by Total_dispensed limit 3"
+                        "order by Total_dispensed limit 5"
                 val data = session.createNativeQuery(qryStr)
                         .setParameter("startDate", startDate)
                         .setParameter("transactionType", FuelTransactionType.DISPENSE.value)
-                        .resultList.filterNotNull().asObservable()
+                        .resultList.filterNotNull()
                 Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
         } catch (e: Exception) {
@@ -116,7 +116,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
                         "  join vehicles v on v.id = t.vehicleId " +
                         "where t.transactionType = :transactionType and t.transactionDate >= :startDate " +
                         "group by v.unit_number " +
-                        "order by Total_dispensed desc limit 3"
+                        "order by Total_dispensed desc limit 5"
                 val data = session.createNativeQuery(qryStr)
                         .setParameter("startDate", startDate)
                         .setParameter("transactionType", FuelTransactionType.DISPENSE.value)
@@ -155,6 +155,11 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
             val lastYearFirstDate = DateUtil.lastYearFirstDate()
             val thisYearFirstDate = DateUtil.thisYearFirstDate()
             val thisYearEndDate = DateUtil.thisYearEndDate()
+
+            println(lastYearFirstDate)
+            println(thisYearFirstDate)
+            println(thisYearEndDate)
+
 
             val results = coroutineScope {
                 val deferredOps = listOf(

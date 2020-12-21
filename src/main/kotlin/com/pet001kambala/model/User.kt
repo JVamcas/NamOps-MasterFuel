@@ -1,12 +1,10 @@
 package com.pet001kambala.model
 
+import com.pet001kambala.utils.SimpleBooleanConvertor
 import com.pet001kambala.utils.SimpleStringConvertor
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ListCell
-import org.hibernate.annotations.Cascade
-import org.hibernate.annotations.CascadeType
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
 import tornadofx.*
 import javax.persistence.*
 
@@ -24,6 +22,7 @@ class User(
     lastName: String? = null,
     companyName: CompanyName = CompanyName.NAMOPS,
     userGroup: UserGroup = UserGroup.Attendant,
+    deleted: Boolean = false,
     username: String? = null,
     password: String? = null
 ) {
@@ -47,6 +46,10 @@ class User(
     @Convert(converter = SimpleStringConvertor::class)
     val userGroupProperty = SimpleStringProperty(userGroup.name)
 
+    @Column(name = "deleted",nullable = false)
+    @Convert(converter = SimpleBooleanConvertor::class)
+    val deletedProperty = SimpleBooleanProperty(deleted)
+
     @Column(name = "username", nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
     val usernameProperty = SimpleStringProperty(username)
@@ -63,6 +66,13 @@ class User(
         if(other == null || other !is User)
             return false
         return other.id == id
+    }
+
+    override fun hashCode(): Int {
+        var result = id ?: 0
+        result = 31 * result + firstNameProperty.hashCode()
+        result = 31 * result + lastNameProperty.hashCode()
+        return result
     }
 }
 

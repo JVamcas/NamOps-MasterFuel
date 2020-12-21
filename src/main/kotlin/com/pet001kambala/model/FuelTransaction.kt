@@ -65,8 +65,7 @@ class FuelTransaction(
     @Convert(converter = SimpleUserConvertor::class)
     val driverProperty = SimpleObjectProperty<User>()
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "driverId")
     var driver: User? = null
         set(value) {
@@ -79,8 +78,7 @@ class FuelTransaction(
     @Convert(converter = SimpleUserConvertor::class)
     val attendantProperty = SimpleObjectProperty<User>()
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "attendantId", nullable = false)
     var attendant: User? = null
         set(value) {
@@ -92,8 +90,7 @@ class FuelTransaction(
     @Convert(converter = SimpleVehicleConvertor::class)
     val vehicleProperty = SimpleObjectProperty<Vehicle>()
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "vehicleId")
     var vehicle: Vehicle? = null
         set(value) {

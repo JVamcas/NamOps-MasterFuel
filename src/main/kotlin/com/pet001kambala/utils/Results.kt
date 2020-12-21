@@ -25,16 +25,19 @@ sealed class Results {
         enum class CODE {
             DUPLICATE_VEHICLE,
             ODOMETER_LESS_PREVIOUS,
+            INSUFFICIENT_FUEL,
             UNKNOWN
         }
 
         val code: CODE = when (e) {
             is DuplicateVehicleException -> CODE.DUPLICATE_VEHICLE
             is InvalidOdoMeterException -> CODE.ODOMETER_LESS_PREVIOUS
+            is InsufficientFuelException -> CODE.INSUFFICIENT_FUEL
             else -> CODE.UNKNOWN
         }
 
         class DuplicateVehicleException : Exception()
         class InvalidOdoMeterException : Exception()
+        class InsufficientFuelException: Exception()
     }
 }

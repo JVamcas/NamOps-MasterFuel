@@ -25,6 +25,9 @@ abstract class AbstractRepo<T> {
             session?.transaction?.rollback()
             Results.Error(e)
         }
+        finally {
+            session?.close()
+        }
     }
 
     open suspend fun updateModel(model: T): Results {
@@ -42,21 +45,27 @@ abstract class AbstractRepo<T> {
             session?.transaction?.rollback()
             Results.Error(e)
         }
-    }
-
-    open suspend fun deleteModel(model: T): Results{
-        var session: Session?
-        return try {
-            withContext(Dispatchers.Default){
-                session = sessionFactory!!.openSession()
-                val transaction = session!!.beginTransaction()
-                session!!.delete(model)
-                transaction.commit()
-                Results.Success<T>(code = Results.Success.CODE.DELETE_SUCCESS)
-            }
-        }
-        catch (e: Exception){
-            Results.Error(e)
+        finally {
+            session?.close()
         }
     }
+//    open suspend fun deleteModel(model: T): Results{
+//        var session: Session? = null
+//        return try {
+//            withContext(Dispatchers.Default){
+//                session = sessionFactory!!.currentSession
+//                val transaction = session!!.beginTransaction()
+//                session!!.delete(model)
+//                transaction.commit()
+//                Results.Success<T>(code = Results.Success.CODE.DELETE_SUCCESS)
+//            }
+//        }
+//        catch (e: Exception){
+//            e.printStackTrace()
+//            Results.Error(e)
+//        }
+//        finally {
+//            session?.close()
+//        }
+//    }
 }

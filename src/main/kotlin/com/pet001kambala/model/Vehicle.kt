@@ -1,12 +1,10 @@
 package com.pet001kambala.model
 
+import com.pet001kambala.utils.SimpleBooleanConvertor
 import com.pet001kambala.utils.SimpleStringConvertor
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ListCell
-import org.hibernate.annotations.Cascade
-import org.hibernate.annotations.CascadeType
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
 import tornadofx.*
 import javax.persistence.*
 
@@ -31,6 +29,7 @@ class Vehicle(
     plateNumber: String? = null,
     department: Department = Department.LOCAL,
     type: VehicleType = VehicleType.TRUCK,
+    deleted: Boolean = false
 
     ) {
 
@@ -41,6 +40,10 @@ class Vehicle(
     @Column(name = "unit_number", nullable = false,unique = true)
     @Convert(converter = SimpleStringConvertor::class)
     val unitNumberProperty = SimpleStringProperty(unitNumber)
+
+    @Column(name = "deleted",nullable = false)
+    @Convert(converter = SimpleBooleanConvertor::class)
+    val deletedProperty = SimpleBooleanProperty(deleted)
 
     @Column(name = "plate_number", nullable = false,unique = true)
     @Convert(converter = SimpleStringConvertor::class)
@@ -67,6 +70,13 @@ class Vehicle(
         if(other == null || other !is Vehicle)
             return false
         return other.id == id
+    }
+
+    override fun hashCode(): Int {
+        var result = id ?: 0
+        result = 31 * result + unitNumberProperty.hashCode()
+        result = 31 * result + plateNumberProperty.hashCode()
+        return result
     }
 }
 

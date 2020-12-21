@@ -40,19 +40,24 @@ abstract class AbstractView(private val viewTitle: String) : View(viewTitle) {
                     )
                 }
                 Results.Error.CODE.ODOMETER_LESS_PREVIOUS -> {
-                    showError(header = "Invalid vehicle odometer."
-                            , msg = "The current odometer reading cannot be less than the previous reading.")
+                    showError(header = "Invalid vehicle odometer.", msg = "The current odometer reading cannot be less than the previous reading.")
                 }
                 Results.Error.CODE.UNKNOWN -> {
                     showError(header = "Unknown Error", msg = "An unknown error has occurred. What to do:\n" +
                             "1.  Restart the program.\n" +
                             "2. If the error persists, please contact the system administrator at NamOps Logistics Pty Ldt.")
                 }
+                Results.Error.CODE.INSUFFICIENT_FUEL -> {
+                    showError(
+                            header = "Insufficient Fuel",
+                            msg = "Insufficient fuel. Fill up tank or select smaller quantity."
+                    )
+                }
             }
         }
     }
 
-    fun <T> ComboBox<T>.bindCombo(property: Property<T>){
+    fun <T> ComboBox<T>.bindCombo(property: Property<T>) {
         bind(property)
         bindSelected(property)
     }

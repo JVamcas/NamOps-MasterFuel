@@ -7,15 +7,19 @@ import javafx.collections.ObservableList
 import javafx.scene.control.Label
 import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import tornadofx.*
+import tornadofx.Stylesheet.Companion.tableView
+import javax.xml.bind.JAXBElement
 
 class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles") {
 
     private val vehicleRepo = VehicleRepo()
-    private lateinit var table: TableView<Vehicle>
+    private lateinit var tableView: TableView<Vehicle>
     override val root = scrollpane {
         vbox(5.0) {
-            table = tableview(modelList) {
+            tableView = tableview(modelList) {
 
                 smartResize()
                 prefWidthProperty().bind(this@scrollpane.widthProperty())
@@ -58,5 +62,20 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles")
         super.onCreate()
         val scope = ModelEditScope(VehicleModel())
         editModel(scope, Vehicle(), NewVehicleController::class)
+    }
+
+    override fun onDelete() {
+        super.onDelete()
+        GlobalScope.launch {
+            val selected = tableView.selectionModel?.selectedItem
+            selected?.let {
+                val results = vehicleRepo.deleteModel(it)
+                if (results is Results.Success<*>) {
+                    modelList.remove(it)
+                    return@launch
+                }
+                parseResults(results)
+            }
+        }
     }
 }

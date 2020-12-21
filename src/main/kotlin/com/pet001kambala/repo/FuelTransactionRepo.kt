@@ -6,6 +6,7 @@ import com.pet001kambala.utils.DateUtil
 import com.pet001kambala.utils.Results
 import javafx.collections.ObservableList
 import kotlinx.coroutines.*
+import org.hibernate.Session
 import tornadofx.*
 import java.sql.Date
 import java.sql.Timestamp
@@ -13,24 +14,27 @@ import java.sql.Timestamp
 class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
 
     suspend fun loadAllTransactions(): Results {
+        var session: Session? = null
         return try {
             withContext(Dispatchers.Default) {
-                val session = sessionFactory!!.openSession()
-                val data = session.createQuery("FROM FuelTransaction", FuelTransaction::class.java).resultList.asObservable()
+                session = sessionFactory!!.openSession()
+                val data = session!!.createQuery("FROM FuelTransaction", FuelTransaction::class.java).resultList.asObservable()
                 Results.Success<ObservableList<FuelTransaction>>(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
         } catch (e: Exception) {
+            session?.close()
             Results.Error(e)
         }
     }
 
     private suspend fun loadOpeningBalance(): Float {
-        var openingBalance = 0f
+        var openingBalance: Float
         withContext(Dispatchers.Default) {
             val session = sessionFactory!!.openSession()
             val qryStr = "select sum(if(transactionType=\"Re-fill\", quantityDispensed,-quantityDispensed)) as current_balance from fueltransactions"
-            val results = session.createNativeQuery(qryStr).resultList
+            val results = session!!.createNativeQuery(qryStr).resultList
             openingBalance = if (results.filterNotNull().isNullOrEmpty()) 0f else results[0].toString().toFloat()
+            session.close()
         }
         return openingBalance
     }
@@ -49,8 +53,9 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
             }
             if (distanceTravelled < 0)
                 throw Results.Error.InvalidOdoMeterException()
-
+            session.close()
         }
+
         return distanceTravelled
     }
 
@@ -64,13 +69,15 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
                 val distanceTravelled = distanceDeferred.await()
                 val openingBalance = balanceDeferred.await()
 
+                if(openingBalance < model.quantityProperty.get())
+                    throw Results.Error.InsufficientFuelException()
+
                 model.distanceTravelledProperty.set(distanceTravelled)
                 model.openingBalanceProperty.set(openingBalance)
                 model.currentBalanceProperty.set(openingBalance - model.quantityProperty.get())
                 addNewModel(model)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             Results.Error(e)
         }
     }
@@ -89,15 +96,16 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
     }
 
     suspend fun loadLeastEfficientVehicle(startDate: Date): Results {
+        var session: Session? = null
         return try {
             withContext(Dispatchers.Default) {
-                val session = sessionFactory!!.openSession()
+                session = sessionFactory!!.openSession()
                 val qryStr = "select v.unit_number,v.plate_number, avg(t.distanceTravelled/t.quantityDispensed) as Total_dispensed from fueltransactions t" +
                         "  join vehicles v on v.id = t.vehicleId " +
                         "WHERE t.transactionType = :transactionType and t.transactionDate >= :startDate " +
                         "group by v.unit_number " +
                         "order by Total_dispensed limit 5"
-                val data = session.createNativeQuery(qryStr)
+                val data = session!!.createNativeQuery(qryStr)
                         .setParameter("startDate", startDate)
                         .setParameter("transactionType", FuelTransactionType.DISPENSE.value)
                         .resultList.filterNotNull()
@@ -106,18 +114,22 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         } catch (e: Exception) {
             Results.Error(e)
         }
+        finally {
+            session?.close()
+        }
     }
 
     suspend fun loadMostEfficientVehicle(startDate: Date): Results {
+        var session: Session? = null
         return try {
             withContext(Dispatchers.Default) {
-                val session = sessionFactory!!.openSession()
+                session = sessionFactory!!.openSession()
                 val qryStr = "select v.unit_number,v.plate_number, sum(t.quantityDispensed) as Total_dispensed from fueltransactions t" +
                         "  join vehicles v on v.id = t.vehicleId " +
                         "where t.transactionType = :transactionType and t.transactionDate >= :startDate " +
                         "group by v.unit_number " +
                         "order by Total_dispensed desc limit 5"
-                val data = session.createNativeQuery(qryStr)
+                val data = session!!.createNativeQuery(qryStr)
                         .setParameter("startDate", startDate)
                         .setParameter("transactionType", FuelTransactionType.DISPENSE.value)
                         .resultList.filterNotNull()
@@ -125,6 +137,9 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
             }
         } catch (e: Exception) {
             Results.Error(e)
+        }
+        finally {
+            session?.close()
         }
     }
 
@@ -136,17 +151,19 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
 
     private suspend fun loadMonthlyFuelUsage(startDate: Date, endDate: Date): List<*> {
         val data: List<*>
+        var session: Session?
         withContext(Dispatchers.Default) {
-            val session = sessionFactory!!.openSession()
+            session = sessionFactory!!.openSession()
             val qryStr = "select sum(t.quantityDispensed) as Total,MONTH(t.transactionDate) as \"Month\" " +
                     "from fueltransactions t where t.transactionType = :transactionType and t.transactionDate BETWEEN :startDate and :endDate" +
                     " group by  MONTH(t.transactionDate) order by MONTH(t.transactionDate)"
-            data = session.createNativeQuery(qryStr)
+            data = session!!.createNativeQuery(qryStr)
                     .setParameter("transactionType", FuelTransactionType.DISPENSE.value)
                     .setParameter("startDate", startDate)
                     .setParameter("endDate", endDate)
                     .resultList.filterNotNull()
         }
+        session?.close()
         return data
     }
 

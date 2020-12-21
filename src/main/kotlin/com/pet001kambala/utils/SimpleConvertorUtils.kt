@@ -26,6 +26,15 @@ class SimpleFloatConvertor : AttributeConverter<SimpleFloatProperty, Float> {
         return SimpleFloatProperty(p0)
     }
 }
+class SimpleBooleanConvertor : AttributeConverter<SimpleBooleanProperty, Boolean> {
+    override fun convertToDatabaseColumn(p0: SimpleBooleanProperty): Boolean {
+        return p0.value
+    }
+
+    override fun convertToEntityAttribute(p0: Boolean): SimpleBooleanProperty {
+        return SimpleBooleanProperty(p0)
+    }
+}
 
 class SimpleIntegerConvertor : AttributeConverter<SimpleIntegerProperty, Int> {
     override fun convertToDatabaseColumn(p0: SimpleIntegerProperty?): Int {

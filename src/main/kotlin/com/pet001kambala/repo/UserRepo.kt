@@ -3,6 +3,7 @@ package com.pet001kambala.repo
 import com.pet001kambala.model.User
 import com.pet001kambala.model.UserGroup
 import com.pet001kambala.utils.Results
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import kotlinx.coroutines.Dispatchers
@@ -12,48 +13,57 @@ import tornadofx.*
 
 class UserRepo : AbstractRepo<User>() {
 
-    suspend fun loadAllUsers():Results {
-       return try{
-           withContext(Dispatchers.Default){
-               val session = sessionFactory!!.openSession()
-               val results =  session.createQuery("SELECT a FROM User a", User::class.java).resultList
-               val data =  results.filterNotNull().asObservable()
-               Results.Success(data = data,code = Results.Success.CODE.LOAD_SUCCESS)
-           }
-       }
-       catch (e: Exception){
-           Results.Error(e)
-       }
+    suspend fun loadAllUsers(): Results {
+        return try {
+            withContext(Dispatchers.Default) {
+                val session = sessionFactory!!.openSession()
+                val results = session.createQuery("SELECT a FROM User a WHERE a.deletedProperty =:deleted", User::class.java)
+                        .setParameter("deleted", SimpleBooleanProperty(false))
+                        .resultList
+                val data = results.filterNotNull().asObservable()
+                session.close()
+                Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
+            }
+        } catch (e: Exception) {
+            Results.Error(e)
+        }
     }
 
-    suspend fun loadAttendants():Results {
-        return try{
-            withContext(Dispatchers.Default){
+    suspend fun loadAttendants(): Results {
+        return try {
+            withContext(Dispatchers.Default) {
                 val session = sessionFactory!!.openSession()
-                val data = session!!.createQuery("FROM User a WHERE a.userGroupProperty = :userGroup",User::class.java)
-                        .setParameter("userGroup",SimpleStringProperty(UserGroup.Attendant.name))
+                val data = session!!.createQuery("FROM User a WHERE a.userGroupProperty = :userGroup and a.deletedProperty =:deleted", User::class.java)
+                        .setParameter("userGroup", SimpleStringProperty(UserGroup.Attendant.name))
+                        .setParameter("deleted", SimpleBooleanProperty(false))
                         .resultList.filterNotNull().asObservable()
-                Results.Success(data = data,code = Results.Success.CODE.LOAD_SUCCESS)
+                session.close()
+                Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             Results.Error(e)
         }
     }
 
 
-    suspend fun loadDrivers():Results {
-        return try{
-            withContext(Dispatchers.Default){
+    suspend fun loadDrivers(): Results {
+        return try {
+            withContext(Dispatchers.Default) {
                 val session = sessionFactory!!.openSession()
-                val data = session!!.createQuery("FROM User a WHERE a.userGroupProperty = :userGroup",User::class.java)
-                        .setParameter("userGroup",SimpleStringProperty(UserGroup.Driver.name))
+                val data = session!!.createQuery("FROM User a WHERE a.userGroupProperty = :userGroup and a.deletedProperty =:deleted", User::class.java)
+                        .setParameter("userGroup", SimpleStringProperty(UserGroup.Driver.name))
+                        .setParameter("deleted", SimpleBooleanProperty(false))
                         .resultList.asObservable()
-                Results.Success(data = data,code = Results.Success.CODE.LOAD_SUCCESS)
+                session.close()
+                Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             Results.Error(e)
         }
+    }
+
+    suspend fun deleteModel(model: User): Results {
+        model.deletedProperty.set(true)
+        return updateModel(model)
     }
 }

@@ -2,6 +2,7 @@ package com.pet001kambala.repo
 
 import com.pet001kambala.model.Vehicle
 import com.pet001kambala.utils.Results
+import javafx.beans.property.SimpleBooleanProperty
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornadofx.*
@@ -12,7 +13,9 @@ class VehicleRepo : AbstractRepo<Vehicle>() {
         return try {
             withContext(Dispatchers.Default) {
                 val session = sessionFactory!!.openSession()
-                val results = session.createQuery("SELECT a FROM Vehicle a", Vehicle::class.java).resultList
+                val results = session.createQuery("SELECT a FROM Vehicle a WHERE a.deletedProperty =:deleted", Vehicle::class.java)
+                        .setParameter("deleted", SimpleBooleanProperty(false))
+                        .resultList
                 val data = results.filterNotNull().asObservable()
                 Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
@@ -67,5 +70,10 @@ class VehicleRepo : AbstractRepo<Vehicle>() {
             e.printStackTrace()
             Results.Error(e)
         }
+    }
+
+    suspend fun deleteModel(model: Vehicle): Results {
+        model.deletedProperty.set(true)
+        return super.updateModel(model)
     }
 }

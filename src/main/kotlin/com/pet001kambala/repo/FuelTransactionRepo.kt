@@ -4,11 +4,14 @@ import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.model.FuelTransactionType
 import com.pet001kambala.utils.DateUtil
 import com.pet001kambala.utils.Results
+import com.pet001kambala.utils.SessionManager.connection
 import javafx.collections.ObservableList
 import kotlinx.coroutines.*
 import org.hibernate.Session
 import tornadofx.*
 import java.sql.Date
+import java.sql.ResultSet
+import java.sql.Statement
 import java.sql.Timestamp
 
 class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
@@ -69,7 +72,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
                 val distanceTravelled = distanceDeferred.await()
                 val openingBalance = balanceDeferred.await()
 
-                if(openingBalance < model.quantityProperty.get())
+                if (openingBalance < model.quantityProperty.get())
                     throw Results.Error.InsufficientFuelException()
 
                 model.distanceTravelledProperty.set(distanceTravelled)
@@ -113,8 +116,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
             }
         } catch (e: Exception) {
             Results.Error(e)
-        }
-        finally {
+        } finally {
             session?.close()
         }
     }
@@ -137,16 +139,10 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
             }
         } catch (e: Exception) {
             Results.Error(e)
-        }
-        finally {
+        } finally {
             session?.close()
         }
     }
-
-
-
-
-
 
 
     private suspend fun loadMonthlyFuelUsage(startDate: Date, endDate: Date): List<*> {
@@ -189,5 +185,29 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         } catch (e: java.lang.Exception) {
             Results.Error(e)
         }
+    }
+
+    suspend fun loadQuantityDispensed(): Float {
+        var stat: Statement? = null
+        var resultSet: ResultSet? = null
+        return try {
+            withContext(Dispatchers.Default) {
+                val strQry = "select t.quantity from sale_mast_data_h t  order by t.transdatetime desc limit 1"
+                stat = connection!!.createStatement()
+                resultSet = stat!!.executeQuery(strQry)
+
+                if (resultSet?.next() == true)
+                    resultSet!!.getFloat("quantity") else 0f
+            }
+        } catch (e: java.lang.Exception) {
+            return 0f
+        } finally {
+            resultSet?.close()
+            stat?.close()
+        }
+    }
+
+    suspend fun loadVehicleOdometer(unitNo: String): Int{
+
     }
 }

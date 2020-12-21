@@ -90,7 +90,10 @@ class FuelUsageController : AbstractView("Dispense fuel" ) {
                     null
                 else error("Quantity should be greater than 1L.")
             }
-            //todo to be replaced by the API call
+            GlobalScope.launch {
+                val results = transactionRepo.loadQuantityDispensed()
+                transactionModel.quantity.set(results)
+            }
         }
 
         vehicleOdometer.apply {

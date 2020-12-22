@@ -1,5 +1,8 @@
-package com.pet001kambala.controller
+package com.pet001kambala.controller.home
 
+import com.pet001kambala.controller.AbstractModelTableController
+import com.pet001kambala.controller.fueltransactions.FuelTopUpController
+import com.pet001kambala.controller.fueltransactions.FuelUsageController
 import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.model.FuelTransactionModel
 import com.pet001kambala.model.FuelTransactionType
@@ -7,8 +10,6 @@ import com.pet001kambala.repo.FuelTransactionRepo
 import com.pet001kambala.utils.Results
 import javafx.collections.ObservableList
 import javafx.event.ActionEvent
-import javafx.event.Event
-import javafx.scene.control.Button
 import javafx.scene.control.ScrollPane
 import javafx.scene.control.TableView
 import javafx.scene.layout.BorderPane
@@ -21,8 +22,12 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Usage
     private val scrollPane: ScrollPane by fxid("tableViewScrollPane")
 
     private val transactionRepo = FuelTransactionRepo()
+   companion object{
+       lateinit var homeWorkspace: Workspace
+   }
 
     init {
+        homeWorkspace = workspace
 
         disableDelete()
         disableSave()
@@ -44,14 +49,14 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Usage
             column("Vehicle", FuelTransaction::vehicle).contentWidth(padding = 20.0, useAsMin = true)
             column("Attendant Name", FuelTransaction::attendant).contentWidth(padding = 20.0, useAsMin = true)
             column("Driver Name", FuelTransaction::driver).contentWidth(padding = 20.0, useAsMin = true)
-            column("Odometer", FuelTransaction::odometerProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Distance travelled since last refill", FuelTransaction::distanceTravelledProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Opening balance", FuelTransaction::openingBalanceProperty).contentWidth(
+            column("Odometer (KM)", FuelTransaction::odometerProperty).contentWidth(padding = 20.0, useAsMin = true)
+            column("Distance travelled since last refill (KM)", FuelTransaction::distanceTravelledProperty).contentWidth(padding = 20.0, useAsMin = true)
+            column("Opening balance (L)", FuelTransaction::openingBalanceProperty).contentWidth(
                     padding = 20.0,
                     useAsMin = true
             )
-            column("Quantity", FuelTransaction::quantityProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Available", FuelTransaction::currentBalanceProperty).contentWidth(padding = 20.0, useAsMin = true).remainingWidth()
+            column("Quantity (L)", FuelTransaction::quantityProperty).contentWidth(padding = 20.0, useAsMin = true)
+            column("Available (L)", FuelTransaction::currentBalanceProperty).contentWidth(padding = 20.0, useAsMin = true).remainingWidth()
         }
 
         root.apply {
@@ -107,5 +112,10 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Usage
         if (loadResults is Results.Success<*>)
             return loadResults.data as ObservableList<FuelTransaction>
         return observableListOf()
+    }
+
+    override fun onDock() {
+        super.onDock()
+        println("HomeController workspace is $workspace")
     }
 }

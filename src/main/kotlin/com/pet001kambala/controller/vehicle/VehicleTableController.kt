@@ -1,8 +1,11 @@
-package com.pet001kambala.controller
+package com.pet001kambala.controller.vehicle
 
+import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.VehicleRepo
 import com.pet001kambala.utils.Results
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.collections.ObservableList
 import javafx.scene.control.Label
 import javafx.scene.control.TableView
@@ -10,13 +13,15 @@ import javafx.scene.layout.Priority
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tornadofx.*
-import tornadofx.Stylesheet.Companion.tableView
-import javax.xml.bind.JAXBElement
 
 class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles") {
 
     private val vehicleRepo = VehicleRepo()
     private lateinit var tableView: TableView<Vehicle>
+
+    init {
+        disableSave()
+    }
     override val root = scrollpane {
         vbox(5.0) {
             tableView = tableview(modelList) {
@@ -32,7 +37,8 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles")
 
                 onUserSelect {
                     val scope = ModelEditScope(VehicleModel())
-                    editModel(scope, it, UpdateVehicleController::class)
+                    scope.viewModel.item = it
+                    workspace.dock<VehicleHomeController>(scope, mapOf("workspace" to workspace))
                 }
 
                 placeholder = Label("No vehicles here yet.")

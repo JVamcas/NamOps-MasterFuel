@@ -1,5 +1,7 @@
-package com.pet001kambala.controller
+package com.pet001kambala.controller.fueltransactions
 
+import com.pet001kambala.controller.AbstractModelTableController
+import com.pet001kambala.controller.AbstractView
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.FuelTransactionRepo
 import com.pet001kambala.repo.UserRepo
@@ -124,5 +126,10 @@ class FuelUsageController : AbstractView("Dispense fuel" ) {
             }
         }
         transactionModel.validate(decorateErrors = false)
+    }
+
+    override fun onDock() {
+        super.onDock()
+        heading = "Dispense fuel"
     }
 }

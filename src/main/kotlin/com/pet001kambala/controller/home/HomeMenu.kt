@@ -1,18 +1,19 @@
-package com.pet001kambala.controller
+package com.pet001kambala.controller.home
 
 import com.pet001kambala.app.Styles
-import javafx.event.ActionEvent
+import com.pet001kambala.controller.AbstractView
+import com.pet001kambala.controller.charts.ChartsController
+import com.pet001kambala.controller.user.UserTableController
+import com.pet001kambala.controller.vehicle.VehicleTableController
 import javafx.event.EventHandler
 import javafx.scene.control.Label
 import javafx.scene.control.MenuBar
 import javafx.scene.control.MenuItem
 import javafx.scene.input.MouseEvent
-import javafx.scene.paint.Color
 import tornadofx.*
-import javax.swing.Action
 
 
-class MainMenu : AbstractView("") {
+class HomeMenu : View("") {
 
     override val root: MenuBar = menubar {
         addClass(Styles.cmenu)

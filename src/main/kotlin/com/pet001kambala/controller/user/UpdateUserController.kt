@@ -1,4 +1,4 @@
-package com.pet001kambala.controller
+package com.pet001kambala.controller.user
 
 import com.pet001kambala.utils.Results
 import kotlinx.coroutines.GlobalScope
@@ -8,8 +8,6 @@ import tornadofx.*
 class UpdateUserController : NewUserController() {
 
     init {
-        title = "Update user account"
-
         saveUser.apply {
             action {
                 userModel.commit()
@@ -25,5 +23,10 @@ class UpdateUserController : NewUserController() {
                 }
             }
         }
+    }
+
+    override fun onDock() {
+        super.onDock()
+        title = "Update user profile"
     }
 }

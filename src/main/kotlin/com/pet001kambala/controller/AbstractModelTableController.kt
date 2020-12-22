@@ -1,7 +1,6 @@
 package com.pet001kambala.controller
 
 import javafx.collections.ObservableList
-import javafx.scene.control.TableView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tornadofx.*
@@ -25,7 +24,6 @@ abstract class AbstractModelTableController<T>(title: String) : AbstractView(tit
         }
     }
 
-
     fun <J : View> editModel(editScope: ModelEditScope, model: T, tClass: KClass<J>) {
         editScope.viewModel.item = model// the model to be edited
 
@@ -33,7 +31,6 @@ abstract class AbstractModelTableController<T>(title: String) : AbstractView(tit
 
         find(tClass, editScope).openModal()
     }
-
 
     abstract suspend fun loadModels(): ObservableList<T>
 

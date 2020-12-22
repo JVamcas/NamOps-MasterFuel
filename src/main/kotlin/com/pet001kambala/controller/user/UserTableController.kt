@@ -1,9 +1,12 @@
-package com.pet001kambala.controller
+package com.pet001kambala.controller.user
 
+import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.model.User
 import com.pet001kambala.model.UserModel
 import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.utils.Results
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.collections.ObservableList
 import javafx.scene.control.Label
 import javafx.scene.control.TableView
@@ -12,7 +15,6 @@ import javafx.scene.layout.Priority
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tornadofx.*
-import javax.xml.bind.JAXBElement
 
 class UserTableController : AbstractModelTableController<User>("Users") {
 
@@ -21,7 +23,6 @@ class UserTableController : AbstractModelTableController<User>("Users") {
     override val root = scrollpane {
         vbox(5.0) {
             tableView = tableview(modelList) {
-
 
                 smartResize()
                 prefWidthProperty().bind(this@scrollpane.widthProperty())
@@ -81,5 +82,20 @@ class UserTableController : AbstractModelTableController<User>("Users") {
         super.onCreate()
         val scope = ModelEditScope(UserModel())
         editModel(scope, User(), NewUserController::class)
+    }
+    override fun onDock() {
+        super.onDock()
+        with(workspace) {
+            println("Usertable workspace is $workspace")
+            button {
+                addClass("icon-only")
+                graphic = FontAwesomeIconView(FontAwesomeIcon.PENCIL).apply {
+                    style {
+                        fill = c("#818181")
+                    }
+                    glyphSize = 18
+                }
+            }
+        }
     }
 }

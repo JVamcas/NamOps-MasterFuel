@@ -19,7 +19,12 @@ enum class VehicleType(val value: String) {
     SIDE_LOADER("Side Loader"),
     TRUCK("Truck"),
     STACKER("Stacker"),
-    FORKLIFT("ForkLift")
+    FORKLIFT("ForkLift"),
+    GENERATOR_100KVA("Generator - 100KVA"),
+    GENERATOR_150KVA("Generator - 150KVA"),
+    GENERATOR_200KVA("Generator - 200KVA"),
+    GENERATOR_350KVA("Generator - 350KVA"),
+    GENERATOR_400KVA("Generator - 400KVA")
 }
 
 @Entity

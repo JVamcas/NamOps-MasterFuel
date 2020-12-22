@@ -1,5 +1,7 @@
-package com.pet001kambala.controller
+package com.pet001kambala.controller.vehicle
 
+import com.pet001kambala.controller.AbstractModelTableController
+import com.pet001kambala.controller.AbstractView
 import com.pet001kambala.model.Department
 import com.pet001kambala.model.Vehicle
 import com.pet001kambala.model.VehicleModel
@@ -85,6 +87,11 @@ open class NewVehicleController : AbstractView("Vehicle registration") {
             enableWhen { vehicleModel.dirty }
             action { vehicleModel.rollback() }
         }
+    }
+
+    override fun onDock() {
+        super.onDock()
+        title = "New vehicle registration"
     }
 }
 

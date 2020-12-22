@@ -1,4 +1,4 @@
-package com.pet001kambala.controller
+package com.pet001kambala.controller.vehicle
 
 import com.pet001kambala.utils.Results
 import kotlinx.coroutines.GlobalScope
@@ -8,8 +8,6 @@ import tornadofx.action
 class UpdateVehicleController: NewVehicleController() {
 
     init {
-
-        title = "Update vehicle details"
 
         saveVehicle.apply {
             action {
@@ -26,5 +24,10 @@ class UpdateVehicleController: NewVehicleController() {
                 }
             }
         }
+    }
+
+    override fun onDock() {
+        super.onDock()
+        title = "Update vehicle details"
     }
 }

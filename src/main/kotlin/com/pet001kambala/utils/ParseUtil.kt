@@ -20,7 +20,7 @@ class ParseUtil {
         }
 
         fun String?.isValidVehicleNo(): Boolean {
-            val pattern = Pattern.compile("^[HL]\\d{2,}$")
+            val pattern = Pattern.compile("^[HGL]\\d{2,}$")
             return !this.isNullOrEmpty() && pattern.matcher(this).matches()
         }
 

@@ -7,12 +7,17 @@ import com.pet001kambala.utils.Results
 import com.pet001kambala.utils.SessionManager.connection
 import javafx.collections.ObservableList
 import kotlinx.coroutines.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.apache.commons.csv.CSVFormat
 import org.hibernate.Session
 import tornadofx.*
+import java.io.StringReader
 import java.sql.Date
 import java.sql.ResultSet
 import java.sql.Statement
 import java.sql.Timestamp
+import kotlin.math.round
 
 class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
 
@@ -192,7 +197,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         var resultSet: ResultSet? = null
         return try {
             withContext(Dispatchers.Default) {
-                val strQry = "select t.quantity from sale_mast_data_h t  order by t.transdatetime desc limit 1"
+                val strQry = "select t.quantity from sale_mast_data t  order by t.transdatetime desc limit 1"
                 stat = connection!!.createStatement()
                 resultSet = stat!!.executeQuery(strQry)
 
@@ -206,8 +211,31 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
             stat?.close()
         }
     }
+    /***
+     * Find the odometer reading for this vehicle from webfleet
+     * @param vehicleNo for the vehicle in question
+     * @return odometer reading else null
+     */
 
-    suspend fun loadVehicleOdometer(unitNo: String): Int{
+    suspend fun loadVehicleOdometer(vehicleNo: String): Int{
+        val url = "https://csv.telematics.tomtom.com/extern?" +
+                "account=namops&username=Rauna&password=3Mili2,87&" +
+                "apikey=0e7ddb3b-65b0-4991-82a9-1c5c6f312317&lang=en&action=showObjectReportExtern"
+        val client = OkHttpClient.Builder().build()
+        val request = Request.Builder()
+                .url(url)
+                .build()
 
+        return try {
+            withContext(Dispatchers.IO) {
+                val results = client.newCall(request).execute()//wait for the results from webfleet
+                val data = results.body?.string()
+                val csvParser = CSVFormat.newFormat(';').withQuote('"').parse(StringReader(data))
+                val vehicleRecord = csvParser.records.filter { it[0] == vehicleNo }
+                (round(vehicleRecord.first()[30].toDouble()/10.0)).toInt()// vehicle odometer reading
+            }
+        } catch (e: java.lang.Exception) {
+            0
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.pet001kambala.controller
 
 import com.pet001kambala.utils.Results
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.application.Platform
 import javafx.beans.property.Property
 import javafx.scene.control.Alert
@@ -8,7 +10,6 @@ import javafx.scene.control.ComboBox
 import tornadofx.*
 
 abstract class AbstractView(private val viewTitle: String) : View(viewTitle) {
-
 
     fun UIComponent.closeView() {
         Platform.runLater {

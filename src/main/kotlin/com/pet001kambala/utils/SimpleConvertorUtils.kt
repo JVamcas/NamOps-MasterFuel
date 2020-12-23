@@ -3,8 +3,11 @@ package com.pet001kambala.utils
 import com.pet001kambala.model.User
 import com.pet001kambala.model.Vehicle
 import javafx.beans.property.*
+import javafx.util.StringConverter
 import java.sql.Date
 import java.sql.Timestamp
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.persistence.AttributeConverter
 
 class SimpleStringConvertor : AttributeConverter<SimpleStringProperty, String> {
@@ -26,6 +29,7 @@ class SimpleFloatConvertor : AttributeConverter<SimpleFloatProperty, Float> {
         return SimpleFloatProperty(p0)
     }
 }
+
 class SimpleBooleanConvertor : AttributeConverter<SimpleBooleanProperty, Boolean> {
     override fun convertToDatabaseColumn(p0: SimpleBooleanProperty): Boolean {
         return p0.value
@@ -73,5 +77,17 @@ class SimpleDateConvertor : AttributeConverter<SimpleObjectProperty<Timestamp>, 
 
     override fun convertToEntityAttribute(p0: Timestamp): SimpleObjectProperty<Timestamp> {
         return SimpleObjectProperty(p0)
+    }
+}
+
+class DatePickerConvertor : StringConverter<LocalDate>() {
+    private val pattern = "yyyy-MM-dd"
+    private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(pattern)
+    override fun toString(date: LocalDate?): String {
+        return dateFormatter.format(date)
+    }
+
+    override fun fromString(string: String?): LocalDate? {
+        return if (string.isNullOrEmpty()) null else LocalDate.parse(string, dateFormatter)
     }
 }

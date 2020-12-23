@@ -7,7 +7,9 @@ import com.pet001kambala.model.*
 import com.pet001kambala.repo.FuelTransactionRepo
 import com.pet001kambala.utils.ParseUtil.Companion.filterDispense
 import com.pet001kambala.utils.ParseUtil.Companion.filterRefill
+import com.pet001kambala.utils.ParseUtil.Companion.toFuelTransactionList
 import com.pet001kambala.utils.Results
+import com.pet001kambala.utils.Results.Success
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.collections.ObservableList
@@ -16,6 +18,8 @@ import javafx.scene.control.ScrollPane
 import javafx.scene.control.TableView
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Priority
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import tornadofx.*
 
 class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Transactions") {
@@ -89,7 +93,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                                 }
 
                                 titledpane("Search fuel transactions") {
-                                    vbox{
+                                    vbox {
                                         form {
                                             fieldset {
                                                 field("Waybill number") {
@@ -121,24 +125,33 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                                             fieldset {
                                                 field("From") {
                                                     tooltip("Start date.")
-                                                    datepicker {
+                                                    datepicker(transactionSearchModel.fromDate) {
                                                         prefWidth = 150.0
                                                         minWidth = prefWidth
-                                                        bind(transactionSearchModel.fromDate)
                                                     }
                                                 }
                                                 field("To") {
                                                     tooltip("End date.")
-                                                    datepicker {
+                                                    datepicker(transactionSearchModel.toDate) {
                                                         prefWidth = 150.0
                                                         minWidth = prefWidth
-                                                        bind(transactionSearchModel.toDate)
+
                                                     }
                                                 }
                                             }
-                                            hbox {
+                                            hbox( 10.0) {
                                                 region {
                                                     hgrow = Priority.ALWAYS
+                                                }
+                                                button("Undo") {
+                                                    graphic = FontAwesomeIconView(FontAwesomeIcon.UNDO).apply {
+                                                        style {
+                                                            fill = c("#056B91")
+                                                        }
+                                                    }
+                                                    action {
+                                                        transactionSearchModel.rollback()
+                                                    }
                                                 }
                                                 button("Search") {
                                                     graphic = FontAwesomeIconView(FontAwesomeIcon.SEARCH).apply {
@@ -148,7 +161,18 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                                                     }
                                                     enableWhen { transactionSearchModel.valid }
                                                     action {
+                                                        transactionSearchModel.commit()
+                                                        GlobalScope.launch {
+                                                            println("from ${transactionSearchModel.fromDate}")
+                                                            println("to ${transactionSearchModel.toDate}")
+                                                            val loadResults = transactionRepo.loadFilteredModel(transactionSearchModel.item)
 
+                                                            if (loadResults is Results.Success<*>) {
+                                                                modelList.asyncItems {
+                                                                    (loadResults.data as List<FuelTransaction>)
+                                                                }
+                                                            } else parseResults(loadResults)
+                                                        }
                                                     }
                                                 }
                                             }

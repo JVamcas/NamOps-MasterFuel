@@ -1,15 +1,17 @@
 package com.pet001kambala.model
 
 import com.pet001kambala.utils.SimpleDateConvertor
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
+import java.time.LocalDate
 import javax.persistence.Convert
 
 class FuelTransactionSearch {
 
     val waybillNoProperty = SimpleStringProperty()
-    val toDateProperty = SimpleStringProperty()
-    val fromDateProperty = SimpleStringProperty()
+    val toDateProperty = SimpleObjectProperty<LocalDate>()
+    val fromDateProperty = SimpleObjectProperty<LocalDate>()
     val driverProperty = SimpleStringProperty()
     val vehicleProperty = SimpleStringProperty()
 

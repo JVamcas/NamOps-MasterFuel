@@ -1,6 +1,7 @@
 package com.pet001kambala.repo
 
 import com.pet001kambala.model.FuelTransaction
+import com.pet001kambala.model.FuelTransactionSearch
 import com.pet001kambala.model.FuelTransactionType
 import com.pet001kambala.model.Vehicle
 import com.pet001kambala.utils.DateUtil
@@ -237,17 +238,54 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
     }
 
     suspend fun loadVehicleDispenseHistory(vehicle: Vehicle): Results {
-        var session: Session?
+        var session: Session? = null
         return try {
             withContext(Dispatchers.Default) {
                 session = sessionFactory!!.openSession()
                 val data = session!!.createQuery("from FuelTransaction where vehicle= :vehicle", FuelTransaction::class.java)
-                        .setParameter("vehicle",vehicle)
+                        .setParameter("vehicle", vehicle)
                         .resultList.filterNotNull().asObservable()
                 Results.Success(data = data, Results.Success.CODE.LOAD_SUCCESS)
             }
         } catch (e: Exception) {
             Results.Error(e)
+        } finally {
+            session?.close()
+        }
+    }
+
+    suspend fun loadFilteredModel(search: FuelTransactionSearch): Results {
+        var session: Session? = null
+
+        val mainBuilder = StringBuilder("SELECT t.* FROM fueltransactions t, vehicles v, users u WHERE v.id=t.vehicleId AND t.driverId=u.id")
+
+        if (!search.waybillNoProperty.get().isNullOrEmpty())
+            mainBuilder.append(" AND t.waybillNo = ${search.waybillNoProperty.get()}")
+
+        if (!search.vehicleProperty.get().isNullOrEmpty())
+            mainBuilder.append(" AND v.unit_number = \'${search.vehicleProperty.get()}\'")
+
+        if (!search.driverProperty.get().isNullOrEmpty())
+            mainBuilder.append(" AND  u.lastName LIKE \'${search.driverProperty.get()}\'")
+
+        val fromDate = search.fromDateProperty.get().toString()
+        val toDate = search.toDateProperty.get().toString()
+
+        if (fromDate.isNotEmpty() && toDate.isNotEmpty())
+            mainBuilder.append(" AND t.transactionDate BETWEEN \'$fromDate\' AND \'$toDate\'")
+
+        return try {
+            withContext(Dispatchers.Default) {
+                session = sessionFactory!!.openSession()
+                val data = session!!.createNativeQuery(mainBuilder.toString(), FuelTransaction::class.java)
+                        .resultList.filterNotNull()
+                Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Results.Error(e)
+        } finally {
+            session?.close()
         }
     }
 }

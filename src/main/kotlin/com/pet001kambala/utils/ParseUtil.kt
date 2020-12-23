@@ -1,6 +1,8 @@
 package com.pet001kambala.utils
 
 
+import com.pet001kambala.model.FuelTransaction
+import com.pet001kambala.model.FuelTransactionType
 import javafx.scene.control.TextField
 import tornadofx.*
 import java.lang.Double.parseDouble
@@ -39,5 +41,21 @@ class ParseUtil {
                             false
                         }
 
+        fun SortedFilteredList<FuelTransaction>.filterRefill(isSelected: Boolean){
+            this.predicate = {
+                if (isSelected)
+                    it.transactionTypeProperty.get() == FuelTransactionType.REFILL.value
+                else
+                    true
+            }
+        }
+        fun SortedFilteredList<FuelTransaction>.filterDispense(isSelected: Boolean){
+            this.predicate = {
+                if (isSelected)
+                    it.transactionTypeProperty.get() == FuelTransactionType.DISPENSE.value
+                else
+                    true
+            }
+        }
     }
 }

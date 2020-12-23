@@ -13,7 +13,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tornadofx.*
 
-open class NewUserController : AbstractView("User registration") {
+open class NewUserController : AbstractView("") {
 
     private val tableScope = super.scope as AbstractModelTableController<User>.ModelEditScope
     val userModel = tableScope.viewModel as UserModel
@@ -96,6 +96,6 @@ open class NewUserController : AbstractView("User registration") {
 
     override fun onDock() {
         super.onDock()
-        title = "New user registration"
+        title = "User registration"
     }
 }

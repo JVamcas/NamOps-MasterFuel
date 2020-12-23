@@ -16,6 +16,7 @@ import tornadofx.*
 
 class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles") {
 
+
     private val vehicleRepo = VehicleRepo()
     private lateinit var tableView: TableView<Vehicle>
 
@@ -38,7 +39,7 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles")
                 onUserSelect {
                     val scope = ModelEditScope(VehicleModel())
                     scope.viewModel.item = it
-                    workspace.dock<VehicleHomeController>(scope, mapOf("workspace" to workspace))
+                    workspace.dock<VehicleHomeController>(scope)
                 }
 
                 placeholder = Label("No vehicles here yet.")

@@ -3,32 +3,38 @@ package com.pet001kambala.controller.home
 import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.controller.fueltransactions.FuelTopUpController
 import com.pet001kambala.controller.fueltransactions.FuelUsageController
-import com.pet001kambala.model.FuelTransaction
-import com.pet001kambala.model.FuelTransactionModel
-import com.pet001kambala.model.FuelTransactionType
+import com.pet001kambala.model.*
 import com.pet001kambala.repo.FuelTransactionRepo
+import com.pet001kambala.utils.ParseUtil.Companion.filterDispense
+import com.pet001kambala.utils.ParseUtil.Companion.filterRefill
 import com.pet001kambala.utils.Results
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.collections.ObservableList
 import javafx.event.ActionEvent
 import javafx.scene.control.ScrollPane
 import javafx.scene.control.TableView
 import javafx.scene.layout.BorderPane
+import javafx.scene.layout.Priority
 import tornadofx.*
 
-class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Usage") {
+class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Transactions") {
 
     override val root: BorderPane by fxml("/view/HomeView.fxml")
     private val table: TableView<FuelTransaction> by fxid("fuelTransactionTable")
     private val scrollPane: ScrollPane by fxid("tableViewScrollPane")
 
     private val transactionRepo = FuelTransactionRepo()
-   companion object{
-       lateinit var homeWorkspace: Workspace
-   }
+    private val transactionSearchModel = TransactionSearch(FuelTransactionSearch())
+
+
+    companion object {
+        lateinit var homeWorkspace: Workspace
+    }
 
     init {
         homeWorkspace = workspace
-
+        println("homecontroller workspace is $workspace")
         disableDelete()
         disableSave()
         disableCreate()
@@ -60,31 +66,92 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Usage
         }
 
         root.apply {
-            vbox {
+            vbox(10.0) {
                 left {
                     squeezebox {
-                        fold("Filters", expanded = true) {
-                            tooltip("Filter data.")
-                            hbox(10.0) {
-                                checkbox("Re-fill") {
-                                    tooltip("Filter out fuel re-fills.")
-                                    action {
-                                        modelList.predicate = {
-                                            if (isSelected)
-                                                it.transactionTypeProperty.get() == FuelTransactionType.REFILL.value
-                                            else
-                                                true
+                        fold("Data processing") {
+                            vbox(10.0) {
+                                titledpane("Filters") {
+                                    hbox(10.0) {
+                                        checkbox("Re-fill") {
+                                            tooltip("Filter out fuel re-fills.")
+                                            action {
+                                                modelList.filterRefill(isSelected)
+                                            }
+                                        }
+                                        checkbox("Dispense") {
+                                            tooltip("Filter out fuel dispenses.")
+                                            action {
+                                                modelList.filterDispense(isSelected)
+                                            }
                                         }
                                     }
                                 }
-                                checkbox("Dispense") {
-                                    tooltip("Filter out fuel dispenses.")
-                                    action {
-                                        modelList.predicate = {
-                                            if (isSelected)
-                                                it.transactionTypeProperty.get() == FuelTransactionType.DISPENSE.value
-                                            else
-                                                true
+
+                                titledpane("Search fuel transactions") {
+                                    vbox{
+                                        form {
+                                            fieldset {
+                                                field("Waybill number") {
+                                                    textfield {
+                                                        prefWidth = 150.0
+                                                        minWidth = prefWidth
+                                                        promptText = "Waybill number"
+                                                        bind(transactionSearchModel.waybill)
+                                                    }
+                                                }
+                                                field("Vehicle number") {
+                                                    textfield {
+                                                        prefWidth = 150.0
+                                                        minWidth = prefWidth
+                                                        promptText = "Vehicle number e.g. H01"
+                                                        bind(transactionSearchModel.vehicle)
+                                                    }
+                                                }
+                                                field("Driver name") {
+                                                    textfield {
+
+                                                        prefWidth = 150.0
+                                                        minWidth = prefWidth
+                                                        promptText = "Driver name"
+                                                        bind(transactionSearchModel.driver)
+                                                    }
+                                                }
+                                            }
+                                            fieldset {
+                                                field("From") {
+                                                    tooltip("Start date.")
+                                                    datepicker {
+                                                        prefWidth = 150.0
+                                                        minWidth = prefWidth
+                                                        bind(transactionSearchModel.fromDate)
+                                                    }
+                                                }
+                                                field("To") {
+                                                    tooltip("End date.")
+                                                    datepicker {
+                                                        prefWidth = 150.0
+                                                        minWidth = prefWidth
+                                                        bind(transactionSearchModel.toDate)
+                                                    }
+                                                }
+                                            }
+                                            hbox {
+                                                region {
+                                                    hgrow = Priority.ALWAYS
+                                                }
+                                                button("Search") {
+                                                    graphic = FontAwesomeIconView(FontAwesomeIcon.SEARCH).apply {
+                                                        style {
+                                                            fill = c("#056B91")
+                                                        }
+                                                    }
+                                                    enableWhen { transactionSearchModel.valid }
+                                                    action {
+
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -112,10 +179,5 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Usage
         if (loadResults is Results.Success<*>)
             return loadResults.data as ObservableList<FuelTransaction>
         return observableListOf()
-    }
-
-    override fun onDock() {
-        super.onDock()
-        println("HomeController workspace is $workspace")
     }
 }

@@ -26,11 +26,6 @@
     </center>
     <bottom>
         <HBox spacing="10.0" style="-fx-background-color: #2E4053;">
-         <TextField prefHeight="25.0" prefWidth="204.0" promptText="Search by Waybill number. Ctrl+S" style="-fx-background-radius: 20;">
-            <HBox.margin>
-               <Insets left="10.0" />
-            </HBox.margin>
-         </TextField>
             <Region HBox.hgrow="ALWAYS" />
             <Button fx:id="storageRefill" onAction="#toStorageRefill" style="-fx-background-color: #0E6251; -fx-background-radius: 10;" text="Fill storage" textFill="WHITE">
                 <font>

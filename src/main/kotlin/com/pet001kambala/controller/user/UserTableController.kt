@@ -83,19 +83,4 @@ class UserTableController : AbstractModelTableController<User>("Users") {
         val scope = ModelEditScope(UserModel())
         editModel(scope, User(), NewUserController::class)
     }
-    override fun onDock() {
-        super.onDock()
-        with(workspace) {
-            println("Usertable workspace is $workspace")
-            button {
-                addClass("icon-only")
-                graphic = FontAwesomeIconView(FontAwesomeIcon.PENCIL).apply {
-                    style {
-                        fill = c("#818181")
-                    }
-                    glyphSize = 18
-                }
-            }
-        }
-    }
 }

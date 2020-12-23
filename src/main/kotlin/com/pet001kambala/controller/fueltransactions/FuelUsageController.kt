@@ -127,9 +127,4 @@ class FuelUsageController : AbstractView("Dispense fuel" ) {
         }
         transactionModel.validate(decorateErrors = false)
     }
-
-    override fun onDock() {
-        super.onDock()
-        heading = "Dispense fuel"
-    }
 }

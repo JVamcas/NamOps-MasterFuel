@@ -17,6 +17,7 @@ abstract class AbstractView(private val viewTitle: String) : View(viewTitle) {
         }
     }
 
+
     fun showError(header: String, msg: String) {
         Platform.runLater {
             Alert(Alert.AlertType.ERROR).apply {
@@ -65,7 +66,8 @@ abstract class AbstractView(private val viewTitle: String) : View(viewTitle) {
 
     override fun onDock() {
         super.onDock()
-        title = "NamOps Logistics Pty Ltd FuelMaster"
+        title = "NamOps FuelMaster"
         heading = viewTitle
+        println("header is ${heading}")
     }
 }

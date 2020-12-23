@@ -2,6 +2,7 @@ package com.pet001kambala.repo
 
 import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.model.FuelTransactionType
+import com.pet001kambala.model.Vehicle
 import com.pet001kambala.utils.DateUtil
 import com.pet001kambala.utils.Results
 import com.pet001kambala.utils.SessionManager.connection
@@ -174,11 +175,6 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
             val thisYearFirstDate = DateUtil.thisYearFirstDate()
             val thisYearEndDate = DateUtil.thisYearEndDate()
 
-            println(lastYearFirstDate)
-            println(thisYearFirstDate)
-            println(thisYearEndDate)
-
-
             val results = coroutineScope {
                 val deferredOps = listOf(
                         async { loadMonthlyFuelUsage(startDate = lastYearFirstDate, endDate = thisYearFirstDate) },
@@ -211,13 +207,14 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
             stat?.close()
         }
     }
+
     /***
      * Find the odometer reading for this vehicle from webfleet
      * @param vehicleNo for the vehicle in question
      * @return odometer reading else null
      */
 
-    suspend fun loadVehicleOdometer(vehicleNo: String): Int{
+    suspend fun loadVehicleOdometer(vehicleNo: String): Int {
         val url = "https://csv.telematics.tomtom.com/extern?" +
                 "account=namops&username=Rauna&password=3Mili2,87&" +
                 "apikey=0e7ddb3b-65b0-4991-82a9-1c5c6f312317&lang=en&action=showObjectReportExtern"
@@ -232,10 +229,25 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
                 val data = results.body?.string()
                 val csvParser = CSVFormat.newFormat(';').withQuote('"').parse(StringReader(data))
                 val vehicleRecord = csvParser.records.filter { it[0] == vehicleNo }
-                (round(vehicleRecord.first()[30].toDouble()/10.0)).toInt()// vehicle odometer reading
+                (round(vehicleRecord.first()[30].toDouble() / 10.0)).toInt()// vehicle odometer reading
             }
         } catch (e: java.lang.Exception) {
             0
+        }
+    }
+
+    suspend fun loadVehicleDispenseHistory(vehicle: Vehicle): Results {
+        var session: Session?
+        return try {
+            withContext(Dispatchers.Default) {
+                session = sessionFactory!!.openSession()
+                val data = session!!.createQuery("from FuelTransaction where vehicle= :vehicle", FuelTransaction::class.java)
+                        .setParameter("vehicle",vehicle)
+                        .resultList.filterNotNull().asObservable()
+                Results.Success(data = data, Results.Success.CODE.LOAD_SUCCESS)
+            }
+        } catch (e: Exception) {
+            Results.Error(e)
         }
     }
 }

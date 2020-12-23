@@ -91,7 +91,7 @@ open class NewVehicleController : AbstractView("Vehicle registration") {
 
     override fun onDock() {
         super.onDock()
-        title = "New vehicle registration"
+        title = "Vehicle registration"
     }
 }
 

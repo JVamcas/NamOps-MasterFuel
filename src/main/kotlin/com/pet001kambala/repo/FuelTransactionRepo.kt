@@ -257,7 +257,9 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
     suspend fun loadFilteredModel(search: FuelTransactionSearch): Results {
         var session: Session? = null
 
-        val mainBuilder = StringBuilder("SELECT t.* FROM fueltransactions t, vehicles v, users u WHERE v.id=t.vehicleId AND t.driverId=u.id")
+        val mainBuilder = StringBuilder("SELECT DISTINCTROW t.* FROM fueltransactions t, vehicles v, users u " +
+                "WHERE t.attendantId=u.id " +
+                "AND (v.id=t.vehicleId OR t.driverId IS NULL)")
 
         if (!search.waybillNoProperty.get().isNullOrEmpty())
             mainBuilder.append(" AND t.waybillNo = ${search.waybillNoProperty.get()}")
@@ -268,14 +270,16 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         if (!search.driverProperty.get().isNullOrEmpty())
             mainBuilder.append(" AND  u.lastName LIKE \'${search.driverProperty.get()}\'")
 
-        val fromDate = search.fromDateProperty.get().toString()
-        val toDate = search.toDateProperty.get().toString()
+        val fromDate = search.fromDateProperty.get()?.toString()
+        val toDate = search.toDateProperty.get()?.toString()
 
-        if (fromDate.isNotEmpty() && toDate.isNotEmpty())
+        if (!fromDate.isNullOrEmpty() && !toDate.isNullOrEmpty())
             mainBuilder.append(" AND t.transactionDate BETWEEN \'$fromDate\' AND \'$toDate\'")
 
         return try {
             withContext(Dispatchers.Default) {
+                val string  = "hello"
+                val strQry = session!!.createQuery("FROM FuelTransaction  t WHERE t.driver.lastNameProperty LIKE :lastName", FuelTransaction::class.java)
                 session = sessionFactory!!.openSession()
                 val data = session!!.createNativeQuery(mainBuilder.toString(), FuelTransaction::class.java)
                         .resultList.filterNotNull()

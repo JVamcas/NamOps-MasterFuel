@@ -39,21 +39,13 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles")
                 onUserSelect {
                     val scope = ModelEditScope(VehicleModel())
                     scope.viewModel.item = it
-                    workspace.dock<VehicleHomeController>(scope)
+                    editModel(scope,it, UpdateVehicleController::class)
                 }
 
                 placeholder = Label("No vehicles here yet.")
 
                 columnResizePolicy = TableView.CONSTRAINED_RESIZE_POLICY
                 vgrow = Priority.ALWAYS
-            }
-            hbox(8.0) {
-                textfield {
-                    promptText = "Search user by unit number. Ctrl+S"
-                }
-                region {
-                    hgrow = Priority.ALWAYS
-                }
             }
         }
     }

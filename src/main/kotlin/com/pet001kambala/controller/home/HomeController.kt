@@ -7,6 +7,8 @@ import com.pet001kambala.model.*
 import com.pet001kambala.repo.FuelTransactionRepo
 import com.pet001kambala.utils.ParseUtil.Companion.filterDispense
 import com.pet001kambala.utils.ParseUtil.Companion.filterRefill
+import com.pet001kambala.utils.ParseUtil.Companion.isValidVehicleNo
+import com.pet001kambala.utils.ParseUtil.Companion.numberValidation
 import com.pet001kambala.utils.ParseUtil.Companion.toFuelTransactionList
 import com.pet001kambala.utils.Results
 import com.pet001kambala.utils.Results.Success
@@ -60,13 +62,19 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             column("Attendant Name", FuelTransaction::attendant).contentWidth(padding = 20.0, useAsMin = true)
             column("Driver Name", FuelTransaction::driver).contentWidth(padding = 20.0, useAsMin = true)
             column("Odometer (KM)", FuelTransaction::odometerProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Distance travelled since last refill (KM)", FuelTransaction::distanceTravelledProperty).contentWidth(padding = 20.0, useAsMin = true)
+            column(
+                "Distance travelled since last refill (KM)",
+                FuelTransaction::distanceTravelledProperty
+            ).contentWidth(padding = 20.0, useAsMin = true)
             column("Opening balance (L)", FuelTransaction::openingBalanceProperty).contentWidth(
-                    padding = 20.0,
-                    useAsMin = true
+                padding = 20.0,
+                useAsMin = true
             )
             column("Quantity (L)", FuelTransaction::quantityProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Available (L)", FuelTransaction::currentBalanceProperty).contentWidth(padding = 20.0, useAsMin = true).remainingWidth()
+            column("Available (L)", FuelTransaction::currentBalanceProperty).contentWidth(
+                padding = 20.0,
+                useAsMin = true
+            ).remainingWidth()
         }
 
         root.apply {
@@ -112,12 +120,11 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                                                         bind(transactionSearchModel.vehicle)
                                                     }
                                                 }
-                                                field("Driver name") {
+                                                field("Driver surname") {
                                                     textfield {
-
                                                         prefWidth = 150.0
                                                         minWidth = prefWidth
-                                                        promptText = "Driver name"
+                                                        promptText = "Driver surname"
                                                         bind(transactionSearchModel.driver)
                                                     }
                                                 }
@@ -139,19 +146,9 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                                                     }
                                                 }
                                             }
-                                            hbox( 10.0) {
+                                            hbox(10.0) {
                                                 region {
                                                     hgrow = Priority.ALWAYS
-                                                }
-                                                button("Undo") {
-                                                    graphic = FontAwesomeIconView(FontAwesomeIcon.UNDO).apply {
-                                                        style {
-                                                            fill = c("#056B91")
-                                                        }
-                                                    }
-                                                    action {
-                                                        transactionSearchModel.rollback()
-                                                    }
                                                 }
                                                 button("Search") {
                                                     graphic = FontAwesomeIconView(FontAwesomeIcon.SEARCH).apply {
@@ -163,9 +160,8 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                                                     action {
                                                         transactionSearchModel.commit()
                                                         GlobalScope.launch {
-                                                            println("from ${transactionSearchModel.fromDate}")
-                                                            println("to ${transactionSearchModel.toDate}")
-                                                            val loadResults = transactionRepo.loadFilteredModel(transactionSearchModel.item)
+                                                            val loadResults =
+                                                                transactionRepo.loadFilteredModel(transactionSearchModel.item)
 
                                                             if (loadResults is Results.Success<*>) {
                                                                 modelList.asyncItems {

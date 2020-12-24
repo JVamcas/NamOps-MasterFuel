@@ -95,4 +95,9 @@ open class FuelTopUpController(
         }
         transactionModel.validate(decorateErrors = false)
     }
+
+    override fun onDock() {
+        super.onDock()
+        title = "Top up storage tank"
+    }
 }

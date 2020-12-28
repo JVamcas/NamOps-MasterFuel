@@ -19,19 +19,19 @@ enum class FuelTransactionType(val value: String) {
 @Table(name = "FuelTransactions")
 class FuelTransaction(
 
-        date: Timestamp? = null,
-        attendant: User? = null,
-        openingBalance: Float = 0f,
-        quantity: Float = 0f,
-        currentBalance: Float = 0f,
-        vehicle: Vehicle? = null,
-        driverName: User? = null,
-        transactionType: FuelTransactionType = FuelTransactionType.DISPENSE,
-        odometer: Int = 0,
-        distanceTravelled: Int = 0,
-        waybillNo: String? = null,
+    date: Timestamp? = null,
+    attendant: User? = null,
+    openingBalance: Float = 0f,
+    quantity: Float = 0f,
+    currentBalance: Float = 0f,
+    vehicle: Vehicle? = null,
+    driverName: User? = null,
+    transactionType: FuelTransactionType = FuelTransactionType.DISPENSE,
+    odometer: Int = 0,
+    distanceTravelled: Int = 0,
+    waybillNo: String? = null,
 
-        ) {
+    ) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -106,6 +106,19 @@ class FuelTransaction(
     @Convert(converter = SimpleIntegerConvertor::class)
     val distanceTravelledProperty = SimpleIntegerProperty(distanceTravelled)
 
+    fun data() = arrayListOf(
+        Pair("Date", dateProperty.get()),
+        Pair("Waybill Number", waybillNoProperty.get()),
+        Pair("Type", transactionTypeProperty.get()),
+        Pair("Vehicle", vehicle ?: "N/A"),
+        Pair("Attendant Name", attendant ?: "N/A"),
+        Pair("Driver Name", driver ?: "N/A"),
+        Pair("Odometer (KM)", odometerProperty.get()),
+        Pair("Distance travelled since last re-fill", distanceTravelledProperty.get()),
+        Pair("Opening balance(L)", openingBalanceProperty.get()),
+        Pair("Quantity dispensed (L)", quantityProperty.get()),
+        Pair("Closing balance(L)", currentBalanceProperty.get())
+    )
 }
 
 class FuelTransactionModel : ItemViewModel<FuelTransaction>() {

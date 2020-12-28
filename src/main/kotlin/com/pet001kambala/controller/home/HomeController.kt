@@ -5,10 +5,12 @@ import com.pet001kambala.controller.fueltransactions.FuelTopUpController
 import com.pet001kambala.controller.fueltransactions.FuelUsageController
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.FuelTransactionRepo
+import com.pet001kambala.utils.DateUtil
 import com.pet001kambala.utils.ParseUtil.Companion.filterDispense
 import com.pet001kambala.utils.ParseUtil.Companion.filterRefill
 import com.pet001kambala.utils.ParseUtil.Companion.isValidVehicleNo
 import com.pet001kambala.utils.ParseUtil.Companion.numberValidation
+import com.pet001kambala.utils.ParseUtil.Companion.toExcelSpreedSheet
 import com.pet001kambala.utils.ParseUtil.Companion.toFuelTransactionList
 import com.pet001kambala.utils.Results
 import com.pet001kambala.utils.Results.Success
@@ -23,6 +25,10 @@ import javafx.scene.layout.Priority
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tornadofx.*
+import javafx.stage.FileChooser
+import jxl.Workbook
+import java.io.File
+
 
 class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Transactions") {
 
@@ -70,11 +76,11 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                 padding = 20.0,
                 useAsMin = true
             )
-            column("Quantity (L)", FuelTransaction::quantityProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Available (L)", FuelTransaction::currentBalanceProperty).contentWidth(
+            column("Quantity dispensed (L)", FuelTransaction::quantityProperty).contentWidth(padding = 20.0, useAsMin = true)
+            column("Closing balance (L)", FuelTransaction::currentBalanceProperty).contentWidth(
                 padding = 20.0,
                 useAsMin = true
-            ).remainingWidth()
+            )
         }
 
         root.apply {
@@ -192,6 +198,39 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
         val scope = ModelEditScope(FuelTransactionModel())
         editModel(scope, FuelTransaction(), FuelUsageController::class)
+    }
+
+    override fun onDock() {
+
+        super.onDock()
+        workspace.apply {
+            button {
+                addClass("icon-only")
+                graphic = FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD).apply {
+                    style {
+                        fill = c("#818181")
+                    }
+                    glyphSize = 18
+                }
+                action {
+                    val fileChooser = FileChooser()
+                    fileChooser.title = "Save As"
+                    fileChooser.extensionFilters.addAll(
+                        FileChooser.ExtensionFilter("Excel Workbook", "*.xls")
+                    )
+                    val selectedFile: File? = fileChooser.showSaveDialog(null)
+                    selectedFile?.let{
+                        GlobalScope.launch {
+                            toExcelSpreedSheet(
+                                wkb = Workbook.createWorkbook(it),
+                                sheetList = arrayListOf(modelList),
+                                sheetNameList = arrayListOf("Fuel Usage")
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override suspend fun loadModels(): ObservableList<FuelTransaction> {

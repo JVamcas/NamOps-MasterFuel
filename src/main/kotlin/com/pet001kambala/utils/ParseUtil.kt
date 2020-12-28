@@ -5,6 +5,11 @@ import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.model.FuelTransactionType
 import javafx.collections.ObservableList
 import javafx.scene.control.TextField
+import jxl.write.Label
+import jxl.write.Number
+import jxl.write.WritableWorkbook
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import tornadofx.*
 import java.lang.Double.parseDouble
 import java.lang.Exception
@@ -30,19 +35,22 @@ class ParseUtil {
         }
 
         fun TextField.numberValidation(msg: String) =
-                validator(ValidationTrigger.OnChange()) {
-                    if (it.isNumber())
-                        null else error(msg)
-                }
+            validator(ValidationTrigger.OnChange()) {
+                if (it.isNumber())
+                    null else error(msg)
+            }
 
-        fun String?.isNumber() =
-                !this.isNullOrEmpty() &&
-                        try {
-                            parseDouble(this)
-                            true
-                        } catch (e: Exception) {
-                            false
-                        }
+        fun Any?.isNumber(): Boolean {
+            val value = this.toString()
+            return value != "null" &&
+                    try {
+                        parseDouble(value)
+                        true
+                    } catch (e: Exception) {
+                        false
+                    }
+        }
+
 
         fun SortedFilteredList<FuelTransaction>.filterRefill(isSelected: Boolean) {
             this.predicate = {
@@ -66,11 +74,55 @@ class ParseUtil {
             return this.map {
                 val entry = it as Array<*>
                 FuelTransaction(
-                        currentBalance =  entry[0] as Float,
-                        date = entry[1] as Timestamp,
-                        distanceTravelled = entry[2].toString().toInt()
+                    currentBalance = entry[0] as Float,
+                    date = entry[1] as Timestamp,
+                    distanceTravelled = entry[2].toString().toInt()
                 )
             }.asObservable()
+        }
+
+        /***
+         * Export fuel transaction records to  excel for further processing
+         */
+
+        suspend fun toExcelSpreedSheet(
+            wkb: WritableWorkbook,
+            sheetList: ArrayList<List<FuelTransaction>>,
+            sheetNameList: ArrayList<String>
+        ): Results {
+            return try {
+                withContext(Dispatchers.Default) {
+                    sheetList.withIndex().forEach {
+                        val sheetData = it.value //
+                        if (sheetData.isNotEmpty()) {
+                            wkb.createSheet(sheetNameList[it.index], it.index).apply {
+                                var colIndex = 0
+                                var rowIndex = 0
+                                val colHeaders = sheetData[0].data().map { it.first }
+                                colHeaders.forEach { addCell(Label(colIndex++, rowIndex, it)) }
+
+                                sheetData.forEach { model ->
+                                    rowIndex++
+                                    colIndex = 0
+                                    model.data().forEach {
+                                        if (it.second.isNumber())
+                                            addCell(Number(colIndex++, rowIndex, it.second.toString().toDouble()))
+                                        else
+                                            addCell(Label(colIndex++, rowIndex, it.second.toString()))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    wkb.write()
+                    Results.Success<FuelTransaction>(code = Results.Success.CODE.WRITE_SUCCESS)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Results.Error(e)
+            } finally {
+                wkb.close()
+            }
         }
     }
 }

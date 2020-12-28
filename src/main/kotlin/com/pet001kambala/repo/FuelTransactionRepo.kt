@@ -8,6 +8,8 @@ import com.pet001kambala.utils.DateUtil
 import com.pet001kambala.utils.Results
 import com.pet001kambala.utils.SessionManager.connection
 import javafx.collections.ObservableList
+import jxl.write.Label
+import jxl.write.WritableWorkbook
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -19,6 +21,7 @@ import java.sql.Date
 import java.sql.ResultSet
 import java.sql.Statement
 import java.sql.Timestamp
+import java.util.ArrayList
 import kotlin.math.round
 
 class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
@@ -254,6 +257,11 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         }
     }
 
+    /***
+     * Filters fueltransaction records based on multiple filters
+     * @param search the wrapper for the filters to be performed
+     * @return Results containing filtered data else error message
+     */
     suspend fun loadFilteredModel(search: FuelTransactionSearch): Results {
         var session: Session? = null
 

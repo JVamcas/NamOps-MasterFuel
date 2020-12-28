@@ -57,6 +57,5 @@ class DateUtil {
         fun thisYear() = Calendar.getInstance().get(Calendar.YEAR).toString()
 
         fun lastYear() = (Calendar.getInstance().get(Calendar.YEAR) - 1).toString()
-
     }
 }

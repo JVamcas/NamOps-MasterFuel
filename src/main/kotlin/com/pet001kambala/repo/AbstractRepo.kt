@@ -21,7 +21,6 @@ abstract class AbstractRepo<T> {
                 Results.Success<T>(code = Results.Success.CODE.WRITE_SUCCESS)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             session?.transaction?.rollback()
             Results.Error(e)
         }
@@ -41,7 +40,6 @@ abstract class AbstractRepo<T> {
                 Results.Success<T>(code = Results.Success.CODE.WRITE_SUCCESS)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             session?.transaction?.rollback()
             Results.Error(e)
         }
@@ -49,23 +47,4 @@ abstract class AbstractRepo<T> {
             session?.close()
         }
     }
-//    open suspend fun deleteModel(model: T): Results{
-//        var session: Session? = null
-//        return try {
-//            withContext(Dispatchers.Default){
-//                session = sessionFactory!!.currentSession
-//                val transaction = session!!.beginTransaction()
-//                session!!.delete(model)
-//                transaction.commit()
-//                Results.Success<T>(code = Results.Success.CODE.DELETE_SUCCESS)
-//            }
-//        }
-//        catch (e: Exception){
-//            e.printStackTrace()
-//            Results.Error(e)
-//        }
-//        finally {
-//            session?.close()
-//        }
-//    }
 }

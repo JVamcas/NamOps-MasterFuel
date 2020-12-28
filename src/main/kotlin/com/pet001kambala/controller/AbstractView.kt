@@ -68,6 +68,5 @@ abstract class AbstractView(private val viewTitle: String) : View(viewTitle) {
         super.onDock()
         title = "NamOps FuelMaster"
         heading = viewTitle
-        println("header is ${heading}")
     }
 }

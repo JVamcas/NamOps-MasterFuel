@@ -5,8 +5,6 @@ import com.pet001kambala.model.User
 import com.pet001kambala.model.UserModel
 import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.utils.Results
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.collections.ObservableList
 import javafx.scene.control.Label
 import javafx.scene.control.TableView
@@ -20,6 +18,11 @@ class UserTableController : AbstractModelTableController<User>("Users") {
 
     private val userRepo = UserRepo()
     private lateinit var tableView: TableView<User>
+
+    init {
+        disableSave()
+    }
+
     override val root = scrollpane {
         vbox(5.0) {
             tableView = tableview(modelList) {

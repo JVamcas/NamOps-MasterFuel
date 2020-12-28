@@ -14,14 +14,6 @@
             <padding>
                 <Insets bottom="5.0" />
             </padding>
-            <TableView fx:id="fuelTransactionTable" VBox.vgrow="ALWAYS">
-                <VBox.margin>
-                    <Insets left="5.0" right="5.0" />
-                </VBox.margin>
-                <padding>
-                    <Insets left="5.0" right="5.0" />
-                </padding>
-            </TableView>
         </ScrollPane>
     </center>
     <bottom>
@@ -33,14 +25,6 @@
                 </font>
             </Button>
             <Button fx:id="vehicleRefill" onAction="#toVehicleRefill" style="-fx-background-color: #1D8348; -fx-background-radius: 10;" text="Dispense" textFill="WHITE">
-                <HBox.margin>
-                    <Insets />
-                </HBox.margin>
-                <font>
-                    <Font name="System Bold Italic" size="12.0" />
-                </font>
-            </Button>
-            <Button fx:id="export" style="-fx-background-radius: 10; -fx-background-color: #21618C;" text="Export" textFill="WHITE">
                 <HBox.margin>
                     <Insets right="10.0" />
                 </HBox.margin>

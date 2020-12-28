@@ -38,7 +38,6 @@ class VehicleRepo : AbstractRepo<Vehicle>() {
                 Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             Results.Error(e)
         }
     }
@@ -67,7 +66,6 @@ class VehicleRepo : AbstractRepo<Vehicle>() {
                 super.updateModel(model)
             else Results.Error(Results.Error.DuplicateVehicleException())
         } catch (e: Exception) {
-            e.printStackTrace()
             Results.Error(e)
         }
     }

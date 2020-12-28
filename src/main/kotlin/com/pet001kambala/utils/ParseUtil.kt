@@ -12,17 +12,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornadofx.*
 import java.lang.Double.parseDouble
-import java.lang.Exception
-import java.sql.Date
 import java.sql.Timestamp
-import java.text.DateFormatSymbols
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.Exception
 
 class ParseUtil {
 
     companion object {
-
 
         fun String?.isValidPlateNo(): Boolean {
             val pattern = Pattern.compile("^N\\d+[A-Z]+$")
@@ -83,6 +80,9 @@ class ParseUtil {
 
         /***
          * Export fuel transaction records to  excel for further processing
+         * @param wkb the workbook to export
+         * @param sheetList [ArrayList<List<FuelTransaction>>]  to export
+         * @param sheetNameList of sheet names each corresponding to the list of model to export
          */
 
         suspend fun toExcelSpreedSheet(
@@ -114,14 +114,18 @@ class ParseUtil {
                             }
                         }
                     }
-                    wkb.write()
                     Results.Success<FuelTransaction>(code = Results.Success.CODE.WRITE_SUCCESS)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
                 Results.Error(e)
             } finally {
-                wkb.close()
+                try{
+                    wkb.write()
+                    wkb.close()
+                }
+                catch (e: Exception){
+                    e.printStackTrace()
+                }
             }
         }
     }

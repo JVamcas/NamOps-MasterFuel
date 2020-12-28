@@ -215,7 +215,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
     /***
      * Find the odometer reading for this vehicle from webfleet
      * @param vehicleNo for the vehicle in question
-     * @return odometer reading else null
+     * @return odometer reading else 0
      */
 
     suspend fun loadVehicleOdometer(vehicleNo: String): Int {
@@ -290,7 +290,6 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
                 Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             Results.Error(e)
         } finally {
             session?.close()

@@ -18,7 +18,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tornadofx.*
 
-class FuelUsageController : AbstractView("Dispense fuel" ) {
+class FuelUsageController : AbstractView("Dispense fuel") {
     private val vehicleRepo = VehicleRepo()
     private val userRepo = UserRepo()
     private val transactionRepo = FuelTransactionRepo()
@@ -65,6 +65,17 @@ class FuelUsageController : AbstractView("Dispense fuel" ) {
             GlobalScope.launch {
                 val results = vehicleRepo.loadAllVehicles()
                 asyncItems { if (results is Results.Success<*>) results.data as ObservableList<Vehicle> else observableListOf() }
+            }
+
+            valueProperty().addListener { _, _, newVehicle ->
+
+                newVehicle?.unitNumberProperty?.get()?.let { unitNo ->
+                    GlobalScope.launch {
+                        vehicleOdometer.text = "0"
+                        val results = transactionRepo.loadVehicleOdometer(unitNo)
+                        vehicleOdometer.text = results.toString()
+                    }
+                }
             }
         }
 

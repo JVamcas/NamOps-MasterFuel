@@ -19,13 +19,15 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.collections.ObservableList
 import javafx.event.ActionEvent
 import javafx.scene.control.ScrollPane
-import javafx.scene.control.TableView
+import javafx.scene.control.TableColumn
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Priority
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tornadofx.*
 import javafx.stage.FileChooser
+import javafx.scene.control.TableView
+
 import jxl.Workbook
 import java.io.File
 
@@ -33,7 +35,8 @@ import java.io.File
 class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Transactions") {
 
     override val root: BorderPane by fxml("/view/HomeView.fxml")
-    private val table: TableView<FuelTransaction> by fxid("fuelTransactionTable")
+
+    private lateinit var tableView: TableView<FuelTransaction>
     private val scrollPane: ScrollPane by fxid("tableViewScrollPane")
 
     private val transactionRepo = FuelTransactionRepo()
@@ -46,13 +49,13 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
     init {
         homeWorkspace = workspace
-        println("homecontroller workspace is $workspace")
         disableDelete()
         disableSave()
         disableCreate()
 
-        table.apply {
+        tableView = tableview(modelList) {
             //ensure table dimensions match the enclosing ScrollPane
+
             smartResize()
             prefWidthProperty().bind(scrollPane.widthProperty())
             prefHeightProperty().bind(scrollPane.heightProperty())
@@ -61,26 +64,48 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
             placeholder = label("No filling records yet.")
 
+            columns.add(indexColumn)
             column("Date", FuelTransaction::dateProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Waybill Number", FuelTransaction::waybillNoProperty).contentWidth(padding = 20.0, useAsMin = true)
+                .apply {
+                    style = "-fx-alignment: CENTER;"
+                }
             column("Type", FuelTransaction::transactionTypeProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Vehicle", FuelTransaction::vehicle).contentWidth(padding = 20.0, useAsMin = true)
             column("Attendant Name", FuelTransaction::attendant).contentWidth(padding = 20.0, useAsMin = true)
             column("Driver Name", FuelTransaction::driver).contentWidth(padding = 20.0, useAsMin = true)
             column("Odometer (KM)", FuelTransaction::odometerProperty).contentWidth(padding = 20.0, useAsMin = true)
+                .apply {
+                    style = "-fx-alignment: CENTER;"
+                }
             column(
                 "Distance travelled since last refill (KM)",
                 FuelTransaction::distanceTravelledProperty
-            ).contentWidth(padding = 20.0, useAsMin = true)
+            ).contentWidth(padding = 20.0, useAsMin = true).apply {
+                style = "-fx-alignment: CENTER;"
+            }
             column("Opening balance (L)", FuelTransaction::openingBalanceProperty).contentWidth(
                 padding = 20.0,
                 useAsMin = true
-            )
-            column("Quantity dispensed (L)", FuelTransaction::quantityProperty).contentWidth(padding = 20.0, useAsMin = true)
+            ).apply {
+                style = "-fx-alignment: CENTER;"
+            }
+            column("Quantity dispensed (L)", FuelTransaction::quantityProperty).contentWidth(
+                padding = 20.0,
+                useAsMin = true
+            ).apply {
+                style = "-fx-alignment: CENTER;"
+            }
+
             column("Closing balance (L)", FuelTransaction::currentBalanceProperty).contentWidth(
                 padding = 20.0,
                 useAsMin = true
-            )
+            ).apply {
+                style = "-fx-alignment: CENTER;"
+            }
+        }
+        scrollPane.apply {
+            add(tableView)
         }
 
         root.apply {
@@ -219,7 +244,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                         FileChooser.ExtensionFilter("Excel Workbook", "*.xls")
                     )
                     val selectedFile: File? = fileChooser.showSaveDialog(null)
-                    selectedFile?.let{
+                    selectedFile?.let {
                         GlobalScope.launch {
                             toExcelSpreedSheet(
                                 wkb = Workbook.createWorkbook(it),

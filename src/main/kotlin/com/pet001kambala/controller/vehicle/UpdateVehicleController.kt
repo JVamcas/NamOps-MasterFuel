@@ -14,9 +14,7 @@ class UpdateVehicleController: NewVehicleController() {
                 vehicleModel.commit()
                 GlobalScope.launch {
                     val result = vehicleRepo.updateModel(vehicleModel.item)
-                    println(result)
                     if(result is Results.Success<*>){
-                        println(result)
                         closeView()
                         return@launch
                     }

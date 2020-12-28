@@ -25,7 +25,6 @@ object SessionManager {
                 newInstance = meta.sessionFactoryBuilder.build()
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             shutDown()
         }
 
@@ -35,7 +34,6 @@ object SessionManager {
                     + "user=namops&password=password123")
         }
         catch (e: Exception){
-            e.printStackTrace()
             connection?.close()
         }
     }

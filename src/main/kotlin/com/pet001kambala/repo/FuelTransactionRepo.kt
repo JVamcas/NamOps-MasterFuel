@@ -257,18 +257,16 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
     suspend fun loadFilteredModel(search: FuelTransactionSearch): Results {
         var session: Session? = null
 
-        val mainBuilder = StringBuilder("SELECT DISTINCTROW t.* FROM fueltransactions t, vehicles v, users u " +
-                "WHERE t.attendantId=u.id " +
-                "AND (v.id=t.vehicleId OR t.driverId IS NULL)")
+        val mainBuilder = StringBuilder("SELECT DISTINCT t.* FROM fueltransactions t, vehicles v, users u WHERE t.attendantId IS NOT NULL")
 
         if (!search.waybillNoProperty.get().isNullOrEmpty())
             mainBuilder.append(" AND t.waybillNo = ${search.waybillNoProperty.get()}")
 
         if (!search.vehicleProperty.get().isNullOrEmpty())
-            mainBuilder.append(" AND v.unit_number = \'${search.vehicleProperty.get()}\'")
+            mainBuilder.append(" AND t.vehicleId=(SELECT id FROM vehicles WHERE unit_number=\'${search.vehicleProperty.get()}\')")
 
         if (!search.driverProperty.get().isNullOrEmpty())
-            mainBuilder.append(" AND  u.lastName LIKE \'${search.driverProperty.get()}\'")
+            mainBuilder.append(" AND t.driverId=(SELECT id FROM users WHERE lastName LIKE '${search.driverProperty.get()}')")
 
         val fromDate = search.fromDateProperty.get()?.toString()
         val toDate = search.toDateProperty.get()?.toString()
@@ -278,8 +276,6 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
 
         return try {
             withContext(Dispatchers.Default) {
-                val string  = "hello"
-                val strQry = session!!.createQuery("FROM FuelTransaction  t WHERE t.driver.lastNameProperty LIKE :lastName", FuelTransaction::class.java)
                 session = sessionFactory!!.openSession()
                 val data = session!!.createNativeQuery(mainBuilder.toString(), FuelTransaction::class.java)
                         .resultList.filterNotNull()

@@ -49,9 +49,9 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
     init {
         homeWorkspace = workspace
-        disableDelete()
-        disableSave()
-        disableCreate()
+        workspace.deleteButton.hide()
+        workspace.saveButton.hide()
+        workspace.createButton.hide()
 
         tableView = tableview(modelList) {
             //ensure table dimensions match the enclosing ScrollPane

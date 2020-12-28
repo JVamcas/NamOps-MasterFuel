@@ -5,10 +5,4 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import tornadofx.*
 
-class MainWorkspace : Workspace() {
-
-    init {
-        add(HomeMenu::class)
-        add(RestProgressBar::class)
-    }
-}
+class MainWorkspace : Workspace()

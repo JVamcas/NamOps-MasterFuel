@@ -8,7 +8,7 @@ import javafx.scene.control.ListCell
 import tornadofx.*
 import javax.persistence.*
 
-enum class UserGroup { Attendant, Driver, Other }
+enum class UserGroup { Attendant, Driver, Admin }
 
 enum class CompanyName(val value: String) {
     NAMOPS("NamOps Logistics Pty Ltd"),

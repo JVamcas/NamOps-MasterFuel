@@ -25,7 +25,7 @@
             <Font name="System Bold Italic" size="36.0" />
          </font>
       </Label>
-      <TextField minHeight="-Infinity" minWidth="-Infinity" prefHeight="52.0" prefWidth="580.0" promptText="Username" style="-fx-border-color: #575755; -fx-border-width: 2; -fx-border-radius: 5;" GridPane.columnSpan="2" GridPane.rowIndex="1">
+      <TextField fx:id="username" minHeight="-Infinity" minWidth="-Infinity" prefHeight="52.0" prefWidth="580.0" promptText="Username" style="-fx-border-color: #575755; -fx-border-width: 2; -fx-border-radius: 5;" GridPane.columnSpan="2" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets left="10.0" right="10.0" />
          </GridPane.margin>
@@ -33,14 +33,6 @@
             <Font name="System Italic" size="24.0" />
          </font>
       </TextField>
-      <Button fx:id="login" alignment="CENTER" mnemonicParsing="false" prefHeight="51.0" prefWidth="124.0" style="-fx-background-color: #18C6F0; -fx-background-radius: 50;" text="Login" textFill="WHITE" underline="true" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
-         <GridPane.margin>
-            <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
-         </GridPane.margin>
-         <font>
-            <Font name="System Bold Italic" size="24.0" />
-         </font>
-      </Button>
       <PasswordField fx:id="password" minHeight="-Infinity" minWidth="-Infinity" prefHeight="52.0" prefWidth="580.0" promptText="Password" style="-fx-border-color: #575755; -fx-border-radius: 5; -fx-border-width: 2;" GridPane.columnSpan="2" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets left="10.0" right="10.0" />
@@ -49,5 +41,22 @@
             <Font name="System Italic" size="24.0" />
          </font>
       </PasswordField>
+      <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+         <children>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="signupBtn" alignment="CENTER" mnemonicParsing="false" prefHeight="51.0" prefWidth="124.0" style="-fx-background-color: #18C6F0; -fx-background-radius: 50;" text="SignUp" textFill="WHITE" underline="true">
+               <font>
+                  <Font name="System Bold Italic" size="24.0" />
+               </font>
+            </Button>
+            <Button fx:id="loginBtn" alignment="CENTER" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="124.0" style="-fx-background-color: #18C6F0; -fx-background-radius: 50;" text="Login" textFill="WHITE" underline="true">
+               <font>
+                  <Font name="System Bold Italic" size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="20.0" right="10.0" />
+               </HBox.margin>
+            </Button>
+         </children></HBox>
    </children>
 </GridPane>

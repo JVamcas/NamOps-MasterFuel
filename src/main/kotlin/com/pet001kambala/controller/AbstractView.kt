@@ -1,11 +1,12 @@
 package com.pet001kambala.controller
 
+import com.pet001kambala.controller.AbstractView.Account.currentUser
 import com.pet001kambala.controller.home.HomeController
 import com.pet001kambala.controller.home.HomeMenu
+import com.pet001kambala.controller.home.LoginController
 import com.pet001kambala.model.User
 import com.pet001kambala.utils.Results
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
+import com.pet001kambala.utils.ParseUtil.Companion.isInvalid
 import javafx.application.Platform
 import javafx.beans.property.Property
 import javafx.beans.property.SimpleObjectProperty
@@ -15,14 +16,28 @@ import tornadofx.*
 
 abstract class AbstractView(private val viewTitle: String) : View(viewTitle) {
 
-    var currentUser = SimpleObjectProperty<User>()
+
+    object Account{
+        val currentUser = SimpleObjectProperty<User>()
+    }
+
 
     init {
-        currentUser.addListener { _, _, newUser ->
-            if (newUser != null) {
-                println("here ${newUser}")
-                workspace.dock<HomeController>()
 
+        currentUser.addListener { _, _, newUser ->
+            with(workspace) {
+                if (!newUser.isInvalid()) {
+                    header.show()
+                    dock<HomeController>()
+                    if(!find(HomeMenu::class.java).isDocked)
+                        add(HomeMenu::class)
+
+                    currentStage?.isResizable = true
+                }
+                else {
+                    find(HomeMenu::class.java).removeFromParent()
+                    dock<LoginController>()
+                }
             }
         }
     }
@@ -87,13 +102,14 @@ abstract class AbstractView(private val viewTitle: String) : View(viewTitle) {
 
     override fun onDock() {
         super.onDock()
-        if (isLoggedIn())
-            workspace.add(HomeMenu::class)
 
-        title = "NamOps FuelMaster"
+        title = "NamOps FuelMaster                  ${currentUser.get()?:""}"
         heading = viewTitle
     }
 
-    fun isLoggedIn() = currentUser.get() != null
+    fun isLoggedIn() = currentUser.get().isInvalid()
 
+    fun logout() {
+        currentUser.set(User())
+    }
 }

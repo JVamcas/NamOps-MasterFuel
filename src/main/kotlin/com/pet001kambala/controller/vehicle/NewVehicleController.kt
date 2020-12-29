@@ -37,6 +37,12 @@ open class NewVehicleController : AbstractView("Vehicle registration") {
 
     init {
 
+        with(workspace){
+            deleteButton.show()
+            saveButton.show()
+            createButton.show()
+        }
+
         unitNo.apply {
             bind(vehicleModel.unitNumber)
             validator(ValidationTrigger.OnChange()) { if (it.isValidVehicleNo()) null else error("Invalid unit number.") }

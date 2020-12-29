@@ -80,12 +80,11 @@ class UserRepo : AbstractRepo<User>() {
         return try {
             withContext(Dispatchers.Default) {
                 session = sessionFactory!!.openSession()
-                val strQry = "SELECT u.* FROM users u WHERE LOWER(u.username)=:username AND u.password=:password LIMIT 1"
+                val strQry = "SELECT DISTINCT * FROM users u WHERE LOWER(u.username)=:username AND u.password=:password AND not u.deleted limit 1"
                 val data = session!!.createNativeQuery(strQry)
                     .setParameter("username", userName)
                     .setParameter("password", password)
                     .resultList.filterNotNull()
-
                 Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
         } catch (e: Exception) {

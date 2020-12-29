@@ -13,7 +13,7 @@ import javafx.scene.input.MouseEvent
 import tornadofx.*
 
 
-class HomeMenu : View("") {
+class HomeMenu : AbstractView("") {
 
     override val root: MenuBar = menubar {
         addClass(Styles.cmenu)
@@ -30,6 +30,11 @@ class HomeMenu : View("") {
             add(MenuItem("Vehicles").apply {
                 action {
                     workspace.dock<VehicleTableController>()
+                }
+            })
+            add(MenuItem("Logout").apply {
+                action {
+                    logout()
                 }
             })
         }

@@ -1,10 +1,16 @@
 package com.pet001kambala.controller.user
 
 import com.pet001kambala.controller.AbstractModelTableController
+import com.pet001kambala.controller.AbstractView
 import com.pet001kambala.model.User
+import com.pet001kambala.model.UserGroup
 import com.pet001kambala.model.UserModel
 import com.pet001kambala.repo.UserRepo
+import com.pet001kambala.utils.AccessType
+import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
 import com.pet001kambala.utils.Results
+import javafx.beans.binding.BooleanExpression
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.ObservableList
 import javafx.scene.control.Label
 import javafx.scene.control.TableView
@@ -18,9 +24,17 @@ class UserTableController : AbstractModelTableController<User>("Users") {
 
     private val userRepo = UserRepo()
     private lateinit var tableView: TableView<User>
+    private val currentUser = AbstractView.Account.currentUser.get()
 
     init {
         disableSave()
+        with(workspace) {
+            deleteButton.show()
+            saveButton.show()
+            createButton.show()
+        }
+        creatableWhen { SimpleBooleanProperty(currentUser.isAuthorised(AccessType.ADD_USER)) }
+        deletableWhen { SimpleBooleanProperty(currentUser.isAuthorised(AccessType.DELETE_USER)) }
     }
 
     override val root = scrollpane {
@@ -34,11 +48,22 @@ class UserTableController : AbstractModelTableController<User>("Users") {
                 column("First Name", User::firstNameProperty).contentWidth(padding = 20.0, useAsMin = true)
                 column("Last Name", User::lastNameProperty).contentWidth(padding = 20.0, useAsMin = true)
                 column("Company", User::companyNameProperty).contentWidth(padding = 20.0, useAsMin = true)
-                column("Category", User::userGroupProperty).contentWidth(padding = 20.0, useAsMin = true).remainingWidth()
+                column("Category", User::userGroupProperty).contentWidth(padding = 20.0, useAsMin = true)
+                    .remainingWidth()
 
                 onUserSelect {
-                    val scope = ModelEditScope(UserModel())
-                    editModel(scope, it, UpdateUserController::class)
+                    if (currentUser.isAuthorised(AccessType.EDIT_USER)) {
+                        //todo to be looked at again
+                        if(it != currentUser && it.userGroupProperty.get() == UserGroup.Admin.name && !currentUser.isAuthorised(AccessType.ADD_ADMIN)){
+                            showError(
+                                header = "Permission Error!",
+                                msg = "You are not allowed to make a user an admin. Contact the System administrator."
+                            )
+                            return@onUserSelect
+                        }
+                        val scope = ModelEditScope(UserModel())
+                        editModel(scope, it, UpdateUserController::class)
+                    }
                 }
 
                 placeholder = Label("No users here yet.")
@@ -61,6 +86,7 @@ class UserTableController : AbstractModelTableController<User>("Users") {
 
     override fun onDelete() {
         super.onDelete()
+
         GlobalScope.launch {
             val selected = tableView.selectionModel?.selectedItem
             selected?.let {
@@ -72,6 +98,7 @@ class UserTableController : AbstractModelTableController<User>("Users") {
                 parseResults(results)
             }
         }
+
     }
 
     override suspend fun loadModels(): ObservableList<User> {

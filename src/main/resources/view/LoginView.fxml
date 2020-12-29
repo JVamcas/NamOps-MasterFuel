@@ -17,7 +17,7 @@
     <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="81.0" prefWidth="580.0" text="Login to NamOps FuelMaster" textFill="#087f8a" GridPane.columnSpan="2" GridPane.halignment="RIGHT">
+      <Label alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="81.0" prefWidth="580.0" text="Welcome to NamOps FuelMaster" textFill="#087f8a" GridPane.columnSpan="2" GridPane.halignment="RIGHT">
          <GridPane.margin>
             <Insets left="10.0" right="10.0" />
          </GridPane.margin>
@@ -44,11 +44,18 @@
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
          <children>
             <Region HBox.hgrow="ALWAYS" />
-            <Button fx:id="signupBtn" alignment="CENTER" mnemonicParsing="false" prefHeight="51.0" prefWidth="124.0" style="-fx-background-color: #18C6F0; -fx-background-radius: 50;" text="SignUp" textFill="WHITE" underline="true">
+            <ProgressIndicator fx:id="progressIndicator">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin></ProgressIndicator>
+            <Label fx:id="invalidLoginLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="51.0" prefWidth="170.0" text="Incorrect username/password." textFill="#eb0a0a" underline="true">
                <font>
-                  <Font name="System Bold Italic" size="24.0" />
+                  <Font name="System Bold Italic" size="12.0" />
                </font>
-            </Button>
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Label>
             <Button fx:id="loginBtn" alignment="CENTER" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="124.0" style="-fx-background-color: #18C6F0; -fx-background-radius: 50;" text="Login" textFill="WHITE" underline="true">
                <font>
                   <Font name="System Bold Italic" size="24.0" />

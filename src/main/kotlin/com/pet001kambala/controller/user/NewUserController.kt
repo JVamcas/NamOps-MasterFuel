@@ -4,9 +4,11 @@ import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.controller.AbstractView
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.UserRepo
+import com.pet001kambala.utils.ParseUtil.Companion.isValidPassword
 import com.pet001kambala.utils.Results
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
+import javafx.scene.control.PasswordField
 import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
 import kotlinx.coroutines.GlobalScope
@@ -27,14 +29,11 @@ open class NewUserController : AbstractView("") {
     private val companyName: ComboBox<String> by fxid("companyName")
     private val category: ComboBox<String> by fxid("category")
     private val cancelEditUser: Button by fxid("cancelEditUser")
+    private val userName: TextField by fxid("username")
+    private val password: PasswordField by fxid("password")
     val saveUser: Button by fxid("saveUser")
 
     init {
-
-        root.apply {
-            prefHeight = 400.0
-            prefWidth = 500.0
-        }
 
         modalStage?.isResizable = false
         firstName.apply {
@@ -66,6 +65,16 @@ open class NewUserController : AbstractView("") {
             required(ValidationTrigger.OnChange(),
                     "Select your company.")
         }
+        password.apply {
+            bind(userModel.password)
+            validator(ValidationTrigger.OnChange()){
+                if(it.isValidPassword()) null else error("Password should be atleast four(4) characters long.")
+            }
+        }
+        userName.apply {
+            bind(userModel.username)
+            required(ValidationTrigger.OnChange(),"Enter a username.")
+        }
 
 
         saveUser.apply {
@@ -96,6 +105,7 @@ open class NewUserController : AbstractView("") {
 
     override fun onDock() {
         super.onDock()
+        modalStage?.isResizable = false
         title = "User registration"
     }
 }

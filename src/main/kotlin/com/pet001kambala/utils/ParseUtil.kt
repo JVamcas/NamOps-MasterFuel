@@ -3,6 +3,8 @@ package com.pet001kambala.utils
 
 import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.model.FuelTransactionType
+import com.pet001kambala.model.User
+import com.pet001kambala.model.UserGroup
 import javafx.collections.ObservableList
 import javafx.scene.control.TextField
 import jxl.write.Label
@@ -19,7 +21,23 @@ import kotlin.Exception
 
 class ParseUtil {
 
+
     companion object {
+        val driverAccessType = arrayListOf(
+            AccessType.ADD_USER,
+            AccessType.ADD_VEHICLE,
+            AccessType.EDIT_USER,
+            AccessType.EDIT_VEHICLE
+        )
+
+        val attendantAccessType = arrayListOf(
+            AccessType.ADD_USER,
+            AccessType.EDIT_VEHICLE,
+            AccessType.EDIT_USER,
+            AccessType.REFILL_STORAGE,
+            AccessType.DISPENSE_FUEL,
+            AccessType.ADD_VEHICLE
+        )
 
         fun String?.isValidPlateNo(): Boolean {
             val pattern = Pattern.compile("^N\\d+[A-Z]+$")
@@ -30,6 +48,8 @@ class ParseUtil {
             val pattern = Pattern.compile("^[HGL]\\d{2,}$")
             return !this.isNullOrEmpty() && pattern.matcher(this).matches()
         }
+
+        fun String?.isValidPassword() = this != null && this.length >= 4
 
         fun TextField.numberValidation(msg: String) =
             validator(ValidationTrigger.OnChange()) {
@@ -119,14 +139,28 @@ class ParseUtil {
             } catch (e: Exception) {
                 Results.Error(e)
             } finally {
-                try{
+                try {
                     wkb.write()
                     wkb.close()
-                }
-                catch (e: Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
         }
+
+        fun User?.isInvalid() = this?.id == null
+
+        fun User?.isAuthorised(accessType: AccessType): Boolean {
+            return this != null && when (this.userGroupProperty.get()) {
+                UserGroup.Admin.name -> true
+                UserGroup.Attendant.name -> attendantAccessType.contains(accessType)
+                UserGroup.Driver.name -> driverAccessType.contains(accessType)
+                else -> false
+            }
+        }
     }
+}
+
+enum class AccessType {
+    EDIT_USER, ADD_USER, DELETE_USER, EDIT_VEHICLE, ADD_VEHICLE, DELETE_VEHICLE, REFILL_STORAGE, DISPENSE_FUEL, DELETE_REFILL, ADD_ADMIN
 }

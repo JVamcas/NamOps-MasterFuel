@@ -12,7 +12,12 @@ enum class UserGroup { Attendant, Driver, Admin }
 
 enum class CompanyName(val value: String) {
     NAMOPS("NamOps Logistics Pty Ltd"),
-    SEANAM("SeaNam Fishing Pty Ltd")
+    SEANAM("SeaNam Fishing Pty Ltd");
+
+    companion object{
+        fun getName(value: String) =
+           values().toList().first { it.value == value }
+    }
 }
 
 @Entity
@@ -30,7 +35,7 @@ class User(
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Int? = null
 
-    @Column(name = "firstName",nullable = false)
+    @Column(name = "firstName", nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
     val firstNameProperty = SimpleStringProperty(firstName)
 
@@ -38,15 +43,15 @@ class User(
     @Convert(converter = SimpleStringConvertor::class)
     val lastNameProperty = SimpleStringProperty(lastName)
 
-    @Column(name = "companyName",nullable = false)
+    @Column(name = "companyName", nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
     val companyNameProperty = SimpleStringProperty(companyName.value)
 
-    @Column(name = "userGroup",nullable = false)
+    @Column(name = "userGroup", nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
     val userGroupProperty = SimpleStringProperty(userGroup.name)
 
-    @Column(name = "deleted",nullable = false)
+    @Column(name = "deleted", nullable = false)
     @Convert(converter = SimpleBooleanConvertor::class)
     val deletedProperty = SimpleBooleanProperty(deleted)
 
@@ -63,7 +68,7 @@ class User(
     }
 
     override fun equals(other: Any?): Boolean {
-        if(other == null || other !is User)
+        if (other == null || other !is User)
             return false
         return other.id == id
     }
@@ -81,6 +86,8 @@ class UserModel : ItemViewModel<User>() {
     var lastName = bind(User::lastNameProperty)
     var companyName = bind(User::companyNameProperty)
     var userGroup = bind(User::userGroupProperty)
+    var username = bind(User::usernameProperty)
+    var password = bind(User::passwordProperty)
 }
 
 /**

@@ -74,7 +74,7 @@ class LoginController : AbstractView("") {
                             Platform.runLater {
                                 currentUser.set(user)
                             }
-                            return@let
+                            return@launch
                         }
                         invalidLoginLabel.isVisible = true
 

@@ -1,13 +1,16 @@
 package com.pet001kambala.controller.home
 
 import com.pet001kambala.controller.AbstractModelTableController
+import com.pet001kambala.controller.AbstractView
 import com.pet001kambala.controller.fueltransactions.FuelTopUpController
 import com.pet001kambala.controller.fueltransactions.FuelUsageController
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.FuelTransactionRepo
+import com.pet001kambala.utils.AccessType
 import com.pet001kambala.utils.DateUtil
 import com.pet001kambala.utils.ParseUtil.Companion.filterDispense
 import com.pet001kambala.utils.ParseUtil.Companion.filterRefill
+import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
 import com.pet001kambala.utils.ParseUtil.Companion.isValidVehicleNo
 import com.pet001kambala.utils.ParseUtil.Companion.numberValidation
 import com.pet001kambala.utils.ParseUtil.Companion.toExcelSpreedSheet
@@ -18,6 +21,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.collections.ObservableList
 import javafx.event.ActionEvent
+import javafx.scene.control.Button
 import javafx.scene.control.ScrollPane
 import javafx.scene.control.TableColumn
 import javafx.scene.layout.BorderPane
@@ -36,8 +40,11 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
     override val root: BorderPane by fxml("/view/HomeView.fxml")
 
-    private lateinit var tableView: TableView<FuelTransaction>
+    private var tableView: TableView<FuelTransaction>
     private val scrollPane: ScrollPane by fxid("tableViewScrollPane")
+
+    private val fillStorageBtn: Button by fxid("storageRefill")
+    private val dispenseBtn: Button by fxid("vehicleRefill")
 
     private val transactionRepo = FuelTransactionRepo()
     private val transactionSearchModel = TransactionSearch(FuelTransactionSearch())
@@ -49,9 +56,6 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
     init {
         homeWorkspace = workspace
-        workspace.deleteButton.hide()
-        workspace.saveButton.hide()
-        workspace.createButton.hide()
 
         tableView = tableview(modelList) {
             //ensure table dimensions match the enclosing ScrollPane
@@ -215,6 +219,8 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
     }
 
     fun toStorageRefill(actionEvent: ActionEvent) {
+
+
         val scope = ModelEditScope(FuelTransactionModel())
         editModel(scope, FuelTransaction(), FuelTopUpController::class)
     }
@@ -226,9 +232,16 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
     }
 
     override fun onDock() {
-
         super.onDock()
-        workspace.apply {
+        with(workspace) {
+            val currentUser = AbstractView.Account.currentUser.get()
+
+            deleteButton.hide()
+            createButton.hide()
+
+            fillStorageBtn.isDisable = !currentUser.isAuthorised(AccessType.REFILL_STORAGE)
+            dispenseBtn.isDisable = !currentUser.isAuthorised(AccessType.DISPENSE_FUEL)
+
             button {
                 addClass("icon-only")
                 graphic = FontAwesomeIconView(FontAwesomeIcon.DOWNLOAD).apply {

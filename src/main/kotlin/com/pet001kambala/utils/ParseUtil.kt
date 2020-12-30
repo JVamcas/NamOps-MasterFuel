@@ -23,14 +23,9 @@ class ParseUtil {
 
 
     companion object {
-        val driverAccessType = arrayListOf(
-            AccessType.ADD_USER,
-            AccessType.ADD_VEHICLE,
-            AccessType.EDIT_USER,
-            AccessType.EDIT_VEHICLE
-        )
+//        val driverAccessType = arrayListOf()
 
-        val attendantAccessType = arrayListOf(
+        private val attendantAccessType = arrayListOf(
             AccessType.ADD_USER,
             AccessType.EDIT_VEHICLE,
             AccessType.EDIT_USER,
@@ -148,19 +143,22 @@ class ParseUtil {
             }
         }
 
-        fun User?.isInvalid() = this?.id == null
+        fun User?.isInvalid() = this == null || this.id == null
 
         fun User?.isAuthorised(accessType: AccessType): Boolean {
             return this != null && when (this.userGroupProperty.get()) {
                 UserGroup.Admin.name -> true
                 UserGroup.Attendant.name -> attendantAccessType.contains(accessType)
-                UserGroup.Driver.name -> driverAccessType.contains(accessType)
+//                UserGroup.Driver.name -> driverAccessType.contains(accessType)
                 else -> false
             }
+        }
+        fun User?.isAdmin(): Boolean{
+            return this !=null && this.userGroupProperty.get() ==UserGroup.Admin.name
         }
     }
 }
 
 enum class AccessType {
-    EDIT_USER, ADD_USER, DELETE_USER, EDIT_VEHICLE, ADD_VEHICLE, DELETE_VEHICLE, REFILL_STORAGE, DISPENSE_FUEL, DELETE_REFILL, ADD_ADMIN
+    EDIT_USER, ADD_USER, DELETE_USER, EDIT_VEHICLE, ADD_VEHICLE, DELETE_VEHICLE, REFILL_STORAGE, DISPENSE_FUEL, DELETE_REFILL, MAKE_ADMIN
 }

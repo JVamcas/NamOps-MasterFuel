@@ -97,6 +97,7 @@ open class NewVehicleController : AbstractView("Vehicle registration") {
 
     override fun onDock() {
         super.onDock()
+        modalStage?.isResizable = false
         title = "Vehicle registration"
     }
 }

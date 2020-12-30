@@ -7,6 +7,7 @@ import com.pet001kambala.model.UserGroup
 import com.pet001kambala.model.UserModel
 import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.utils.AccessType
+import com.pet001kambala.utils.ParseUtil.Companion.isAdmin
 import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
 import com.pet001kambala.utils.Results
 import javafx.beans.binding.BooleanExpression
@@ -24,18 +25,7 @@ class UserTableController : AbstractModelTableController<User>("Users") {
 
     private val userRepo = UserRepo()
     private lateinit var tableView: TableView<User>
-    private val currentUser = AbstractView.Account.currentUser.get()
 
-    init {
-        disableSave()
-        with(workspace) {
-            deleteButton.show()
-            saveButton.show()
-            createButton.show()
-        }
-        creatableWhen { SimpleBooleanProperty(currentUser.isAuthorised(AccessType.ADD_USER)) }
-        deletableWhen { SimpleBooleanProperty(currentUser.isAuthorised(AccessType.DELETE_USER)) }
-    }
 
     override val root = scrollpane {
         vbox(5.0) {
@@ -52,15 +42,10 @@ class UserTableController : AbstractModelTableController<User>("Users") {
                     .remainingWidth()
 
                 onUserSelect {
-                    if (currentUser.isAuthorised(AccessType.EDIT_USER)) {
-                        //todo to be looked at again
-                        if(it != currentUser && it.userGroupProperty.get() == UserGroup.Admin.name && !currentUser.isAuthorised(AccessType.ADD_ADMIN)){
-                            showError(
-                                header = "Permission Error!",
-                                msg = "You are not allowed to make a user an admin. Contact the System administrator."
-                            )
-                            return@onUserSelect
-                        }
+                    val currentUser = Account.currentUser.get()
+                    if (currentUser == it //can edit own account
+                        //is authorized to edit account
+                        || currentUser.isAuthorised(AccessType.EDIT_USER)) {
                         val scope = ModelEditScope(UserModel())
                         editModel(scope, it, UpdateUserController::class)
                     }
@@ -99,6 +84,21 @@ class UserTableController : AbstractModelTableController<User>("Users") {
             }
         }
 
+    }
+
+    override fun onDock() {
+        super.onDock()
+
+        with(workspace) {
+            val currentUser = Account.currentUser.get()
+            if (currentUser.isAuthorised(AccessType.ADD_USER))
+                createButton.show()
+            else createButton.hide()
+
+            if (currentUser.isAuthorised(AccessType.DELETE_USER))
+                deleteButton.show()
+            else deleteButton.hide()
+        }
     }
 
     override suspend fun loadModels(): ObservableList<User> {

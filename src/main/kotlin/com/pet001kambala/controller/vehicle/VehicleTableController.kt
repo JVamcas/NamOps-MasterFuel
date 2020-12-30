@@ -3,6 +3,8 @@ package com.pet001kambala.controller.vehicle
 import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.VehicleRepo
+import com.pet001kambala.utils.AccessType
+import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
 import com.pet001kambala.utils.Results
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
@@ -37,9 +39,11 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles")
                 column("Department", Vehicle::departmentProperty)
 
                 onUserSelect {
-                    val scope = ModelEditScope(VehicleModel())
-                    scope.viewModel.item = it
-                    editModel(scope,it, UpdateVehicleController::class)
+                    if (Account.currentUser.get().isAuthorised(AccessType.EDIT_VEHICLE)) {
+                        val scope = ModelEditScope(VehicleModel())
+                        scope.viewModel.item = it
+                        editModel(scope, it, UpdateVehicleController::class)
+                    }
                 }
 
                 placeholder = Label("No vehicles here yet.")
@@ -75,6 +79,20 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles")
                 }
                 parseResults(results)
             }
+        }
+    }
+
+    override fun onDock() {
+        super.onDock()
+        with(workspace) {
+            val currentUser = Account.currentUser.get()
+            if (currentUser.isAuthorised(AccessType.ADD_VEHICLE))
+                createButton.show()
+            else createButton.hide()
+
+            if (currentUser.isAuthorised(AccessType.DELETE_VEHICLE))
+                deleteButton.show()
+            else deleteButton.hide()
         }
     }
 }

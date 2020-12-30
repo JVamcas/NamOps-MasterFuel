@@ -37,7 +37,7 @@ class ChartsController : AbstractView("Fuel Statistics") {
                         val dataList = leastEfficientResult.data as List<*>
 
                         Platform.runLater {
-                            piechart("${thisMonthByName()} ${thisYear()} - Least efficient vehicles") {
+                            piechart("${thisMonthByName()} ${thisYear()} - Five Least efficient vehicles") {
                                 dataList.forEach {
                                     val entry = it as Array<*>
                                     val vehicle = "${entry[0].toString()} - ${entry[1].toString()}"
@@ -56,7 +56,7 @@ class ChartsController : AbstractView("Fuel Statistics") {
                         val dataList = mostEfficientResult.data as List<*>
 
                         Platform.runLater {
-                            piechart("${thisMonthByName()} ${thisYear()} - Most efficient vehicles") {
+                            piechart("${thisMonthByName()} ${thisYear()} - Five Most efficient vehicles") {
                                 dataList.forEach {
                                     val entry = it as Array<*>
                                     val vehicle = "${entry[0].toString()} - ${entry[1].toString()}"

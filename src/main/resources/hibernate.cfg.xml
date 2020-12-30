@@ -11,7 +11,7 @@
         <property name="connection.username">jvamcas</property>
         <property name="connection.password">password</property>
         <property name="current_session_context_class">thread</property>
-<!--        <property name="hibernate.hbm2ddl.auto">update</property>-->
+        <property name="hibernate.hbm2ddl.auto">update</property>
         <property name="hibernate.c3p0.acquire_increment">1</property>
         <property name="hibernate.c3p0.idle_test_period">60</property>
         <property name="hibernate.c3p0.min_size">5</property>

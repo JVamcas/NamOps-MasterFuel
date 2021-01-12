@@ -8,6 +8,8 @@ import com.pet001kambala.model.UserGroup
 import com.pet001kambala.model.UserModel
 import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.utils.Results
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.application.Platform
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.value.ObservableValue
@@ -47,9 +49,9 @@ class LoginController : AbstractView("") {
 
 
         loginBtn.apply {
+            enableWhen { userModel.valid }
 
             action {
-                enableWhen { userModel.valid }
                 userModel.commit()
                 GlobalScope.launch {
 

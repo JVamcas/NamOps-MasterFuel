@@ -98,6 +98,7 @@ open class FuelTopUpController(
 
     override fun onDock() {
         super.onDock()
+        modalStage?.isResizable = false
         title = "Top up storage tank"
     }
 }

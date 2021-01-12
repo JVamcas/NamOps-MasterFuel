@@ -142,6 +142,7 @@ class FuelUsageController : AbstractView("Dispense fuel") {
 
     override fun onDock() {
         super.onDock()
+        modalStage?.isResizable = false
         title = "Dispense fuel"
     }
 }

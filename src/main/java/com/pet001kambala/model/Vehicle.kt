@@ -11,7 +11,8 @@ import javax.persistence.*
 enum class Department(val value: String) {
     LOCAL("Local Transport"),
     DEPOT("Depot Operations"),
-    WORKSHOP("Workshop")
+    WORKSHOP("Workshop"),
+    SEANAM("SeaNam")
 }
 
 enum class VehicleType(val value: String) {

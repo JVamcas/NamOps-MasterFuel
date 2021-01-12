@@ -70,20 +70,20 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
             columns.add(indexColumn)
             column("Date", FuelTransaction::dateProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Waybill Number", FuelTransaction::waybillNoProperty).contentWidth(padding = 20.0, useAsMin = true)
+            column("Waybill", FuelTransaction::waybillNoProperty).contentWidth(padding = 20.0, useAsMin = true)
                 .apply {
                     style = "-fx-alignment: CENTER;"
                 }
             column("Type", FuelTransaction::transactionTypeProperty).contentWidth(padding = 20.0, useAsMin = true)
             column("Vehicle", FuelTransaction::vehicle).contentWidth(padding = 20.0, useAsMin = true)
-            column("Attendant Name", FuelTransaction::attendant).contentWidth(padding = 20.0, useAsMin = true)
-            column("Driver Name", FuelTransaction::driver).contentWidth(padding = 20.0, useAsMin = true)
+            column("Attendant", FuelTransaction::attendant).contentWidth(padding = 20.0, useAsMin = true)
+            column("Driver", FuelTransaction::driver).contentWidth(padding = 20.0, useAsMin = true)
             column("Odometer (KM)", FuelTransaction::odometerProperty).contentWidth(padding = 20.0, useAsMin = true)
                 .apply {
                     style = "-fx-alignment: CENTER;"
                 }
             column(
-                "Distance travelled since last refill (KM)",
+                "Distance (KM)",
                 FuelTransaction::distanceTravelledProperty
             ).contentWidth(padding = 20.0, useAsMin = true).apply {
                 style = "-fx-alignment: CENTER;"

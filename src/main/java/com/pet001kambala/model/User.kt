@@ -55,11 +55,11 @@ class User(
     @Convert(converter = SimpleBooleanConvertor::class)
     val deletedProperty = SimpleBooleanProperty(deleted)
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = true)
     @Convert(converter = SimpleStringConvertor::class)
     val usernameProperty = SimpleStringProperty(username)
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = true)
     @Convert(converter = SimpleStringConvertor::class)
     val passwordProperty = SimpleStringProperty(password)
 

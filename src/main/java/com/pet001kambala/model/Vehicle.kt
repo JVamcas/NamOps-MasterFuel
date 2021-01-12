@@ -51,7 +51,7 @@ class Vehicle(
     @Convert(converter = SimpleBooleanConvertor::class)
     val deletedProperty = SimpleBooleanProperty(deleted)
 
-    @Column(name = "plate_number", nullable = false,unique = true)
+    @Column(name = "plate_number", nullable = true,unique = true)
     @Convert(converter = SimpleStringConvertor::class)
     val plateNumberProperty = SimpleStringProperty(plateNumber)
 

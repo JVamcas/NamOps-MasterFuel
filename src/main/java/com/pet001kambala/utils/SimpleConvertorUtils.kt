@@ -1,5 +1,6 @@
 package com.pet001kambala.utils
 
+import com.pet001kambala.model.Company
 import com.pet001kambala.model.User
 import com.pet001kambala.model.Vehicle
 import javafx.beans.property.*
@@ -79,6 +80,17 @@ class SimpleDateConvertor : AttributeConverter<SimpleObjectProperty<Timestamp>, 
         return SimpleObjectProperty(p0)
     }
 }
+
+class SimpleCompanyConvertor : AttributeConverter<SimpleObjectProperty<Company>, Company> {
+    override fun convertToDatabaseColumn(p0: SimpleObjectProperty<Company>): Company {
+        return p0.get()
+    }
+
+    override fun convertToEntityAttribute(p0: Company): SimpleObjectProperty<Company> {
+        return SimpleObjectProperty(p0)
+    }
+}
+
 
 class DatePickerConvertor : StringConverter<LocalDate>() {
     private val pattern = "yyyy-MM-dd"

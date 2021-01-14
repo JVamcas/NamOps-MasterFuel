@@ -6,34 +6,31 @@ import com.pet001kambala.controller.fueltransactions.FuelTopUpController
 import com.pet001kambala.controller.fueltransactions.FuelUsageController
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.FuelTransactionRepo
-import com.pet001kambala.utils.AccessType
-import com.pet001kambala.utils.DateUtil
+import com.pet001kambala.repo.UserRepo
+import com.pet001kambala.repo.VehicleRepo
+import com.pet001kambala.utils.*
+import com.pet001kambala.utils.ComboBoxEditingCell
 import com.pet001kambala.utils.ParseUtil.Companion.filterDispense
 import com.pet001kambala.utils.ParseUtil.Companion.filterRefill
 import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
-import com.pet001kambala.utils.ParseUtil.Companion.isValidVehicleNo
-import com.pet001kambala.utils.ParseUtil.Companion.numberValidation
 import com.pet001kambala.utils.ParseUtil.Companion.toExcelSpreedSheet
 import com.pet001kambala.utils.ParseUtil.Companion.toFuelTransactionList
-import com.pet001kambala.utils.Results
-import com.pet001kambala.utils.Results.Success
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.collections.ObservableList
 import javafx.event.ActionEvent
-import javafx.scene.control.Button
-import javafx.scene.control.ScrollPane
-import javafx.scene.control.TableColumn
+import javafx.scene.control.*
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Priority
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+
 import tornadofx.*
 import javafx.stage.FileChooser
-import javafx.scene.control.TableView
 
 import jxl.Workbook
 import java.io.File
+import java.sql.Driver
 
 
 class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Transactions") {
@@ -48,6 +45,8 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
     private val transactionRepo = FuelTransactionRepo()
     private val transactionSearchModel = TransactionSearch(FuelTransactionSearch())
+
+    private lateinit var transViewModel: TableViewEditModel<FuelTransaction>
 
 
     companion object {
@@ -69,15 +68,66 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             placeholder = label("No filling records yet.")
 
             columns.add(indexColumn)
-            column("Date", FuelTransaction::dateProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Waybill", FuelTransaction::waybillNoProperty).contentWidth(padding = 20.0, useAsMin = true)
-                .apply {
-                    style = "-fx-alignment: CENTER;"
+
+
+
+            column("Date", FuelTransaction::dateProperty).apply {
+                contentWidth(padding = 20.0, useAsMin = true)
+                setCellFactory { DateEditingCell<FuelTransaction>() }
+            }
+
+            column("Waybill", FuelTransaction::waybillNoProperty).apply {
+                setCellFactory { EditingCell<FuelTransaction>() }
+                contentWidth(padding = 20.0, useAsMin = true)
+                style = "-fx-alignment: CENTER;"
+            }
+            column("Type", FuelTransaction::transactionTypeProperty).apply {
+                contentWidth(padding = 20.0, useAsMin = true)
+            }
+
+            column("Equipment", FuelTransaction::vehicle).apply {
+                contentWidth(padding = 20.0, useAsMin = true)
+                GlobalScope.launch {
+                    val loadResults = VehicleRepo().loadAllVehicles()
+                    setCellFactory {
+                        val vehicles = if (loadResults is Results.Success<*>)
+                            loadResults.data as ObservableList<Vehicle>
+                        else observableListOf()
+
+                        ComboBoxEditingCell(vehicles)
+                    }
                 }
-            column("Type", FuelTransaction::transactionTypeProperty).contentWidth(padding = 20.0, useAsMin = true)
-            column("Vehicle", FuelTransaction::vehicle).contentWidth(padding = 20.0, useAsMin = true)
-            column("Attendant", FuelTransaction::attendant).contentWidth(padding = 20.0, useAsMin = true)
-            column("Driver", FuelTransaction::driver).contentWidth(padding = 20.0, useAsMin = true)
+            }
+
+            column("Attendant", FuelTransaction::attendant).apply {
+                contentWidth(padding = 20.0, useAsMin = true)
+
+                GlobalScope.launch {
+                    val loadResults = UserRepo().loadAttendants()
+                    setCellFactory {
+                        val attendants = if (loadResults is Results.Success<*>)
+                            loadResults.data as ObservableList<User>
+                        else observableListOf()
+
+                        ComboBoxEditingCell(attendants)
+                    }
+                }
+            }
+
+            column("Driver", FuelTransaction::driver).apply {
+                contentWidth(padding = 20.0, useAsMin = true)
+                GlobalScope.launch {
+                    val loadResults = UserRepo().loadDrivers()
+                    setCellFactory {
+                        val drivers = if (loadResults is Results.Success<*>)
+                            loadResults.data as ObservableList<User>
+                        else observableListOf()
+
+                        ComboBoxEditingCell(drivers)
+                    }
+                }
+            }
+
             column("Odometer (KM)", FuelTransaction::odometerProperty).contentWidth(padding = 20.0, useAsMin = true)
                 .apply {
                     style = "-fx-alignment: CENTER;"
@@ -94,6 +144,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             ).apply {
                 style = "-fx-alignment: CENTER;"
             }
+
             column("Quantity dispensed (L)", FuelTransaction::quantityProperty).contentWidth(
                 padding = 20.0,
                 useAsMin = true
@@ -107,6 +158,12 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             ).apply {
                 style = "-fx-alignment: CENTER;"
             }
+
+            transViewModel = editModel
+
+            enableCellEditing()
+            enableDirtyTracking()
+
         }
         scrollPane.apply {
             add(tableView)
@@ -239,6 +296,10 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             deleteButton.hide()
             createButton.hide()
 
+            if (currentUser.isAuthorised(AccessType.EDIT_FUEL_TRANSACTION))
+                saveButton.show()
+            else saveButton.hide()
+
             fillStorageBtn.isDisable = !currentUser.isAuthorised(AccessType.REFILL_STORAGE)
             dispenseBtn.isDisable = !currentUser.isAuthorised(AccessType.DISPENSE_FUEL)
 
@@ -276,5 +337,27 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
         if (loadResults is Results.Success<*>)
             return loadResults.data as ObservableList<FuelTransaction>
         return observableListOf()
+    }
+
+    override fun onSave() {
+        super.onSave()
+
+        val changedTrans = transViewModel.items.asSequence()
+            .filter { it.value.isDirty }.map {
+                it.value.commit()
+                it.key
+            }.toList()
+
+        GlobalScope.launch {
+            if (!changedTrans.isNullOrEmpty()) {
+                val results = transactionRepo.batchUpdate(changedTrans)
+
+                if (results !is Results.Success<*>) {
+                    transViewModel.items.asSequence().forEach { it.value.rollback() }
+                } else
+                    onRefresh()
+                //process the results of batch processing
+            }
+        }
     }
 }

@@ -56,6 +56,7 @@ class UpdateUserController : NewUserController() {
         userName.isEditable = currentUser.isAdmin() || currentUser == userModel.item
         password.isEditable = currentUser.isAdmin() || currentUser == userModel.item
 
+
         title = "Update user profile"
     }
 }

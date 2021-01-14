@@ -5,6 +5,8 @@ import java.sql.Date
 import java.sql.Timestamp
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class DateUtil {
@@ -18,6 +20,11 @@ class DateUtil {
 
         fun Date._24(): String {
             return SimpleDateFormat(DATE_FORMAT, Locale.US).format(this)
+        }
+
+        fun LocalDateTime._24(): String{
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            return this.format(formatter)
         }
 
         fun thisYearFirstDate(): Date {

@@ -3,6 +3,7 @@ package com.pet001kambala.model
 import com.pet001kambala.utils.SimpleBooleanConvertor
 import com.pet001kambala.utils.SimpleStringConvertor
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ListCell
 import tornadofx.*
@@ -19,6 +20,17 @@ enum class CompanyName(val value: String) {
            values().toList().first { it.value == value }
     }
 }
+@Entity
+class Company(){
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Int? = null
+
+    @Column(name = "company_name", nullable = false)
+    @Convert(converter = SimpleStringConvertor::class)
+    val lastNameProperty = SimpleStringProperty()
+}
+
 
 @Entity
 @Table(name = "Users")
@@ -30,6 +42,7 @@ class User(
     deleted: Boolean = false,
     username: String? = null,
     password: String? = null
+
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,7 +58,7 @@ class User(
 
     @Column(name = "companyName", nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
-    val companyNameProperty = SimpleStringProperty(companyName.value)
+    val companyNameProperty = SimpleStringProperty(companyName.name)
 
     @Column(name = "userGroup", nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
@@ -84,7 +97,7 @@ class User(
 class UserModel : ItemViewModel<User>() {
     var firstName = bind(User::firstNameProperty)
     var lastName = bind(User::lastNameProperty)
-    var companyName = bind(User::companyNameProperty)
+    var company = bind(User::companyNameProperty)
     var userGroup = bind(User::userGroupProperty)
     var username = bind(User::usernameProperty)
     var password = bind(User::passwordProperty)

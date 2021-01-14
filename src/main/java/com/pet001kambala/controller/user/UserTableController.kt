@@ -90,6 +90,7 @@ class UserTableController : AbstractModelTableController<User>("Users") {
         super.onDock()
 
         with(workspace) {
+            saveButton.hide()
             val currentUser = Account.currentUser.get()
             if (currentUser.isAuthorised(AccessType.ADD_USER))
                 createButton.show()

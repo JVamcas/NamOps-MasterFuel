@@ -85,6 +85,7 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles")
     override fun onDock() {
         super.onDock()
         with(workspace) {
+            saveButton.hide()
             val currentUser = Account.currentUser.get()
             if (currentUser.isAuthorised(AccessType.ADD_VEHICLE))
                 createButton.show()

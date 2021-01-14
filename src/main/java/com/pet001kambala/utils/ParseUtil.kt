@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import tornadofx.*
 import java.lang.Double.parseDouble
 import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.Exception
@@ -86,10 +87,16 @@ class ParseUtil {
             return this.map {
                 val entry = it as Array<*>
                 FuelTransaction(
-                    currentBalance = entry[0] as Float,
-                    date = entry[1] as Timestamp,
-                    distanceTravelled = entry[2].toString().toInt()
-                )
+                    currentBalance = entry[1] as Float,
+                    date = entry[2] as Timestamp,
+                    distanceTravelled = entry[3] as Int,
+                    odometer =  entry[4] as Int,
+                    openingBalance = entry[5] as Float,
+                    quantity = entry[6] as Float,
+                    transactionType = FuelTransactionType.valueOf(entry[7] as String),
+                    waybillNo = entry[8].toString(),
+
+                ).also { it.id = entry[0] as Int}
             }.asObservable()
         }
 
@@ -153,12 +160,13 @@ class ParseUtil {
                 else -> false
             }
         }
-        fun User?.isAdmin(): Boolean{
-            return this !=null && this.userGroupProperty.get() ==UserGroup.Admin.name
+
+        fun User?.isAdmin(): Boolean {
+            return this != null && this.userGroupProperty.get() == UserGroup.Admin.name
         }
     }
 }
 
 enum class AccessType {
-    EDIT_USER, ADD_USER, DELETE_USER, EDIT_VEHICLE, ADD_VEHICLE, DELETE_VEHICLE, REFILL_STORAGE, DISPENSE_FUEL, DELETE_REFILL, MAKE_ADMIN
+    EDIT_USER, ADD_USER, DELETE_USER, EDIT_VEHICLE, ADD_VEHICLE, DELETE_VEHICLE, REFILL_STORAGE, DISPENSE_FUEL, EDIT_FUEL_TRANSACTION, DELETE_REFILL, MAKE_ADMIN
 }

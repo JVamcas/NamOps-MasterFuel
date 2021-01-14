@@ -9,6 +9,8 @@ import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import tornadofx.*
 import java.sql.Timestamp
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.persistence.*
 
 enum class FuelTransactionType(val value: String) {
@@ -47,7 +49,7 @@ class FuelTransaction(
 
     @Column(name = "transactionDate", nullable = false)
     @Convert(converter = SimpleDateConvertor::class)
-    val dateProperty = SimpleObjectProperty(date)
+    val dateProperty = SimpleObjectProperty<Timestamp>(date)
 
     @Column(name = "openingBalance", nullable = false)
     @Convert(converter = SimpleFloatConvertor::class)

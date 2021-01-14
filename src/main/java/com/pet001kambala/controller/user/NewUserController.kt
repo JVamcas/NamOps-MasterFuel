@@ -64,7 +64,7 @@ open class NewUserController : AbstractView("") {
         }
 
         companyName.apply {
-            bind(userModel.companyName)
+            bind(userModel.company)
             items = CompanyName.values().map { it.value }.asObservable()
             required(
                 ValidationTrigger.OnChange(),

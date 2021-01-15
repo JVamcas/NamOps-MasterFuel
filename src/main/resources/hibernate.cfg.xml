@@ -29,6 +29,8 @@
         <mapping class="com.pet001kambala.model.User"/>
         <mapping class="com.pet001kambala.model.Vehicle"/>
         <mapping class="com.pet001kambala.model.FuelTransaction"/>
+        <mapping class="com.pet001kambala.model.Company"/>
+        <mapping class="com.pet001kambala.model.DepartmentC"/>
 
     </session-factory>
 </hibernate-configuration>

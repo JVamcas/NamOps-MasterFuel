@@ -20,17 +20,6 @@ enum class CompanyName(val value: String) {
            values().toList().first { it.value == value }
     }
 }
-@Entity
-class Company(){
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Int? = null
-
-    @Column(name = "company_name", nullable = false)
-    @Convert(converter = SimpleStringConvertor::class)
-    val lastNameProperty = SimpleStringProperty()
-}
-
 
 @Entity
 @Table(name = "Users")
@@ -58,7 +47,7 @@ class User(
 
     @Column(name = "companyName", nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
-    val companyNameProperty = SimpleStringProperty(companyName.name)
+    val companyNameProperty = SimpleStringProperty(companyName.value)
 
     @Column(name = "userGroup", nullable = false)
     @Convert(converter = SimpleStringConvertor::class)

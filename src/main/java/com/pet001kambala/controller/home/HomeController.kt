@@ -14,7 +14,6 @@ import com.pet001kambala.utils.ParseUtil.Companion.filterDispense
 import com.pet001kambala.utils.ParseUtil.Companion.filterRefill
 import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
 import com.pet001kambala.utils.ParseUtil.Companion.toExcelSpreedSheet
-import com.pet001kambala.utils.ParseUtil.Companion.toFuelTransactionList
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.collections.ObservableList
@@ -83,6 +82,10 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             }
             column("Type", FuelTransaction::transactionTypeProperty).apply {
                 contentWidth(padding = 20.0, useAsMin = true)
+                setCellFactory {
+                    val transactionType = FuelTransactionType.values().map { it.value }.asObservable()
+                    ComboBoxEditingCell(transactionType)
+                }
             }
 
             column("Equipment", FuelTransaction::vehicle).apply {

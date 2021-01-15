@@ -12,14 +12,14 @@ internal class ComboBoxEditingCell<K, T>(private val coll: ObservableList<T>) : 
         if (!isEmpty) {
             super.startEdit()
             createComboBox()
-            text = null
+            text = ""
             graphic = comboBox
         }
     }
 
     override fun cancelEdit() {
         super.cancelEdit()
-        text = typ.toString()
+        text = if (typ== null) "" else typ.toString()
         graphic = null
     }
 
@@ -31,10 +31,10 @@ internal class ComboBoxEditingCell<K, T>(private val coll: ObservableList<T>) : 
         } else {
             if (isEditing) {
                 comboBox.value = typ
-                text = typ.toString()
+                text = if (typ== null) "" else typ.toString()
                 setGraphic(comboBox)
             } else {
-                text = typ.toString()
+                text = if (typ== null) "" else typ.toString()
                 setGraphic(null)
             }
         }
@@ -57,7 +57,7 @@ internal class ComboBoxEditingCell<K, T>(private val coll: ObservableList<T>) : 
                 override fun updateItem(item: T?, empty: Boolean) {
                     super.updateItem(item, empty)
                     text = if (item == null || empty) {
-                        "N/A"
+                        ""
                     } else {
                         item.toString()
                     }

@@ -1,0 +1,11 @@
+#companiesBtn{
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.add-company-btn{
+    -fx-end-margin: 10.0 10.0 10.0 10.0;
+}
+.hbox-one{
+    -fx-background-color: #990233;
+}

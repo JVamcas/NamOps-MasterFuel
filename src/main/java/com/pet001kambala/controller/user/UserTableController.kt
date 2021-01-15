@@ -35,6 +35,7 @@ class UserTableController : AbstractModelTableController<User>("Users") {
                 prefWidthProperty().bind(this@scrollpane.widthProperty())
                 prefHeightProperty().bind(this@scrollpane.heightProperty())
 
+                indexColumn
                 column("First Name", User::firstNameProperty).contentWidth(padding = 20.0, useAsMin = true)
                 column("Last Name", User::lastNameProperty).contentWidth(padding = 20.0, useAsMin = true)
                 column("Company", User::companyNameProperty).contentWidth(padding = 20.0, useAsMin = true)

@@ -293,6 +293,8 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         if (!fromDate.isNullOrEmpty() && !toDate.isNullOrEmpty())
             mainBuilder.append(" AND t.transactionDate BETWEEN \'$fromDate\' AND \'$toDate\'")
 
+        mainBuilder.append(" order by t.transdatetime desc")
+
         return try {
             withContext(Dispatchers.Default) {
                 session = sessionFactory!!.openSession()

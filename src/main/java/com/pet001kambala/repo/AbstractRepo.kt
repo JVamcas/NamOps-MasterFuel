@@ -21,6 +21,7 @@ abstract class AbstractRepo<T> {
                 Results.Success<T>(code = Results.Success.CODE.WRITE_SUCCESS)
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             session?.transaction?.rollback()
             Results.Error(e)
         }

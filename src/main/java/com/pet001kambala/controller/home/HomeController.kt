@@ -29,7 +29,6 @@ import javafx.stage.FileChooser
 
 import jxl.Workbook
 import java.io.File
-import java.sql.Driver
 
 
 class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Transactions") {

@@ -12,11 +12,11 @@ import kotlin.reflect.KClass
 abstract class AbstractModelTableController<T>(title: String) : AbstractView(title) {
 
     val modelList = SortedFilteredList<T>()
-    val indexColumn = TableColumn<T, String>("#")
+    val indexColumn = TableColumn<T, String>("No.")
 
     init {
         indexColumn.apply {
-            contentWidth(padding = 10.0, useAsMin = true)
+            contentWidth(padding = 5.0, useAsMin = true)
             style = "-fx-alignment: CENTER;"
             cellValueFactory = PropertyValueFactory<T, String>("Index")
             setCellFactory {
@@ -60,7 +60,7 @@ abstract class AbstractModelTableController<T>(title: String) : AbstractView(tit
 
     inner class ModelEditScope(val viewModel: ItemViewModel<T>) : Scope() {
         //default user
-        val tableData: ObservableList<T> = modelList
+        val tableData by lazy { modelList }
     }
 }
 

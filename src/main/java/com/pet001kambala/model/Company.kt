@@ -24,6 +24,9 @@ class Company {
     @Convert(converter = SimpleBooleanConvertor::class)
     val deletedProperty = SimpleBooleanProperty(false)
 
+    override fun toString(): String{
+        return nameProperty.get()
+    }
 }
 
 class CompanyModel : ItemViewModel<Company>() {

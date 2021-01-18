@@ -58,11 +58,20 @@ class CompanyController : AbstractModelTableController<Company>("Companies") {
                 contextmenu {
                     item("Delete").action {
                         selectedItem?.apply {
-
+                            GlobalScope.launch{
+                                val results = companyRepo.deleteModel(this@apply)
+                                if (results is Results.Success<*>)
+                                    onRefresh()
+                                else parseResults(results)
+                            }
                         }
                     }
                     item("Departments").action{
-
+                        val scope = Scope()
+                        val model = CompanyModel()
+                        model.item = selectedItem
+                        setInScope(model,scope)
+                        find(CompanyDepartmentController::class, scope).openModal()
                     }
                 }
             }

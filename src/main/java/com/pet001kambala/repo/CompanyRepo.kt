@@ -1,6 +1,7 @@
 package com.pet001kambala.repo
 
 import com.pet001kambala.model.Company
+import com.pet001kambala.model.User
 import com.pet001kambala.utils.Results
 import javafx.beans.property.SimpleBooleanProperty
 import kotlinx.coroutines.Dispatchers
@@ -27,5 +28,10 @@ class CompanyRepo : AbstractRepo<Company>() {
         } finally {
             session?.close()
         }
+    }
+
+    suspend fun deleteModel(model: Company): Results {
+        model.deletedProperty.set(true)
+        return updateModel(model)
     }
 }

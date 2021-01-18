@@ -37,7 +37,7 @@ open class NewUserController : AbstractView("") {
     val userName: TextField by fxid("username")
     val password: PasswordField by fxid("password")
     val saveUser: Button by fxid("saveUser")
-    val companiesBtn: Button by fxid("companiesBtn")
+    private val companiesBtn: Button by fxid("companiesBtn")
 
     init {
 

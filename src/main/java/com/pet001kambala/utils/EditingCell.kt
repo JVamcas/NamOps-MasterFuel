@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import tornadofx.*
 
 
-class EditingCell<K>(private val repo: AbstractRepo<K>? = null) : TableCell<K, String>() {
+class EditingCell<K, T>(private val repo: AbstractRepo<K>? = null) : TableCell<K, T>() {
     private lateinit var textField: TextField
 
     override fun startEdit() {
@@ -28,14 +28,14 @@ class EditingCell<K>(private val repo: AbstractRepo<K>? = null) : TableCell<K, S
 
     override fun cancelEdit() {
         super.cancelEdit()
-        text = item
+        text = item.toString()
         graphic = null
     }
 
-    override fun updateItem(item: String?, empty: Boolean) {
+    override fun updateItem(item: T?, empty: Boolean) {
         super.updateItem(item, empty)
         if (empty) {
-            text = item
+            text = item.toString()
             graphic = null
         } else {
             if (isEditing) {
@@ -52,7 +52,8 @@ class EditingCell<K>(private val repo: AbstractRepo<K>? = null) : TableCell<K, S
     private fun createTextField() {
         textField = TextField(string)
         textField.minWidth = this.width - this.graphicTextGap * 2
-        textField.setOnAction { commitEdit(textField.text) }
+        textField.setOnAction { commitEdit(item) }
+//        textField.setOnAction { commitEdit(textField.text) }
         repo?.let {
             textField.addEventHandler(KeyEvent.KEY_PRESSED) {
                 if (it.code == KeyCode.ENTER) {
@@ -66,11 +67,12 @@ class EditingCell<K>(private val repo: AbstractRepo<K>? = null) : TableCell<K, S
         textField.focusedProperty()
             .addListener { _: ObservableValue<out Boolean?>?, _: Boolean?, newValue: Boolean? ->
                 if (!newValue!!) {
-                    commitEdit(textField.text)
+                    commitEdit(item)
+//                    commitEdit(textField.text)
                 }
             }
     }
 
     private val string: String
-        get() = item ?: ""
+        get() = item.toString() ?: ""
 }

@@ -52,7 +52,7 @@ class DepartmentC {
     val companyProperty = SimpleObjectProperty<Company>()
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "companyId")
+    @JoinColumn(name = "companyId", nullable = false)
     var company: Company? = null
         set(value) {
             field = value

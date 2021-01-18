@@ -2,6 +2,7 @@ package com.pet001kambala.controller.campany
 
 import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.model.Company
+import com.pet001kambala.model.CompanyModel
 import com.pet001kambala.model.DepartmentC
 import com.pet001kambala.model.DepartmentModel
 import com.pet001kambala.repo.DepartmentRepo
@@ -15,17 +16,22 @@ import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import kotlinx.coroutines.GlobalScope
 import tornadofx.*
+import kotlinx.coroutines.launch
 
-class CompanyDepartmentController: AbstractModelTableController<DepartmentC>("") {
+class CompanyDepartmentController : AbstractModelTableController<DepartmentC>("") {
 
-    private val deptModel =  DepartmentModel()
+    private val deptModel = DepartmentModel()
     private val deptRepo = DepartmentRepo()
-    private val company : Company by inject()
+    private val companyModel: CompanyModel by inject()
+
+    init {
+        deptModel.item = DepartmentC()
+    }
 
     override val root = vbox(spacing = 10.0) {
         scrollpane {
-            prefHeight = 500.0
-            prefWidth = 450.0
+            prefHeight = 300.0
+            prefWidth = 150.0
 
             minHeight = prefHeight
             minWidth = prefWidth
@@ -46,6 +52,19 @@ class CompanyDepartmentController: AbstractModelTableController<DepartmentC>("")
                     remainingWidth()
                 }
 
+                contextmenu {
+                    item("Delete").action {
+                        selectedItem?.apply {
+                            GlobalScope.launch {
+                                val results = deptRepo.deleteModel(this@apply)
+                                if (results is Results.Success<*>)
+                                    onRefresh()
+                                else parseResults(results)
+                            }
+                        }
+                    }
+                }
+
                 columnResizePolicy = TableView.CONSTRAINED_RESIZE_POLICY
                 vgrow = Priority.ALWAYS
 
@@ -56,12 +75,12 @@ class CompanyDepartmentController: AbstractModelTableController<DepartmentC>("")
         titledpane("Add department") {
             hbox(spacing = 10.0) {
                 textfield {
-                    prefWidth = 300.0
+                    prefWidth = 200.0
                     minWidth = prefWidth
-                    promptText = "Company name"
+                    promptText = "Deparment name"
                     bind(deptModel.name)
 
-                    required(ValidationTrigger.OnChange(),"Enter department name.")
+                    required(ValidationTrigger.OnChange(), "Enter department name.")
                 }
                 button {
                     enableWhen { deptModel.valid }
@@ -70,6 +89,8 @@ class CompanyDepartmentController: AbstractModelTableController<DepartmentC>("")
                         deptModel.commit()
                         GlobalScope.launch {
                             val dept = deptModel.item
+                            dept.company = companyModel.item
+
                             val results = deptRepo.addNewModel(dept)
                             if (results is Results.Success<*>) {
                                 deptModel.item = DepartmentC()
@@ -95,11 +116,11 @@ class CompanyDepartmentController: AbstractModelTableController<DepartmentC>("")
     override fun onDock() {
         super.onDock()
         currentStage?.isResizable = false
-        title = "Departments"
+        title = "${companyModel.item} - Departments"
     }
 
     override suspend fun loadModels(): ObservableList<DepartmentC> {
-        val loadResults = deptRepo.loadAllDepartments(company)
+        val loadResults = deptRepo.loadAllDepartments(companyModel.item)
         if (loadResults is Results.Success<*>)
             return loadResults.data as ObservableList<DepartmentC>
         return observableListOf()

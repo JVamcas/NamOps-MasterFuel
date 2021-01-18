@@ -75,7 +75,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             }
 
             column("Waybill", FuelTransaction::waybillNoProperty).apply {
-                setCellFactory { EditingCell<FuelTransaction>() }
+                setCellFactory { EditingCell<FuelTransaction,String>() }
                 contentWidth(padding = 20.0, useAsMin = true)
                 style = "-fx-alignment: CENTER;"
             }
@@ -130,36 +130,35 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                 }
             }
 
-            column("Odometer (KM)", FuelTransaction::odometerProperty).contentWidth(padding = 20.0, useAsMin = true)
-                .apply {
-                    style = "-fx-alignment: CENTER;"
-                }
-            column(
-                "Distance (KM)",
-                FuelTransaction::distanceTravelledProperty
-            ).contentWidth(padding = 20.0, useAsMin = true).apply {
+            column("Odometer (KM)", FuelTransaction::odometerProperty).apply {
                 style = "-fx-alignment: CENTER;"
-            }
-            column("Opening balance (L)", FuelTransaction::openingBalanceProperty).contentWidth(
-                padding = 20.0,
-                useAsMin = true
-            ).apply {
-                style = "-fx-alignment: CENTER;"
+                contentWidth(padding = 20.0, useAsMin = true)
+                setCellFactory { EditingCell<FuelTransaction,Number>() }
             }
 
-            column("Quantity dispensed (L)", FuelTransaction::quantityProperty).contentWidth(
-                padding = 20.0,
-                useAsMin = true
-            ).apply {
+            column("Distance (KM)", FuelTransaction::distanceTravelledProperty).apply {
                 style = "-fx-alignment: CENTER;"
+                contentWidth(padding = 20.0, useAsMin = true)
+            }
+//            column("Opening balance (L)", FuelTransaction::openingBalanceProperty).contentWidth(
+//                padding = 20.0,
+//                useAsMin = true
+//            ).apply {
+//                style = "-fx-alignment: CENTER;"
+//            }
+
+            column("Quantity dispensed (L)", FuelTransaction::quantityProperty).apply {
+                style = "-fx-alignment: CENTER;"
+                contentWidth(padding = 20.0, useAsMin = true)
+                setCellFactory { EditingCell<FuelTransaction, Number>() }
             }
 
-            column("Closing balance (L)", FuelTransaction::currentBalanceProperty).contentWidth(
-                padding = 20.0,
-                useAsMin = true
-            ).apply {
-                style = "-fx-alignment: CENTER;"
-            }
+//            column("Closing balance (L)", FuelTransaction::currentBalanceProperty).contentWidth(
+//                padding = 20.0,
+//                useAsMin = true
+//            ).apply {
+//                style = "-fx-alignment: CENTER;"
+//            }
 
             transViewModel = editModel
 

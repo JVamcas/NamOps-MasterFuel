@@ -31,4 +31,9 @@ class DepartmentRepo : AbstractRepo<DepartmentC>() {
             session?.close()
         }
     }
+
+    suspend fun deleteModel(model: DepartmentC): Results {
+        model.deletedProperty.set(true)
+        return updateModel(model)
+    }
 }

@@ -293,7 +293,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         if (!fromDate.isNullOrEmpty() && !toDate.isNullOrEmpty())
             mainBuilder.append(" AND t.transactionDate BETWEEN \'$fromDate\' AND \'$toDate\'")
 
-        mainBuilder.append(" order by t.transdatetime desc")
+        mainBuilder.append(" order by t.transactionDate desc")
 
         return try {
             withContext(Dispatchers.Default) {
@@ -303,6 +303,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
                 Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             Results.Error(e)
         } finally {
             session?.close()

@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 import org.hibernate.Session
 import tornadofx.*
 
-class DepartmentRepo : AbstractRepo<Department>() {
+class DepartmentRepo : AbstractRepo<DepartmentC>() {
 
     suspend fun loadAllDepartments(company: Company): Results {
         var session: Session? = null

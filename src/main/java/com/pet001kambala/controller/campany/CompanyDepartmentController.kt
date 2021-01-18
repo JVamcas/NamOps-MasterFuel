@@ -2,8 +2,9 @@ package com.pet001kambala.controller.campany
 
 import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.model.Company
-import com.pet001kambala.model.CompanyModel
-import com.pet001kambala.repo.CompanyRepo
+import com.pet001kambala.model.DepartmentC
+import com.pet001kambala.model.DepartmentModel
+import com.pet001kambala.repo.DepartmentRepo
 import com.pet001kambala.utils.EditingCell
 import com.pet001kambala.utils.Results
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
@@ -14,17 +15,12 @@ import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import kotlinx.coroutines.GlobalScope
 import tornadofx.*
-import kotlinx.coroutines.launch
 
+class CompanyDepartmentController: AbstractModelTableController<DepartmentC>("") {
 
-class CompanyController : AbstractModelTableController<Company>("Companies") {
-
-    private val companyRepo = CompanyRepo()
-    private val companyModel = CompanyModel()
-
-    init {
-        companyModel.item = Company()
-    }
+    private val deptModel =  DepartmentModel()
+    private val deptRepo = DepartmentRepo()
+    private val company : Company by inject()
 
     override val root = vbox(spacing = 10.0) {
         scrollpane {
@@ -34,19 +30,19 @@ class CompanyController : AbstractModelTableController<Company>("Companies") {
             minHeight = prefHeight
             minWidth = prefWidth
 
-            tableview<Company> {
+            tableview<DepartmentC> {
 
                 items = modelList
 
                 smartResize()
                 prefWidthProperty().bind(this@scrollpane.widthProperty())
                 prefHeightProperty().bind(this@scrollpane.heightProperty())
-                placeholder = Label("No companies here yet.")
+                placeholder = Label("No departments here yet.")
 
                 columns.add(indexColumn)
-                column("Company name", Company::nameProperty).apply {
+                column("Department name", DepartmentC::nameProperty).apply {
                     contentWidth(padding = 20.0, useAsMin = true)
-                    setCellFactory { EditingCell(companyRepo) }
+                    setCellFactory { EditingCell<DepartmentC>(deptRepo) }
                     remainingWidth()
                 }
 
@@ -54,41 +50,30 @@ class CompanyController : AbstractModelTableController<Company>("Companies") {
                 vgrow = Priority.ALWAYS
 
                 enableCellEditing()
-
-                contextmenu {
-                    item("Delete").action {
-                        selectedItem?.apply {
-
-                        }
-                    }
-                    item("Departments").action{
-
-                    }
-                }
             }
         }
 
-        titledpane("Add company") {
+        titledpane("Add department") {
             hbox(spacing = 10.0) {
                 textfield {
                     prefWidth = 300.0
                     minWidth = prefWidth
                     promptText = "Company name"
-                    bind(companyModel.name)
+                    bind(deptModel.name)
 
-                    required(ValidationTrigger.OnChange(),"Enter company name.")
+                    required(ValidationTrigger.OnChange(),"Enter department name.")
                 }
                 button {
-                    enableWhen { companyModel.valid }
+                    enableWhen { deptModel.valid }
                     graphic = FontAwesomeIconView(FontAwesomeIcon.SAVE)
                     action {
-                        companyModel.commit()
+                        deptModel.commit()
                         GlobalScope.launch {
-                            val company = companyModel.item
-                            val results = companyRepo.addNewModel(company)
+                            val dept = deptModel.item
+                            val results = deptRepo.addNewModel(dept)
                             if (results is Results.Success<*>) {
-                                companyModel.item = Company()
-                                modelList.add(company)
+                                deptModel.item = DepartmentC()
+                                modelList.add(dept)
                                 return@launch
                             }
                             parseResults(results)
@@ -96,13 +81,13 @@ class CompanyController : AbstractModelTableController<Company>("Companies") {
                     }
                 }
                 button {
-                    enableWhen { companyModel.dirty }
+                    enableWhen { deptModel.dirty }
                     graphic = FontAwesomeIconView(FontAwesomeIcon.CLOSE)
                     action {
-                        companyModel.item = Company()
+                        deptModel.item = DepartmentC()
                     }
                 }
-                companyModel.validate(decorateErrors = false)
+                deptModel.validate(decorateErrors = false)
             }
         }
     }
@@ -110,13 +95,13 @@ class CompanyController : AbstractModelTableController<Company>("Companies") {
     override fun onDock() {
         super.onDock()
         currentStage?.isResizable = false
-        title = "Companies"
+        title = "Departments"
     }
 
-    override suspend fun loadModels(): ObservableList<Company> {
-        val loadResults = companyRepo.loadAllCompanies()
+    override suspend fun loadModels(): ObservableList<DepartmentC> {
+        val loadResults = deptRepo.loadAllDepartments(company)
         if (loadResults is Results.Success<*>)
-            return loadResults.data as ObservableList<Company>
+            return loadResults.data as ObservableList<DepartmentC>
         return observableListOf()
     }
 }

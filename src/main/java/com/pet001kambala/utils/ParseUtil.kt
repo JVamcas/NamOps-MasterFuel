@@ -83,23 +83,6 @@ class ParseUtil {
             }
         }
 
-        fun List<*>.toFuelTransactionList(): ObservableList<FuelTransaction> {
-            return this.map {
-                val entry = it as Array<*>
-                FuelTransaction(
-                    currentBalance = entry[1] as Float,
-                    date = entry[2] as Timestamp,
-                    distanceTravelled = entry[3] as Int,
-                    odometer =  entry[4] as Int,
-                    openingBalance = entry[5] as Float,
-                    quantity = entry[6] as Float,
-                    transactionType = FuelTransactionType.valueOf(entry[7] as String),
-                    waybillNo = entry[8].toString(),
-
-                ).also { it.id = entry[0] as Int}
-            }.asObservable()
-        }
-
         /***
          * Export fuel transaction records to  excel for further processing
          * @param wkb the workbook to export

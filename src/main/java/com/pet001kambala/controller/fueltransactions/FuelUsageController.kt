@@ -70,11 +70,12 @@ class FuelUsageController : AbstractView("Dispense fuel") {
             valueProperty().addListener { _, _, newVehicle ->
 
                 newVehicle?.unitNumberProperty?.get()?.let { unitNo ->
+                    var results: Int = 0
                     GlobalScope.launch {
                         vehicleOdometer.text = "0"
-                        val results = transactionRepo.loadVehicleOdometer(unitNo)
-                        vehicleOdometer.text = results.toString()
+                        results = transactionRepo.loadVehicleOdometer(unitNo)
                     }
+                    vehicleOdometer.text = results.toString()
                 }
             }
         }
@@ -105,7 +106,7 @@ class FuelUsageController : AbstractView("Dispense fuel") {
             }
             GlobalScope.launch {
                 val results = transactionRepo.loadQuantityDispensed()
-                transactionModel.quantity.set(results)
+                transactionModel.quantity.set(results.toString())
             }
         }
 

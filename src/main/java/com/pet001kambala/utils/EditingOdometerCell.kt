@@ -1,6 +1,8 @@
 package com.pet001kambala.utils
 
+import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.repo.AbstractRepo
+import com.pet001kambala.repo.FuelTransactionRepo
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.scene.control.TableCell
@@ -13,7 +15,7 @@ import kotlinx.coroutines.launch
 import tornadofx.*
 
 
-class EditingCell<K>(private val repo: AbstractRepo<K>? = null) : TableCell<K, String>() {
+class EditingOdometerCell : TableCell<FuelTransaction, String>() {
     private lateinit var textField: TextField
 
     override fun startEdit() {
@@ -53,11 +55,15 @@ class EditingCell<K>(private val repo: AbstractRepo<K>? = null) : TableCell<K, S
         textField = TextField(string)
         textField.minWidth = this.width - this.graphicTextGap * 2
         textField.setOnAction { commitEdit(textField.text) }
-        repo?.let {
+        FuelTransactionRepo().let { repo->
             textField.addEventHandler(KeyEvent.KEY_PRESSED) {
                 if (it.code == KeyCode.ENTER) {
+                    val oldValue = item
+                    val newValue = textField.text
+
                     GlobalScope.launch {
-                        val results = repo.updateModel(rowItem)
+                        val results = repo.updateOdometer(rowItem,oldValue,newValue)
+
                     }
                 }
             }

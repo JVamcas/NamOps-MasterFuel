@@ -1,7 +1,6 @@
 package com.pet001kambala.controller.campany
 
 import com.pet001kambala.controller.AbstractModelTableController
-import com.pet001kambala.model.Company
 import com.pet001kambala.model.CompanyModel
 import com.pet001kambala.model.DepartmentC
 import com.pet001kambala.model.DepartmentModel

@@ -24,13 +24,13 @@ class FuelTransaction(
     date: Timestamp? = null,
     attendant: User? = null,
     openingBalance: Float = 0f,
-    quantity: Float = 0f,
+    quantity: String = "0.0",
     currentBalance: Float = 0f,
     vehicle: Vehicle? = null,
     driverName: User? = null,
     transactionType: FuelTransactionType = FuelTransactionType.DISPENSE,
-    odometer: Int = 0,
-    distanceTravelled: Int = 0,
+    odometer: String = "0",
+    distanceTravelled: String = "0",
     waybillNo: String? = null,
 
     ) {
@@ -40,8 +40,8 @@ class FuelTransaction(
     var id: Int? = null
 
     @Column(name = "odometer")
-    @Convert(converter = SimpleIntegerConvertor::class)
-    val odometerProperty = SimpleIntegerProperty(odometer)
+    @Convert(converter = SimpleStringConvertor::class)
+    val odometerProperty = SimpleStringProperty(odometer)
 
     @Column(name = "waybillNo")
     @Convert(converter = SimpleStringConvertor::class)
@@ -56,8 +56,8 @@ class FuelTransaction(
     val openingBalanceProperty = SimpleFloatProperty(openingBalance)
 
     @Column(name = "quantityDispensed", nullable = false)
-    @Convert(converter = SimpleFloatConvertor::class)
-    val quantityProperty = SimpleFloatProperty(quantity)
+    @Convert(converter = SimpleStringConvertor::class)
+    val quantityProperty = SimpleStringProperty(quantity)
 
     @Column(name = "currentBalance", nullable = false)
     @Convert(converter = SimpleFloatConvertor::class)
@@ -105,8 +105,8 @@ class FuelTransaction(
     val transactionTypeProperty = SimpleStringProperty(transactionType.value)
 
     @Column(name = "distanceTravelled")
-    @Convert(converter = SimpleIntegerConvertor::class)
-    val distanceTravelledProperty = SimpleIntegerProperty(distanceTravelled)
+    @Convert(converter = SimpleStringConvertor::class)
+    val distanceTravelledProperty = SimpleStringProperty(distanceTravelled)
 
     fun data() = arrayListOf(
         Pair("Date", dateProperty.get()),

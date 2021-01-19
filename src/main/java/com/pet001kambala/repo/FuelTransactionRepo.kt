@@ -5,27 +5,24 @@ import com.pet001kambala.model.FuelTransactionSearch
 import com.pet001kambala.model.FuelTransactionType
 import com.pet001kambala.model.Vehicle
 import com.pet001kambala.utils.DateUtil
+import com.pet001kambala.utils.DateUtil.Companion.today
 import com.pet001kambala.utils.Results
 import com.pet001kambala.utils.SessionManager.connection
-import javafx.collections.ObservableList
-import jxl.write.Label
-import jxl.write.WritableWorkbook
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.apache.commons.csv.CSVFormat
 import org.hibernate.Session
 import org.hibernate.Transaction
+import org.w3c.dom.views.AbstractView
 import tornadofx.*
 import java.io.StringReader
 import java.sql.Date
 import java.sql.ResultSet
 import java.sql.Statement
-import java.sql.Timestamp
-import java.util.ArrayList
 import kotlin.math.round
 
-class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
+class FuelTransactionRepo(val abstractView: AbstractView<FuelTransaction>) : AbstractRepo<FuelTransaction>() {
 
     suspend fun loadAllTransactions(): Results {
         var session: Session? = null
@@ -83,18 +80,18 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         return try {
             coroutineScope {
                 val distanceDeferred =
-                    async { loadDistanceTravelledSinceLastRefill(model.odometerProperty.get(), vehicleId!!) }
+                    async { loadDistanceTravelledSinceLastRefill(model.odometerProperty.get().toInt(), vehicleId!!) }
                 val balanceDeferred = async { loadOpeningBalance() }
 
                 val distanceTravelled = distanceDeferred.await()
                 val openingBalance = balanceDeferred.await()
 
-                if (openingBalance < model.quantityProperty.get())
+                if (openingBalance < model.quantityProperty.get().toFloat())
                     throw Results.Error.InsufficientFuelException()
 
-                model.distanceTravelledProperty.set(distanceTravelled)
+                model.distanceTravelledProperty.set(distanceTravelled.toString())
                 model.openingBalanceProperty.set(openingBalance)
-                model.currentBalanceProperty.set(openingBalance - model.quantityProperty.get())
+                model.currentBalanceProperty.set(openingBalance - model.quantityProperty.get().toFloat())
                 addNewModel(model)
             }
         } catch (e: Exception) {
@@ -107,7 +104,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
             val openingBalance = loadOpeningBalance()
 
             model.openingBalanceProperty.set(openingBalance)
-            model.currentBalanceProperty.set(model.quantityProperty.get() + openingBalance)
+            model.currentBalanceProperty.set(model.quantityProperty.get().toFloat() + openingBalance)
             addNewModel(model)
             Results.Success<Float>(code = Results.Success.CODE.WRITE_SUCCESS)
         } catch (e: Exception) {
@@ -329,5 +326,34 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         } finally {
             session?.close()
         }
+    }
+
+    suspend fun updateOdometer(originalTrans: FuelTransaction, oldOdo: String, newOdo: String): Results {
+
+        val thisDate = originalTrans.dateProperty.get().toLocalDateTime().toLocalDate()
+        val today = today().toLocalDateTime().toLocalDate()
+
+        val search = FuelTransactionSearch().apply {
+            fromDateProperty.set(thisDate)
+            toDateProperty.set(today)
+            vehicleProperty.set(originalTrans.vehicle?.unitNumberProperty?.get())
+        }
+        //load all dispense for this vehicle from that date to today
+        val vehicleTrans = loadFilteredModel(search)
+        return if (vehicleTrans is Results.Success<*>) {
+            val data = vehicleTrans.data as List<FuelTransaction>
+
+            val corFactor = newOdo.toInt() - oldOdo.toInt()
+
+            data.forEach {
+                val currentDistance = it.distanceTravelledProperty.get().toInt()
+                it.distanceTravelledProperty.set(if (currentDistance > 0) (currentDistance + corFactor).toString() else "0")
+                //update original Fuel Transaction odometer
+                if(it.id == originalTrans.id)
+                    it.odometerProperty.set(newOdo)
+            }
+            batchUpdate(data)
+        }
+        else vehicleTrans
     }
 }

@@ -4,6 +4,7 @@ import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.controller.AbstractView
 import com.pet001kambala.controller.campany.CompanyController
 import com.pet001kambala.model.*
+import com.pet001kambala.repo.CompanyRepo
 import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.utils.ParseUtil.Companion.isAdmin
 import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
@@ -11,6 +12,7 @@ import com.pet001kambala.utils.ParseUtil.Companion.isValidPassword
 import com.pet001kambala.utils.Results
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
+import javafx.collections.ObservableList
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.PasswordField
@@ -31,7 +33,7 @@ open class NewUserController : AbstractView("") {
 
     private val firstName: TextField by fxid("firstName")
     private val lastName: TextField by fxid("lastName")
-    private val companyName: ComboBox<String> by fxid("companyName")
+    private val companyName: ComboBox<Company> by fxid("companyName")
     private val category: ComboBox<String> by fxid("category")
     private val cancelEditUser: Button by fxid("cancelEditUser")
     val userName: TextField by fxid("username")
@@ -69,10 +71,15 @@ open class NewUserController : AbstractView("") {
 
         companyName.apply {
             bind(userModel.company)
-            items = CompanyName.values().map { it.value }.asObservable()
+            GlobalScope.launch{
+                val results = CompanyRepo().loadAllCompanies()
+                if(results is Results.Success<*>)
+                    items = results.data as ObservableList<Company>
+            }
+//            items = CompanyRepo().loadAllCompanies().asObservable()
             required(
                 ValidationTrigger.OnChange(),
-                "Select your company."
+                "Select user's company."
             )
         }
         password.apply {

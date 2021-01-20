@@ -2,11 +2,12 @@ package com.pet001kambala.controller.user
 
 import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.controller.AbstractView
-import com.pet001kambala.model.User
-import com.pet001kambala.model.UserGroup
-import com.pet001kambala.model.UserModel
+import com.pet001kambala.model.*
+import com.pet001kambala.repo.CompanyRepo
 import com.pet001kambala.repo.UserRepo
+import com.pet001kambala.repo.VehicleRepo
 import com.pet001kambala.utils.AccessType
+import com.pet001kambala.utils.ComboBoxEditingCell
 import com.pet001kambala.utils.ParseUtil.Companion.isAdmin
 import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
 import com.pet001kambala.utils.Results
@@ -38,7 +39,18 @@ class UserTableController : AbstractModelTableController<User>("Users") {
                 indexColumn
                 column("First Name", User::firstNameProperty).contentWidth(padding = 20.0, useAsMin = true)
                 column("Last Name", User::lastNameProperty).contentWidth(padding = 20.0, useAsMin = true)
-                column("Company", User::companyNameProperty).contentWidth(padding = 20.0, useAsMin = true)
+                column("Company", User::company).apply {
+                    contentWidth(padding = 20.0, useAsMin = true)
+                    GlobalScope.launch {
+                        val loadResults = CompanyRepo().loadAllCompanies()
+                        setCellFactory {
+                            val companies = if (loadResults is Results.Success<*>)
+                                loadResults.data as ObservableList<Company>
+                            else observableListOf()
+                            ComboBoxEditingCell(companies)
+                        }
+                    }
+                }
                 column("Category", User::userGroupProperty).contentWidth(padding = 20.0, useAsMin = true)
                     .remainingWidth()
 

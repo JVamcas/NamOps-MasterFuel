@@ -2,7 +2,6 @@ package com.pet001kambala.controller.home
 
 import com.pet001kambala.controller.AbstractView
 import com.pet001kambala.controller.AbstractView.Account.currentUser
-import com.pet001kambala.model.CompanyName
 import com.pet001kambala.model.User
 import com.pet001kambala.model.UserGroup
 import com.pet001kambala.model.UserModel
@@ -62,23 +61,27 @@ class LoginController : AbstractView("") {
                     progressIndicator.isVisible = false
 
                     if (results is Results.Success<*>) {
-                        val data = (results.data as List<*>).firstOrNull()
-                        data?.let {
-                            val entry = data as Array<*>
-                            user = User(
-                                firstName = entry[3].toString(),
-                                lastName = entry[4].toString(),
-                                userGroup = UserGroup.valueOf(entry[6].toString()),
-                                username = entry[7].toString(),
-                                companyName = CompanyName.getName(entry[1].toString()),
-                                deleted = false,
-                            ).also { it.id = entry[0] as Int }
+                        user = (results.data as List<User>).firstOrNull()
+                        user?.let {
                             Platform.runLater {
                                 currentUser.set(user)
                             }
                             return@launch
                         }
                         invalidLoginLabel.isVisible = true
+//                        data?.let {
+//                            val entry = data as Array<*>
+//                            user = User(
+//                                firstName = entry[3].toString(),
+//                                lastName = entry[4].toString(),
+//                                userGroup = UserGroup.valueOf(entry[6].toString()),
+//                                username = entry[7].toString(),
+//                                companyName = CompanyName.getName(entry[1].toString()),
+//                                deleted = false,
+//                            ).also { it.id = entry[0] as Int }
+
+                        //}
+
 
                     } else
                         parseResults(results)

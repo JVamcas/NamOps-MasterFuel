@@ -394,7 +394,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
             Platform.runLater {
                 fuelAvailable.apply {
-                    style { textFill = if (currentFuel >= 10_000f) c("#ffffff") else c("#FF2000") }
+                    style { textFill = if (currentFuel >= 10_000f) c("#11ff20") else c("#FF2000") }
                     text = "${currentFuel} Litres"
                 }
             }

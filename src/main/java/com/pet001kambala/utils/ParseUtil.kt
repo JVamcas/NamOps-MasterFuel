@@ -5,7 +5,9 @@ import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.model.FuelTransactionType
 import com.pet001kambala.model.User
 import com.pet001kambala.model.UserGroup
+import javafx.beans.property.Property
 import javafx.collections.ObservableList
+import javafx.event.EventTarget
 import javafx.scene.control.TextField
 import jxl.write.Label
 import jxl.write.Number
@@ -82,6 +84,14 @@ class ParseUtil {
                     true
             }
         }
+
+//        fun EventTarget.datetimepicker(
+//            property: Property<LocalDateTime>,
+//            op: DateTimePicker.() -> Unit
+//        ): DateTimePicker {
+//
+//
+//        }
 
         /***
          * Export fuel transaction records to  excel for further processing

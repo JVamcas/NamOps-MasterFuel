@@ -5,6 +5,7 @@ import com.pet001kambala.model.FuelTransactionSearch
 import com.pet001kambala.model.FuelTransactionType
 import com.pet001kambala.model.Vehicle
 import com.pet001kambala.utils.DateUtil
+import com.pet001kambala.utils.DateUtil.Companion._24
 import com.pet001kambala.utils.DateUtil.Companion.today
 import com.pet001kambala.utils.Results
 import com.pet001kambala.utils.SessionManager.connection
@@ -14,7 +15,6 @@ import okhttp3.Request
 import org.apache.commons.csv.CSVFormat
 import org.hibernate.Session
 import org.hibernate.Transaction
-import org.w3c.dom.views.AbstractView
 import tornadofx.*
 import java.io.StringReader
 import java.sql.Date
@@ -22,7 +22,7 @@ import java.sql.ResultSet
 import java.sql.Statement
 import kotlin.math.round
 
-class FuelTransactionRepo(val abstractView: AbstractView<FuelTransaction>) : AbstractRepo<FuelTransaction>() {
+class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
 
     suspend fun loadAllTransactions(): Results {
         var session: Session? = null
@@ -31,7 +31,6 @@ class FuelTransactionRepo(val abstractView: AbstractView<FuelTransaction>) : Abs
                 session = sessionFactory!!.openSession()
                 val qryStr = "SELECT * FROM fueltransactions t ORDER BY t.transactionDate DESC LIMIT 50"
                 val data = session!!.createNativeQuery(qryStr, FuelTransaction::class.java).resultList.asObservable()
-//               on!!.createQuery("FROM FuelTransaction", FuelTransaction::class.java).resultList.asObservable()
                 Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
         } catch (e: Exception) {
@@ -40,7 +39,7 @@ class FuelTransactionRepo(val abstractView: AbstractView<FuelTransaction>) : Abs
         }
     }
 
-    private suspend fun loadOpeningBalance(): Float {
+    suspend fun loadOpeningBalance(): Float {
         var openingBalance: Float
         withContext(Dispatchers.Default) {
             val session = sessionFactory!!.openSession()
@@ -284,8 +283,8 @@ class FuelTransactionRepo(val abstractView: AbstractView<FuelTransaction>) : Abs
         if (!search.driverProperty.get().isNullOrEmpty())
             mainBuilder.append(" AND t.driverId=(SELECT id FROM users WHERE lastName LIKE '${search.driverProperty.get()}')")
 
-        val fromDate = search.fromDateProperty.get()?.toString()
-        val toDate = search.toDateProperty.get()?.toString()
+        val fromDate = search.fromDateProperty.get()?.minusHours(2)?._24()
+        val toDate = search.toDateProperty.get()?.minusHours(2)?._24()
 
         if (!fromDate.isNullOrEmpty() && !toDate.isNullOrEmpty())
             mainBuilder.append(" AND t.transactionDate BETWEEN \'$fromDate\' AND \'$toDate\'")
@@ -330,12 +329,12 @@ class FuelTransactionRepo(val abstractView: AbstractView<FuelTransaction>) : Abs
 
     suspend fun updateOdometer(originalTrans: FuelTransaction, oldOdo: String, newOdo: String): Results {
 
-        val thisDate = originalTrans.dateProperty.get().toLocalDateTime().toLocalDate()
-        val today = today().toLocalDateTime().toLocalDate()
+        val thisDate = originalTrans.dateProperty.get().toLocalDateTime()
+        val tomorrow = today().toLocalDateTime()
 
         val search = FuelTransactionSearch().apply {
             fromDateProperty.set(thisDate)
-            toDateProperty.set(today)
+            toDateProperty.set(tomorrow)
             vehicleProperty.set(originalTrans.vehicle?.unitNumberProperty?.get())
         }
         //load all dispense for this vehicle from that date to today
@@ -349,11 +348,82 @@ class FuelTransactionRepo(val abstractView: AbstractView<FuelTransaction>) : Abs
                 val currentDistance = it.distanceTravelledProperty.get().toInt()
                 it.distanceTravelledProperty.set(if (currentDistance > 0) (currentDistance + corFactor).toString() else "0")
                 //update original Fuel Transaction odometer
-                if(it.id == originalTrans.id)
+                if (it.id == originalTrans.id)
                     it.odometerProperty.set(newOdo)
             }
-            batchUpdate(data)
+            val updateResults = batchUpdate(data)
+            if (updateResults is Results.Success<*>)
+                Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
+            else updateResults
+        } else vehicleTrans
+    }
+
+    suspend fun updateWayBill(trans: FuelTransaction, newValue: String): Results {
+        val search = FuelTransactionSearch().also { it.waybillNoProperty.set(newValue) }
+        val results = loadFilteredModel(search)
+        return if (results is Results.Success<*>) {
+            if (results.data != null)
+                Results.Error(Results.Error.DuplicateWaybillException())
+            else updateModel(trans.also { it.waybillNoProperty.set(newValue) })
+        } else results
+    }
+
+    suspend fun updateFuelDispensed(trans: FuelTransaction, oldValue: String, newValue: String): Results {
+        val thisDate = trans.dateProperty.get().toLocalDateTime()
+        val tomorrow = today().toLocalDateTime()
+
+        val search = FuelTransactionSearch().apply {
+            fromDateProperty.set(thisDate)
+            toDateProperty.set(tomorrow)
         }
-        else vehicleTrans
+        //load all dispense for this vehicle from that date to today
+        val searchResults = loadFilteredModel(search)
+        return if (searchResults is Results.Success<*>) {
+            val data = searchResults.data as List<FuelTransaction>
+
+            val corFactor = newValue.toFloat() - oldValue.toFloat()
+
+            data.forEach {
+                val openingBalance = it.openingBalanceProperty.get() + corFactor
+                val closingBalance = it.currentBalanceProperty.get() + corFactor
+
+                if (it.id != trans.id)// current trans opening balance is not affected
+                    it.openingBalanceProperty.set(openingBalance)
+
+                if (it.id == trans.id)
+                    it.quantityProperty.set(newValue)
+
+                it.currentBalanceProperty.set(closingBalance)
+            }
+            batchUpdate(data)
+
+        } else searchResults
+    }
+
+    suspend fun deleteFuelDispenseInstance(trans: FuelTransaction): Results {
+
+        val newDispense = trans.quantityProperty.get().toFloat() * 2
+
+        val dispenseResults = updateFuelDispensed(trans, trans.quantityProperty.get(), newDispense.toString())
+        return if (dispenseResults is Results.Success<*>)
+            deleteModel(trans)
+        else dispenseResults
+    }
+
+    private suspend fun deleteModel(trans: FuelTransaction): Results {
+        var session: Session? = null
+        return try {
+            withContext(Dispatchers.Default) {
+                session = sessionFactory!!.openSession()
+                val transaction = session!!.beginTransaction()
+                session!!.delete(trans)
+                transaction.commit()
+                Results.Success<FuelTransaction>(code = Results.Success.CODE.DELETE_SUCCESS)
+            }
+        } catch (e: Exception) {
+            Results.Error(e)
+        } finally {
+            session?.close()
+        }
     }
 }

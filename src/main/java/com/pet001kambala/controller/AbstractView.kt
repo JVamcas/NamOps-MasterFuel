@@ -78,6 +78,12 @@ abstract class AbstractView(private val viewTitle: String) : View(viewTitle) {
                         msg = "The current odometer reading cannot be less than the previous reading."
                     )
                 }
+                Results.Error.CODE.DUPLICATE_WAYBILL -> {
+                    showError(
+                        header = "Duplicate Waybill.",
+                        msg = "That waybill already exist on the system."
+                    )
+                }
                 Results.Error.CODE.UNKNOWN -> {
                     showError(
                         header = "Unknown Error", msg = "An unknown error has occurred. What to do:\n" +
@@ -88,7 +94,7 @@ abstract class AbstractView(private val viewTitle: String) : View(viewTitle) {
                 Results.Error.CODE.INSUFFICIENT_FUEL -> {
                     showError(
                         header = "Insufficient Fuel",
-                        msg = "Insufficient fuel. Fill up tank or select smaller quantity."
+                        msg = "Insufficient fuel. Fill up storage tank or select smaller quantity."
                     )
                 }
             }

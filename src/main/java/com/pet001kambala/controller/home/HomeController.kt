@@ -16,6 +16,7 @@ import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
 import com.pet001kambala.utils.ParseUtil.Companion.toExcelSpreedSheet
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
+import javafx.application.Platform
 import javafx.collections.ObservableList
 import javafx.event.ActionEvent
 import javafx.scene.control.*
@@ -23,6 +24,7 @@ import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Priority
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+
 
 import tornadofx.*
 import javafx.stage.FileChooser
@@ -41,10 +43,12 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
     private val fillStorageBtn: Button by fxid("storageRefill")
     private val dispenseBtn: Button by fxid("vehicleRefill")
 
+    private val fuelAvailable: Label by fxid("fuelAvailable")
+
     private val transactionRepo = FuelTransactionRepo()
     private val transactionSearchModel = TransactionSearch(FuelTransactionSearch())
 
-    private lateinit var transViewModel: TableViewEditModel<FuelTransaction>
+    lateinit var tableModel: TableViewEditModel<FuelTransaction>
 
 
     companion object {
@@ -67,15 +71,13 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
             columns.add(indexColumn)
 
-
-
             column("Date", FuelTransaction::dateProperty).apply {
                 contentWidth(padding = 20.0, useAsMin = true)
                 setCellFactory { DateEditingCell<FuelTransaction>() }
             }
 
             column("Waybill", FuelTransaction::waybillNoProperty).apply {
-                setCellFactory { EditingCell<FuelTransaction>() }
+                setCellFactory { EditingWaybillCell(this@HomeController) }
                 contentWidth(padding = 20.0, useAsMin = true)
                 style = "-fx-alignment: CENTER;"
             }
@@ -133,7 +135,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             column("Odometer (KM)", FuelTransaction::odometerProperty).apply {
                 style = "-fx-alignment: CENTER;"
                 contentWidth(padding = 20.0, useAsMin = true)
-                setCellFactory { EditingOdometerCell() }
+                setCellFactory { EditingOdometerCell(this@HomeController) }
             }
 
             column("Distance (KM)", FuelTransaction::distanceTravelledProperty).apply {
@@ -150,7 +152,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             column("Quantity dispensed (L)", FuelTransaction::quantityProperty).apply {
                 style = "-fx-alignment: CENTER;"
                 contentWidth(padding = 20.0, useAsMin = true)
-                setCellFactory { EditingCell<FuelTransaction>() }
+                setCellFactory { EditingFuelDispencedCell(this@HomeController) }
             }
 
             column("Closing balance (L)", FuelTransaction::currentBalanceProperty).contentWidth(
@@ -160,15 +162,16 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                 style = "-fx-alignment: CENTER;"
             }
 
-            transViewModel = editModel
+            tableModel = editModel
 
-            enableCellEditing()
             enableDirtyTracking()
+            enableCellEditing()
 
         }
         scrollPane.apply {
             add(tableView)
         }
+
 
         root.apply {
             vbox(10.0) {
@@ -225,17 +228,22 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                                             fieldset {
                                                 field("From") {
                                                     tooltip("Start date.")
-                                                    datepicker(transactionSearchModel.fromDate) {
-                                                        prefWidth = 150.0
-                                                        minWidth = prefWidth
+                                                    hbox {
+                                                        add(DateTimePicker().apply {
+                                                            prefWidth = 150.0
+                                                            minWidth = prefWidth
+                                                            transactionSearchModel.fromDate.bind(dateTimeValue)
+                                                        })
                                                     }
                                                 }
                                                 field("To") {
                                                     tooltip("End date.")
-                                                    datepicker(transactionSearchModel.toDate) {
-                                                        prefWidth = 150.0
-                                                        minWidth = prefWidth
-
+                                                    hbox {
+                                                        add(DateTimePicker().apply {
+                                                            prefWidth = 150.0
+                                                            minWidth = prefWidth
+                                                            transactionSearchModel.toDate.bind(dateTimeValue)
+                                                        })
                                                     }
                                                 }
                                             }
@@ -301,6 +309,10 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                 saveButton.show()
             else saveButton.hide()
 
+            if (currentUser.isAuthorised(AccessType.DELETE_REFILL))
+                deleteButton.show()
+            else deleteButton.hide()
+
             fillStorageBtn.isDisable = !currentUser.isAuthorised(AccessType.REFILL_STORAGE)
             dispenseBtn.isDisable = !currentUser.isAuthorised(AccessType.DISPENSE_FUEL)
 
@@ -343,7 +355,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
     override fun onSave() {
         super.onSave()
 
-        val changedTrans = transViewModel.items.asSequence()
+        val changedTrans = tableModel.items.asSequence()
             .filter { it.value.isDirty }.map {
                 it.value.commit()
                 it.key
@@ -354,10 +366,37 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                 val results = transactionRepo.batchUpdate(changedTrans)
 
                 if (results !is Results.Success<*>) {
-                    transViewModel.items.asSequence().forEach { it.value.rollback() }
+                    tableModel.items.asSequence().forEach { it.value.rollback() }
                 } else
                     onRefresh()
                 //process the results of batch processing
+            }
+        }
+    }
+
+    override fun onDelete() {
+        super.onDelete()
+        GlobalScope.launch {
+            val trans = tableView.selectedItem
+            val results = trans?.let { transactionRepo.deleteFuelDispenseInstance(it) }
+            if (results is Results.Success<*>)
+                onRefresh()
+            else results?.let { parseResults(it) }
+        }
+    }
+
+    override fun onRefresh() {
+        super.onRefresh()
+
+        var currentFuel: Float  = 0f
+        GlobalScope.launch {
+            currentFuel = transactionRepo.loadOpeningBalance()
+
+            Platform.runLater {
+                fuelAvailable.apply {
+                    style { textFill = if (currentFuel >= 10_000f) c("#ffffff") else c("#FF2000") }
+                    text = "${currentFuel} Litres"
+                }
             }
         }
     }

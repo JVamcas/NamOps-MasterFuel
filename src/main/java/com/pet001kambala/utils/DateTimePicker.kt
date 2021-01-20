@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter
  */
 class DateTimePicker : DatePicker() {
     private var formatter: DateTimeFormatter? = null
-    private val dateTimeValue: ObjectProperty<LocalDateTime?> = SimpleObjectProperty(LocalDateTime.now())
+    val dateTimeValue: ObjectProperty<LocalDateTime?> = SimpleObjectProperty()
     private val format: ObjectProperty<String> = object : SimpleObjectProperty<String>() {
         override fun set(newValue: String) {
             super.set(newValue)

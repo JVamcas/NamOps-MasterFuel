@@ -1,5 +1,7 @@
 package com.pet001kambala.utils
 
+import tornadofx.*
+
 import com.pet001kambala.controller.home.HomeController
 import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.repo.AbstractRepo
@@ -13,10 +15,7 @@ import javafx.scene.input.KeyEvent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-import tornadofx.*
-
-
-class EditingOdometerCell(private val tableView: HomeController) : TableCell<FuelTransaction, String>() {
+class EditingWaybillCell(private val tableView: HomeController) : TableCell<FuelTransaction, String>() {
     private lateinit var textField: TextField
 
     override fun startEdit() {
@@ -63,11 +62,14 @@ class EditingOdometerCell(private val tableView: HomeController) : TableCell<Fue
                     val newValue = textField.text
 
                     GlobalScope.launch {
-                        val results = repo.updateOdometer(rowItem,oldValue,newValue)
+                        val results = repo.updateWayBill(rowItem,newValue)
                         if(results is Results.Success<*>)
                             tableView.onRefresh()
 //                            tableView.modelList.asyncItems { results.data as List<FuelTransaction> }
-                        else tableView.parseResults(results)
+                        else {
+                            tableView.tableModel.rollbackSelected()
+                            tableView.parseResults(results)
+                        }
                     }
                 }
             }

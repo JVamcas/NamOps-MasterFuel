@@ -26,6 +26,10 @@ class DateUtil {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             return this.format(formatter)
         }
+        fun localDateToday(): LocalDateTime{
+            val date = Date()
+            return Timestamp(date.time).toLocalDateTime()
+        }
 
         fun thisYearFirstDate(): Date {
             val cal = Calendar.getInstance()

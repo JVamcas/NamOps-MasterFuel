@@ -121,6 +121,14 @@ class FuelTransaction(
         Pair("Quantity dispensed (L)", quantityProperty.get()),
         Pair("Closing balance(L)", currentBalanceProperty.get())
     )
+
+    override fun equals(other: Any?): Boolean {
+        if(other == null)
+            return false
+        if(other !is FuelTransaction)
+            return false
+        return  id == other.id
+    }
 }
 
 class FuelTransactionModel : ItemViewModel<FuelTransaction>() {

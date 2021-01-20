@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import tornadofx.*
 
 
-class EditingOdometerCell(private val tableView: HomeController) : TableCell<FuelTransaction, String>() {
+class EditingFuelDispencedCell(private val tableView: HomeController) : TableCell<FuelTransaction, String>() {
     private lateinit var textField: TextField
 
     override fun startEdit() {
@@ -63,7 +63,7 @@ class EditingOdometerCell(private val tableView: HomeController) : TableCell<Fue
                     val newValue = textField.text
 
                     GlobalScope.launch {
-                        val results = repo.updateOdometer(rowItem,oldValue,newValue)
+                        val results = repo.updateFuelDispensed(rowItem,oldValue,newValue)
                         if(results is Results.Success<*>)
                             tableView.onRefresh()
 //                            tableView.modelList.asyncItems { results.data as List<FuelTransaction> }

@@ -28,7 +28,6 @@ class FuelUsageController : AbstractView("Dispense fuel") {
 
     override val root: GridPane by fxml("/view/FuelUsageView.fxml")
 
-//    private val attendant: ComboBox<User> by fxid("attendant")
     private val driver: ComboBox<User> by fxid("driver")
     private val vehicle: ComboBox<Vehicle> by fxid("vehicle")
     private val dispenseQuantity: TextField by fxid("dispenseQuantity")
@@ -46,16 +45,6 @@ class FuelUsageController : AbstractView("Dispense fuel") {
         }
 
         root.setMaxSize(446.0, 243.0)
-//
-//        attendant.apply {
-//            bind(transactionModel.attendant)
-//            setCellFactory { SimpleUserListCell() }
-//            buttonCell = SimpleUserListCell()
-//            GlobalScope.launch {
-//                val results = userRepo.loadAttendants()
-//                asyncItems { if (results is Results.Success<*>) results.data as ObservableList<User> else observableListOf() }
-//            }
-//        }
 
         vehicle.apply {
             bind(transactionModel.vehicle)
@@ -124,7 +113,7 @@ class FuelUsageController : AbstractView("Dispense fuel") {
                     item.attendant = Account.currentUser.get()
                     val results = transactionRepo.dispenseFuel(item)
                     if (results is Results.Success<*>) {
-                        tableScope.tableData.add(item)
+                        onRefresh()
                         closeView()
                     }
                     parseResults(results)

@@ -26,6 +26,7 @@ sealed class Results {
             DUPLICATE_VEHICLE,
             ODOMETER_LESS_PREVIOUS,
             INSUFFICIENT_FUEL,
+            DUPLICATE_WAYBILL,
             UNKNOWN
         }
 
@@ -33,11 +34,13 @@ sealed class Results {
             is DuplicateVehicleException -> CODE.DUPLICATE_VEHICLE
             is InvalidOdoMeterException -> CODE.ODOMETER_LESS_PREVIOUS
             is InsufficientFuelException -> CODE.INSUFFICIENT_FUEL
+            is DuplicateWaybillException -> CODE.DUPLICATE_WAYBILL
             else -> CODE.UNKNOWN
         }
 
         class DuplicateVehicleException : Exception()
         class InvalidOdoMeterException : Exception()
         class InsufficientFuelException: Exception()
+        class DuplicateWaybillException: Exception()
     }
 }

@@ -20,6 +20,7 @@ import java.io.StringReader
 import java.sql.Date
 import java.sql.ResultSet
 import java.sql.Statement
+import kotlin.math.absoluteValue
 import kotlin.math.round
 
 class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
@@ -371,7 +372,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
 
     suspend fun updateFuelDispensed(
         trans: FuelTransaction,
-        correctionFactor: Float/*oldValue: String, newValue: String*/
+        correctionFactor: Float/*oldValue: String*/, newValue: Float
     ): Results {
         val thisDate = trans.dateProperty.get().toLocalDateTime()
         val tomorrow = today().toLocalDateTime()
@@ -394,8 +395,8 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
                 if (it.id != trans.id)// current trans opening balance is not affected
                     it.openingBalanceProperty.set(String.format("%.2f", openingBalance).toFloat())
 
-//                if (it.id == trans.id)
-//                    it.quantityProperty.set(newValue)
+                if (it.id == trans.id)
+                    it.quantityProperty.set(String.format("%.2f", newValue))
 
                 it.currentBalanceProperty.set(String.format("%.2f", closingBalance).toFloat())
             }
@@ -421,13 +422,17 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
 //        val newValue = if (trans.transactionTypeProperty.get() == FuelTransactionType.DISPENSE.name)
 //            dispensedQuantity  else 0
 
-        val correctionFactor = if(trans.transactionTypeProperty.get() == FuelTransactionType.DISPENSE.value)
-                dispensedQuantity else dispensedQuantity.unaryMinus()
+        val correctionFactor = if (trans.transactionTypeProperty.get() == FuelTransactionType.DISPENSE.value)
+            dispensedQuantity else dispensedQuantity.unaryMinus()
 
         println(trans.transactionTypeProperty.get())
         println("Dispense qty: $correctionFactor")
 
-        val updateResults = updateFuelDispensed(trans = trans, correctionFactor = correctionFactor)
+        val updateResults = updateFuelDispensed(
+            trans = trans,
+            correctionFactor = correctionFactor,
+            newValue = dispensedQuantity.absoluteValue
+        )
 
         return if (updateResults is Results.Success<*>)
             deleteModel(trans)

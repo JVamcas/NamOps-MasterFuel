@@ -2,6 +2,7 @@ package com.pet001kambala.utils
 
 import com.pet001kambala.controller.home.HomeController
 import com.pet001kambala.model.FuelTransaction
+import com.pet001kambala.model.FuelTransactionType
 import com.pet001kambala.repo.AbstractRepo
 import com.pet001kambala.repo.FuelTransactionRepo
 import javafx.beans.value.ObservableValue
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 import tornadofx.*
 
 
-class EditingFuelDispencedCell(private val tableView: HomeController) : TableCell<FuelTransaction, String>() {
+class EditingFuelDispencedCell(private val tableView: HomeController) :
+    TableCell<FuelTransaction, String>() {
     private lateinit var textField: TextField
 
     override fun startEdit() {
@@ -63,12 +65,18 @@ class EditingFuelDispencedCell(private val tableView: HomeController) : TableCel
                     val newValue = textField.text
 
                     GlobalScope.launch {
-                        val correctionFactor = newValue.toFloat() - oldValue.toFloat()
+                        var correctionFactor = oldValue.toFloat() - newValue.toFloat()
 
-                        //TODO not yet tested
-
-                        //todo need to determine if dispense or refill
-                        val results = repo.updateFuelDispensed(rowItem, correctionFactor/*oldValue,newValue*/)
+                        correctionFactor =
+                            if (rowItem.transactionTypeProperty.get() == FuelTransactionType.DISPENSE.value)
+                                correctionFactor else correctionFactor.unaryMinus()
+//
+//                        val correctionFactor = newValue.toFloat() - oldValue.toFloat()
+                        val results = repo.updateFuelDispensed(
+                            rowItem,
+                            correctionFactor,
+                            newValue.toFloatOrNull() ?: 0.0f/*oldValue,newValue*/
+                        )
                         if (results is Results.Success<*>)
                             tableView.onRefresh()
 //                            tableView.modelList.asyncItems { results.data as List<FuelTransaction> }

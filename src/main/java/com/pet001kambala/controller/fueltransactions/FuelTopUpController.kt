@@ -2,6 +2,7 @@ package com.pet001kambala.controller.fueltransactions
 
 import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.controller.AbstractView
+import com.pet001kambala.controller.home.HomeController
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.FuelTransactionRepo
 import com.pet001kambala.repo.UserRepo
@@ -27,6 +28,8 @@ open class FuelTopUpController(
 
     private val userRepo = UserRepo()
     private val transactionRepo = FuelTransactionRepo()
+
+    private val tableView: HomeController by inject()
 
     private val tableScope = super.scope as AbstractModelTableController<FuelTransaction>.ModelEditScope
     private val transactionModel = tableScope.viewModel as FuelTransactionModel
@@ -81,7 +84,7 @@ open class FuelTopUpController(
                     //TODO start of progress indicator
                     transactionRepo.topUpFuel(item)
                     //TODO end of progress indicator
-                    tableScope.tableData.add(item)
+                    tableView.onRefresh()
                     closeView()
                 }
             }

@@ -50,6 +50,8 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
     lateinit var tableModel: TableViewEditModel<FuelTransaction>
 
+    private val currentUser: User by AbstractView.Account.currentUser
+
 
     companion object {
         lateinit var homeWorkspace: Workspace
@@ -167,6 +169,22 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             enableDirtyTracking()
             enableCellEditing()
 
+
+            contextmenu {
+                item("Delete record") {
+                    action {
+                        if (currentUser.isAuthorised(AccessType.DELETE_REFILL)) {
+                            GlobalScope.launch {
+                                val trans = selectedItem
+                                val results = trans?.let { transactionRepo.deleteFuelTransaction(it) }
+                                if (results is Results.Success<*>)
+                                    onRefresh()
+                                else results?.let { parseResults(it) }
+                            }
+                        }
+                    }
+                }
+            }
         }
         scrollPane.apply {
             add(tableView)
@@ -286,14 +304,17 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
     fun toStorageRefill(actionEvent: ActionEvent) {
 
-
         val scope = ModelEditScope(FuelTransactionModel())
+        val controller = this
+        setInScope(controller,scope)
         editModel(scope, FuelTransaction(), FuelTopUpController::class)
     }
 
     fun toVehicleRefill(actionEvent: ActionEvent) {
 
         val scope = ModelEditScope(FuelTransactionModel())
+        val controller = this
+        setInScope(controller,scope)
         editModel(scope, FuelTransaction(), FuelUsageController::class)
     }
 
@@ -308,10 +329,6 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             if (currentUser.isAuthorised(AccessType.EDIT_FUEL_TRANSACTION))
                 saveButton.show()
             else saveButton.hide()
-
-            if (currentUser.isAuthorised(AccessType.DELETE_REFILL))
-                deleteButton.show()
-            else deleteButton.hide()
 
             fillStorageBtn.isDisable = !currentUser.isAuthorised(AccessType.REFILL_STORAGE)
             dispenseBtn.isDisable = !currentUser.isAuthorised(AccessType.DISPENSE_FUEL)
@@ -374,21 +391,10 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
         }
     }
 
-    override fun onDelete() {
-        super.onDelete()
-        GlobalScope.launch {
-            val trans = tableView.selectedItem
-            val results = trans?.let { transactionRepo.deleteFuelDispenseInstance(it) }
-            if (results is Results.Success<*>)
-                onRefresh()
-            else results?.let { parseResults(it) }
-        }
-    }
-
     override fun onRefresh() {
         super.onRefresh()
 
-        var currentFuel: Float  = 0f
+        var currentFuel: Float = 0f
         GlobalScope.launch {
             currentFuel = transactionRepo.loadOpeningBalance()
 

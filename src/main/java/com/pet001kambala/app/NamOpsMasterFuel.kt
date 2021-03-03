@@ -16,7 +16,7 @@ class NamOpsMasterFuel : App(MainWorkspace::class, Styles::class) {
         super.stop()
         try{
             SessionManager.newInstance!!.close()
-            println("Session factory clossed")
+            println("Session factory closed")
         }
         catch (e: Exception){
 

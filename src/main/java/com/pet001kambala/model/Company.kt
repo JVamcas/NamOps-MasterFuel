@@ -58,6 +58,10 @@ class DepartmentC {
             field = value
             companyProperty.set(value)
         }
+
+    override fun toString(): String {
+        return nameProperty.get()
+    }
 }
 class DepartmentModel: ItemViewModel<DepartmentC>(){
     val name = bind(DepartmentC::nameProperty)

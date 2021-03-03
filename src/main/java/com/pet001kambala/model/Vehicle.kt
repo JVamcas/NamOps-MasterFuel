@@ -1,8 +1,11 @@
 package com.pet001kambala.model
 
 import com.pet001kambala.utils.SimpleBooleanConvertor
+import com.pet001kambala.utils.SimpleDepartmentConvertor
+import com.pet001kambala.utils.SimpleDeptConvertor
 import com.pet001kambala.utils.SimpleStringConvertor
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ListCell
 import tornadofx.*
@@ -57,19 +60,31 @@ class Vehicle(
 
     @Column(name = "department", nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
-    val departmentProperty = SimpleStringProperty(department.value)
+    val deptProperty = SimpleStringProperty(department.value)
+
+    @Transient
+    @Convert(converter = SimpleDepartmentConvertor::class)
+    val departmentProperty = SimpleObjectProperty<DepartmentC>()
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "departmentId", nullable = false)
+    var department: DepartmentC? = null
+        set(value) {
+            field = value
+            departmentProperty.set(value)
+        }
 
     @Column(name = "vehicle_type", nullable = false)
     @Convert(converter = SimpleStringConvertor::class)
     val typeProperty = SimpleStringProperty(type.value)
 
-    override fun toString() = "${unitNumberProperty.get()} | ${plateNumberProperty.get()} | ${departmentProperty.get()}"
+    override fun toString() = "${unitNumberProperty.get()} | ${plateNumberProperty.get()} | ${deptProperty.get()}"
 
     class SimpleVehicleListCell : ListCell<Vehicle>() {
 
         override fun updateItem(vehicle: Vehicle?, empty: Boolean) {
             super.updateItem(vehicle, empty)
-            text = "${vehicle?.unitNumberProperty?.get()} | ${vehicle?.plateNumberProperty?.get()} | ${vehicle?.departmentProperty?.get()}"
+            text = "${vehicle?.unitNumberProperty?.get()} | ${vehicle?.plateNumberProperty?.get()} | ${vehicle?.deptProperty?.get()}"
         }
     }
     override fun equals(other: Any?): Boolean {
@@ -90,6 +105,6 @@ class VehicleModel : ItemViewModel<Vehicle>() {
 
     var unitNumber = bind(Vehicle::unitNumberProperty)
     var plateNumber = bind(Vehicle::plateNumberProperty)
-    var department = bind(Vehicle::departmentProperty)
+    var department = bind(Vehicle::department)
     var type = bind(Vehicle::typeProperty)
 }

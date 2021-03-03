@@ -2,12 +2,13 @@ package com.pet001kambala.controller.vehicle
 
 import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.model.*
+import com.pet001kambala.repo.CompanyRepo
+import com.pet001kambala.repo.DepartmentRepo
 import com.pet001kambala.repo.VehicleRepo
 import com.pet001kambala.utils.AccessType
+import com.pet001kambala.utils.ComboBoxEditingCell
 import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
 import com.pet001kambala.utils.Results
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.collections.ObservableList
 import javafx.scene.control.Label
 import javafx.scene.control.TableView
@@ -36,7 +37,7 @@ class VehicleTableController : AbstractModelTableController<Vehicle>("Vehicles")
                 column("Unit Number", Vehicle::unitNumberProperty)
                 column("Plate Number", Vehicle::plateNumberProperty)
                 column("Type of Vehicle", Vehicle::typeProperty)
-                column("Department", Vehicle::departmentProperty)
+                column("Department", Vehicle::department)
 
                 onUserSelect {
                     if (Account.currentUser.get().isAuthorised(AccessType.EDIT_VEHICLE)) {

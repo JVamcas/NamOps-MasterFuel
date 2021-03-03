@@ -100,7 +100,7 @@ class User(
 class UserModel : ItemViewModel<User>() {
     var firstName = bind(User::firstNameProperty)
     var lastName = bind(User::lastNameProperty)
-    var company = bind(User::companyProperty)
+    var company = bind(User::company)
     var userGroup = bind(User::userGroupProperty)
     var username = bind(User::usernameProperty)
     var password = bind(User::passwordProperty)

@@ -15,6 +15,7 @@ class UpdateVehicleController: NewVehicleController() {
                 GlobalScope.launch {
                     val result = vehicleRepo.updateModel(vehicleModel.item)
                     if(result is Results.Success<*>){
+                        onRefresh()
                         closeView()
                         return@launch
                     }

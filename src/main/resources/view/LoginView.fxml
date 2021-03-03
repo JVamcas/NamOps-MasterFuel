@@ -17,7 +17,7 @@
     <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="81.0" prefWidth="580.0" text="Welcome to NamOps FuelMaster" textFill="#087f8a" GridPane.columnSpan="2" GridPane.halignment="RIGHT">
+      <Label alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="81.0" prefWidth="580.0" text="NamOps FuelMaster" textFill="#087f8a" GridPane.columnSpan="2" GridPane.halignment="RIGHT">
          <GridPane.margin>
             <Insets left="10.0" right="10.0" />
          </GridPane.margin>

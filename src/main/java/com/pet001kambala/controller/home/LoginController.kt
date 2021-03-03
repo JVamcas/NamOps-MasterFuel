@@ -69,19 +69,6 @@ class LoginController : AbstractView("") {
                             return@launch
                         }
                         invalidLoginLabel.isVisible = true
-//                        data?.let {
-//                            val entry = data as Array<*>
-//                            user = User(
-//                                firstName = entry[3].toString(),
-//                                lastName = entry[4].toString(),
-//                                userGroup = UserGroup.valueOf(entry[6].toString()),
-//                                username = entry[7].toString(),
-//                                companyName = CompanyName.getName(entry[1].toString()),
-//                                deleted = false,
-//                            ).also { it.id = entry[0] as Int }
-
-                        //}
-
 
                     } else
                         parseResults(results)

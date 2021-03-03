@@ -56,15 +56,20 @@ class EditingFuelDispencedCell(private val tableView: HomeController) : TableCel
         textField = TextField(string)
         textField.minWidth = this.width - this.graphicTextGap * 2
         textField.setOnAction { commitEdit(textField.text) }
-        FuelTransactionRepo().let { repo->
+        FuelTransactionRepo().let { repo ->
             textField.addEventHandler(KeyEvent.KEY_PRESSED) {
                 if (it.code == KeyCode.ENTER) {
                     val oldValue = item
                     val newValue = textField.text
 
                     GlobalScope.launch {
-                        val results = repo.updateFuelDispensed(rowItem,oldValue,newValue)
-                        if(results is Results.Success<*>)
+                        val correctionFactor = newValue.toFloat() - oldValue.toFloat()
+
+                        //TODO not yet tested
+
+                        //todo need to determine if dispense or refill
+                        val results = repo.updateFuelDispensed(rowItem, correctionFactor/*oldValue,newValue*/)
+                        if (results is Results.Success<*>)
                             tableView.onRefresh()
 //                            tableView.modelList.asyncItems { results.data as List<FuelTransaction> }
                         else tableView.parseResults(results)

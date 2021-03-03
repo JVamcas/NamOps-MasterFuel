@@ -362,17 +362,21 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         val search = FuelTransactionSearch().also { it.waybillNoProperty.set(newValue) }
         val results = loadFilteredModel(search)
         return if (results is Results.Success<*>) {
-            if (results.data != null)
+            val data = results.data as List<*>
+            if (data.isNotEmpty())
                 Results.Error(Results.Error.DuplicateWaybillException())
             else updateModel(trans.also { it.waybillNoProperty.set(newValue) })
         } else results
     }
 
-    suspend fun updateFuelDispensed(trans: FuelTransaction, oldValue: String, newValue: String): Results {
+    suspend fun updateFuelDispensed(
+        trans: FuelTransaction,
+        correctionFactor: Float/*oldValue: String, newValue: String*/
+    ): Results {
         val thisDate = trans.dateProperty.get().toLocalDateTime()
         val tomorrow = today().toLocalDateTime()
 
-        val search = FuelTransactionSearch().apply {
+        val search = FuelTransactionSearch().apply { // all transactions made on that date till now
             fromDateProperty.set(thisDate)
             toDateProperty.set(tomorrow)
         }
@@ -381,34 +385,71 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         return if (searchResults is Results.Success<*>) {
             val data = searchResults.data as List<FuelTransaction>
 
-            val corFactor = newValue.toFloat() - oldValue.toFloat()
+//            val corFactor = newValue.toFloat() - oldValue.toFloat()
 
             data.forEach {
-                val openingBalance = it.openingBalanceProperty.get() + corFactor
-                val closingBalance = it.currentBalanceProperty.get() + corFactor
+                val openingBalance = it.openingBalanceProperty.get() + correctionFactor
+                val closingBalance = it.currentBalanceProperty.get() + correctionFactor
 
                 if (it.id != trans.id)// current trans opening balance is not affected
-                    it.openingBalanceProperty.set(openingBalance)
+                    it.openingBalanceProperty.set(String.format("%.2f", openingBalance).toFloat())
 
-                if (it.id == trans.id)
-                    it.quantityProperty.set(newValue)
+//                if (it.id == trans.id)
+//                    it.quantityProperty.set(newValue)
 
-                it.currentBalanceProperty.set(closingBalance)
+                it.currentBalanceProperty.set(String.format("%.2f", closingBalance).toFloat())
             }
             batchUpdate(data)
 
         } else searchResults
     }
 
-    suspend fun deleteFuelDispenseInstance(trans: FuelTransaction): Results {
+//    suspend fun deleteFuelDispenseInstance(trans: FuelTransaction): Results {
+//
+//        val newDispense = trans.quantityProperty.get().toFloat() * 2
+//
+//        val dispenseResults = updateFuelDispensed(trans, trans.quantityProperty.get(), newDispense.toString())
+//        return if (dispenseResults is Results.Success<*>)
+//            deleteModel(trans)
+//        else dispenseResults
+//    }
 
-        val newDispense = trans.quantityProperty.get().toFloat() * 2
+    suspend fun deleteFuelTransaction(trans: FuelTransaction): Results {
 
-        val dispenseResults = updateFuelDispensed(trans, trans.quantityProperty.get(), newDispense.toString())
-        return if (dispenseResults is Results.Success<*>)
+//        val dispensedQuantity = trans.quantityProperty.get().toFloat()
+        val dispensedQuantity = trans.quantityProperty.get().toFloat()
+//        val newValue = if (trans.transactionTypeProperty.get() == FuelTransactionType.DISPENSE.name)
+//            dispensedQuantity  else 0
+
+        val correctionFactor = if(trans.transactionTypeProperty.get() == FuelTransactionType.DISPENSE.value)
+                dispensedQuantity else dispensedQuantity.unaryMinus()
+
+        println(trans.transactionTypeProperty.get())
+        println("Dispense qty: $correctionFactor")
+
+        val updateResults = updateFuelDispensed(trans = trans, correctionFactor = correctionFactor)
+
+        return if (updateResults is Results.Success<*>)
             deleteModel(trans)
-        else dispenseResults
+        else updateResults
+//
+//
+//        return when (trans.transactionTypeProperty.get()) {
+//
+//            FuelTransactionType.DISPENSE.name -> {
+//
+//                val dispenseResults =
+//                    updateFuelDispensed(trans, trans.quantityProperty.get(), (dispensedQuantity * 2).toString())
+//                if (dispenseResults is Results.Success<*>)
+//                    deleteModel(trans)
+//                else dispenseResults
+//            }
+//            else -> {
+//
+//            }
+//        }
     }
+
 
     private suspend fun deleteModel(trans: FuelTransaction): Results {
         var session: Session? = null

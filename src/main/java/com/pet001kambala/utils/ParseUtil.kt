@@ -38,7 +38,7 @@ class ParseUtil {
         )
 
         fun String?.isValidPlateNo(): Boolean {
-            val pattern = Pattern.compile("^N\\d+[A-Z]+$")
+            val pattern = Pattern.compile("^[nN]\\d+[a-zA-Z]+\$")
             return this.isNullOrEmpty() || pattern.matcher(this).matches()
         }
 
@@ -84,14 +84,6 @@ class ParseUtil {
                     true
             }
         }
-
-//        fun EventTarget.datetimepicker(
-//            property: Property<LocalDateTime>,
-//            op: DateTimePicker.() -> Unit
-//        ): DateTimePicker {
-//
-//
-//        }
 
         /***
          * Export fuel transaction records to  excel for further processing

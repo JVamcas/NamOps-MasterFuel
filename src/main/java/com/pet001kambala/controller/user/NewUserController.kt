@@ -7,7 +7,6 @@ import com.pet001kambala.model.*
 import com.pet001kambala.repo.CompanyRepo
 import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.utils.ParseUtil.Companion.isAdmin
-import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
 import com.pet001kambala.utils.ParseUtil.Companion.isValidPassword
 import com.pet001kambala.utils.Results
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
@@ -76,10 +75,9 @@ open class NewUserController : AbstractView("") {
                 if(results is Results.Success<*>)
                     items = results.data as ObservableList<Company>
             }
-//            items = CompanyRepo().loadAllCompanies().asObservable()
             required(
                 ValidationTrigger.OnChange(),
-                "Select user's company."
+                "Select your company."
             )
         }
         password.apply {

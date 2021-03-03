@@ -2,6 +2,7 @@ package com.pet001kambala.controller.fueltransactions
 
 import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.controller.AbstractView
+import com.pet001kambala.controller.home.HomeController
 import com.pet001kambala.model.*
 import com.pet001kambala.repo.FuelTransactionRepo
 import com.pet001kambala.repo.UserRepo
@@ -23,6 +24,7 @@ class FuelUsageController : AbstractView("Dispense fuel") {
     private val userRepo = UserRepo()
     private val transactionRepo = FuelTransactionRepo()
 
+    private val tableView: HomeController by inject()
     private val tableScope = super.scope as AbstractModelTableController<FuelTransaction>.ModelEditScope
     private val transactionModel = tableScope.viewModel as FuelTransactionModel
 
@@ -56,17 +58,17 @@ class FuelUsageController : AbstractView("Dispense fuel") {
                 asyncItems { if (results is Results.Success<*>) results.data as ObservableList<Vehicle> else observableListOf() }
             }
 
-            valueProperty().addListener { _, _, newVehicle ->
-
-                newVehicle?.unitNumberProperty?.get()?.let { unitNo ->
-                    var results: Int = 0
-                    GlobalScope.launch {
-                        vehicleOdometer.text = "0"
-                        results = transactionRepo.loadVehicleOdometer(unitNo)
-                    }
-                    vehicleOdometer.text = results.toString()
-                }
-            }
+//            valueProperty().addListener { _, _, newVehicle ->
+//
+//                newVehicle?.unitNumberProperty?.get()?.let { unitNo ->
+//                    var results: Int = 0
+//                    GlobalScope.launch {
+//                        vehicleOdometer.text = "0"
+//                        results = transactionRepo.loadVehicleOdometer(unitNo)
+//                    }
+//                    vehicleOdometer.text = results.toString()
+//                }
+//            }
         }
 
         driver.apply {
@@ -113,7 +115,7 @@ class FuelUsageController : AbstractView("Dispense fuel") {
                     item.attendant = Account.currentUser.get()
                     val results = transactionRepo.dispenseFuel(item)
                     if (results is Results.Success<*>) {
-                        onRefresh()
+                        tableView.onRefresh()
                         closeView()
                     }
                     parseResults(results)

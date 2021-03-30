@@ -95,6 +95,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
                 addNewModel(model)
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             Results.Error(e)
         }
     }

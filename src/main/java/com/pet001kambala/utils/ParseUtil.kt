@@ -5,9 +5,6 @@ import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.model.FuelTransactionType
 import com.pet001kambala.model.User
 import com.pet001kambala.model.UserGroup
-import javafx.beans.property.Property
-import javafx.collections.ObservableList
-import javafx.event.EventTarget
 import javafx.scene.control.TextField
 import jxl.write.Label
 import jxl.write.Number
@@ -16,11 +13,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tornadofx.*
 import java.lang.Double.parseDouble
-import java.sql.Timestamp
-import java.time.LocalDateTime
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.Exception
 
 class ParseUtil {
 
@@ -153,5 +147,7 @@ class ParseUtil {
 }
 
 enum class AccessType {
-    EDIT_USER, ADD_USER, DELETE_USER, EDIT_VEHICLE, ADD_VEHICLE, DELETE_VEHICLE, REFILL_STORAGE, DISPENSE_FUEL, EDIT_FUEL_TRANSACTION, DELETE_REFILL, MAKE_ADMIN
+    EDIT_USER, ADD_USER, DELETE_USER,
+    EDIT_VEHICLE, ADD_VEHICLE, DELETE_VEHICLE,
+    REFILL_STORAGE, DISPENSE_FUEL, EDIT_FUEL_TRANSACTION, DELETE_REFILL, MAKE_ADMIN
 }

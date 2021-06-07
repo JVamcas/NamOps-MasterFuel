@@ -87,7 +87,7 @@ class LoginController : AbstractView("") {
 
     override fun onUndock() {
         super.onUndock()
-        //clean up back stck so as not to go back to login screen
+        //clean up back stack so as not to go back to login screen
         workspace.viewStack.remove(this)
     }
 }

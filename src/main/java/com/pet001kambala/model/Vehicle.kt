@@ -36,7 +36,7 @@ enum class VehicleType(val value: String) {
 class Vehicle(
     unitNumber: String? = null,
     plateNumber: String? = null,
-    department: Department = Department.LOCAL,
+    department: DepartmentC? = null,
     type: VehicleType = VehicleType.TRUCK,
     deleted: Boolean = false
 
@@ -58,9 +58,9 @@ class Vehicle(
     @Convert(converter = SimpleStringConvertor::class)
     val plateNumberProperty = SimpleStringProperty(plateNumber)
 
-    @Column(name = "department", nullable = false)
-    @Convert(converter = SimpleStringConvertor::class)
-    val deptProperty = SimpleStringProperty(department.value)
+//    @Column(name = "department", nullable = false)
+//    @Convert(converter = SimpleStringConvertor::class)
+//    val deptProperty = SimpleStringProperty(department.value)
 
     @Transient
     @Convert(converter = SimpleDepartmentConvertor::class)
@@ -78,13 +78,13 @@ class Vehicle(
     @Convert(converter = SimpleStringConvertor::class)
     val typeProperty = SimpleStringProperty(type.value)
 
-    override fun toString() = "${unitNumberProperty.get()} | ${plateNumberProperty.get()} | ${deptProperty.get()}"
+    override fun toString() = "${unitNumberProperty.get()} | ${plateNumberProperty.get()} | ${department?.nameProperty?.get()}"
 
     class SimpleVehicleListCell : ListCell<Vehicle>() {
 
         override fun updateItem(vehicle: Vehicle?, empty: Boolean) {
             super.updateItem(vehicle, empty)
-            text = "${vehicle?.unitNumberProperty?.get()} | ${vehicle?.plateNumberProperty?.get()} | ${vehicle?.deptProperty?.get()}"
+            text = "${vehicle?.unitNumberProperty?.get()} | ${vehicle?.plateNumberProperty?.get()} | ${vehicle?.department?.nameProperty?.get()}"
         }
     }
     override fun equals(other: Any?): Boolean {

@@ -122,13 +122,13 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
 
             column("Driver", FuelTransaction::driver).apply {
                 contentWidth(padding = 20.0, useAsMin = true)
+
                 GlobalScope.launch {
                     val loadResults = UserRepo().loadDrivers()
                     setCellFactory {
                         val drivers = if (loadResults is Results.Success<*>)
                             loadResults.data as ObservableList<User>
                         else observableListOf()
-
                         ComboBoxEditingCell(drivers)
                     }
                 }
@@ -169,7 +169,6 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
             enableDirtyTracking()
             enableCellEditing()
 
-
             contextmenu {
                 item("Delete record") {
                     action {
@@ -189,7 +188,6 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
         scrollPane.apply {
             add(tableView)
         }
-
 
         root.apply {
             vbox(10.0) {
@@ -234,7 +232,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                                                         bind(transactionSearchModel.vehicle)
                                                     }
                                                 }
-                                                field("Driver surname") {
+                                                field("Driver") {
                                                     textfield {
                                                         prefWidth = 150.0
                                                         minWidth = prefWidth

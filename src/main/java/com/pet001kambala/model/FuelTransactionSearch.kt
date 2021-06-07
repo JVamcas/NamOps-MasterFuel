@@ -23,7 +23,7 @@ class TransactionSearch(search: FuelTransactionSearch): ItemViewModel<FuelTransa
     val waybill = bind(FuelTransactionSearch::waybillNoProperty)
     @Convert(converter = SimpleDateConvertor::class)
     val toDate = bind(FuelTransactionSearch::toDateProperty)
-    @Convert(converter = SimpleDateConvertor::class)
+
     val fromDate = bind(FuelTransactionSearch::fromDateProperty)
     val driver = bind(FuelTransactionSearch::driverProperty)
     val vehicle = bind(FuelTransactionSearch::vehicleProperty)

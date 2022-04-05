@@ -113,7 +113,11 @@ class FuelUsageController : AbstractView("Dispense fuel") {
                 GlobalScope.launch {
                     val item = transactionModel.item
                     item.attendant = Account.currentUser.get()
-                    val results = transactionRepo.dispenseFuel(item)
+                    val results = transactionRepo.dispenseFuel(item.also{
+                        //todo changed odo here
+                        val quantity = it.odometerProperty.get().toInt()
+                        it.odometerProperty.set(quantity.toString())
+                    })
                     if (results is Results.Success<*>) {
                         tableView.onRefresh()
                         closeView()

@@ -10,7 +10,7 @@
         <property name="connection.username">namops</property>
         <property name="connection.password">3Mili2,87</property>
         <property name="current_session_context_class">thread</property>
-        <property name="hibernate.hbm2ddl.auto">update</property>
+<!--        <property name="hibernate.hbm2ddl.auto">update</property>-->
         <property name="hibernate.c3p0.acquire_increment">1</property>
         <property name="hibernate.c3p0.idle_test_period">60</property>
         <property name="hibernate.c3p0.min_size">5</property>
@@ -29,7 +29,7 @@
         <mapping class="com.pet001kambala.model.Vehicle"/>
         <mapping class="com.pet001kambala.model.FuelTransaction"/>
         <mapping class="com.pet001kambala.model.Company"/>
-        <mapping class="com.pet001kambala.model.DepartmentC"/>
+        <mapping class="com.pet001kambala.model.Department"/>
 
     </session-factory>
 </hibernate-configuration>

@@ -2,7 +2,7 @@ package com.pet001kambala.controller.campany
 
 import com.pet001kambala.controller.AbstractModelTableController
 import com.pet001kambala.model.CompanyModel
-import com.pet001kambala.model.DepartmentC
+import com.pet001kambala.model.Department
 import com.pet001kambala.model.DepartmentModel
 import com.pet001kambala.repo.DepartmentRepo
 import com.pet001kambala.utils.EditingCell
@@ -17,14 +17,14 @@ import kotlinx.coroutines.GlobalScope
 import tornadofx.*
 import kotlinx.coroutines.launch
 
-class CompanyDepartmentController : AbstractModelTableController<DepartmentC>("") {
+class CompanyDepartmentController : AbstractModelTableController<Department>("") {
 
     private val deptModel = DepartmentModel()
     private val deptRepo = DepartmentRepo()
     private val companyModel: CompanyModel by inject()
 
     init {
-        deptModel.item = DepartmentC()
+        deptModel.item = Department()
     }
 
     override val root = vbox(spacing = 10.0) {
@@ -35,7 +35,7 @@ class CompanyDepartmentController : AbstractModelTableController<DepartmentC>(""
             minHeight = prefHeight
             minWidth = prefWidth
 
-            tableview<DepartmentC> {
+            tableview<Department> {
 
                 items = modelList
 
@@ -45,9 +45,9 @@ class CompanyDepartmentController : AbstractModelTableController<DepartmentC>(""
                 placeholder = Label("No departments here yet.")
 
                 columns.add(indexColumn)
-                column("Department name", DepartmentC::nameProperty).apply {
+                column("Department name", Department::nameProperty).apply {
                     contentWidth(padding = 20.0, useAsMin = true)
-                    setCellFactory { EditingCell<DepartmentC>(deptRepo) }
+                    setCellFactory { EditingCell<Department>(deptRepo) }
                     remainingWidth()
                 }
 
@@ -92,7 +92,7 @@ class CompanyDepartmentController : AbstractModelTableController<DepartmentC>(""
 
                             val results = deptRepo.addNewModel(dept)
                             if (results is Results.Success<*>) {
-                                deptModel.item = DepartmentC()
+                                deptModel.item = Department()
                                 modelList.add(dept)
                                 return@launch
                             }
@@ -104,7 +104,7 @@ class CompanyDepartmentController : AbstractModelTableController<DepartmentC>(""
                     enableWhen { deptModel.dirty }
                     graphic = FontAwesomeIconView(FontAwesomeIcon.CLOSE)
                     action {
-                        deptModel.item = DepartmentC()
+                        deptModel.item = Department()
                     }
                 }
                 deptModel.validate(decorateErrors = false)
@@ -118,10 +118,10 @@ class CompanyDepartmentController : AbstractModelTableController<DepartmentC>(""
         title = "${companyModel.item} - Departments"
     }
 
-    override suspend fun loadModels(): ObservableList<DepartmentC> {
+    override suspend fun loadModels(): ObservableList<Department> {
         val loadResults = deptRepo.loadAllDepartments(companyModel.item)
         if (loadResults is Results.Success<*>)
-            return loadResults.data as ObservableList<DepartmentC>
+            return loadResults.data as ObservableList<Department>
         return observableListOf()
     }
 }

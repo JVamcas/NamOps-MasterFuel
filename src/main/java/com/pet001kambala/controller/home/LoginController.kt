@@ -3,22 +3,15 @@ package com.pet001kambala.controller.home
 import com.pet001kambala.controller.AbstractView
 import com.pet001kambala.controller.AbstractView.Account.currentUser
 import com.pet001kambala.model.User
-import com.pet001kambala.model.UserGroup
 import com.pet001kambala.model.UserModel
 import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.utils.Results
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.application.Platform
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.value.ObservableValue
 import javafx.scene.control.*
 import javafx.scene.layout.GridPane
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornadofx.*
-import java.util.concurrent.TimeUnit
 
 class LoginController : AbstractView("") {
 

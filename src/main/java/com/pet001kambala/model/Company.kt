@@ -1,5 +1,6 @@
 package com.pet001kambala.model
 
+import com.pet001kambala.utils.ParseUtil.Companion.capitalize
 import com.pet001kambala.utils.SimpleBooleanConvertor
 import com.pet001kambala.utils.SimpleCompanyConvertor
 import com.pet001kambala.utils.SimpleStringConvertor
@@ -34,7 +35,7 @@ class CompanyModel : ItemViewModel<Company>() {
 }
 
 @Entity
-class DepartmentC {
+class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
@@ -60,10 +61,10 @@ class DepartmentC {
         }
 
     override fun toString(): String {
-        return nameProperty.get()
+        return nameProperty.get().capitalize()
     }
 }
-class DepartmentModel: ItemViewModel<DepartmentC>(){
-    val name = bind(DepartmentC::nameProperty)
-    val company = bind(DepartmentC::companyProperty)
+class DepartmentModel: ItemViewModel<Department>(){
+    val name = bind(Department::nameProperty)
+    val company = bind(Department::companyProperty)
 }

@@ -1,9 +1,9 @@
 package com.pet001kambala.model
 
+import com.pet001kambala.utils.ParseUtil.Companion.capitalize
 import com.pet001kambala.utils.SimpleBooleanConvertor
 import com.pet001kambala.utils.SimpleCompanyConvertor
 import com.pet001kambala.utils.SimpleStringConvertor
-import com.pet001kambala.utils.SimpleUserConvertor
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
@@ -13,22 +13,11 @@ import javax.persistence.*
 
 enum class UserGroup { Attendant, Driver, Admin }
 
-//enum class CompanyName(val value: String) {
-//    NAMOPS("NamOps Logistics Pty Ltd"),
-//    SEANAM("SeaNam Fishing Pty Ltd");
-//
-//    companion object{
-//        fun getName(value: String) =
-//           values().toList().first { it.value == value }
-//    }
-//}
-
 @Entity
 @Table(name = "Users")
 class User(
     firstName: String? = null,
     lastName: String? = null,
-//    companyName: CompanyName = CompanyName.NAMOPS,
     userGroup: UserGroup = UserGroup.Attendant,
     deleted: Boolean = false,
     username: String? = null,
@@ -80,7 +69,7 @@ class User(
         }
 
     override fun toString(): String {
-        return "${firstNameProperty.get()} ${lastNameProperty.get()}"
+        return "${firstNameProperty.get().capitalize()} ${lastNameProperty.get().capitalize()}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -113,6 +102,6 @@ class SimpleUserListCell : ListCell<User>() {
 
     override fun updateItem(user: User?, empty: Boolean) {
         super.updateItem(user, empty)
-        text = "${user?.firstNameProperty?.get()} ${user?.lastNameProperty?.get()}"
+        text = "${user?.firstNameProperty?.get().capitalize()} ${user?.lastNameProperty?.get().capitalize()}"
     }
 }

@@ -11,7 +11,6 @@ import com.pet001kambala.utils.ParseUtil.Companion.isValidVehicleNo
 import com.pet001kambala.utils.Results
 import javafx.application.Platform
 import javafx.collections.ObservableList
-import javafx.event.ActionEvent
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
@@ -31,7 +30,7 @@ open class NewVehicleController : AbstractView("Vehicle registration") {
 
     private val unitNo: TextField by fxid("unitNo")
     private val plateNo: TextField by fxid("plateNo")
-    private val department: ComboBox<DepartmentC> by fxid("department")
+    private val department: ComboBox<Department> by fxid("department")
     private val vehicleType: ComboBox<String> by fxid("vehicleType")
     private val company: ComboBox<Company> by fxid("company")
 
@@ -120,7 +119,7 @@ open class NewVehicleController : AbstractView("Vehicle registration") {
                 val results = DepartmentRepo().loadAllDepartments(it)
                 if (results is Results.Success<*>) {
                     Platform.runLater {
-                        department.items = results.data as ObservableList<DepartmentC>
+                        department.items = results.data as ObservableList<Department>
                         department.value = department.items.firstOrNull()
                     }
                 }

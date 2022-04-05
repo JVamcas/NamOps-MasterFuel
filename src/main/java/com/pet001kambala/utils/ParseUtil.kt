@@ -5,6 +5,7 @@ import com.pet001kambala.model.FuelTransaction
 import com.pet001kambala.model.FuelTransactionType
 import com.pet001kambala.model.User
 import com.pet001kambala.model.UserGroup
+import javafx.collections.ObservableList
 import javafx.scene.control.TextField
 import jxl.write.Label
 import jxl.write.Number
@@ -79,6 +80,32 @@ class ParseUtil {
             }
         }
 
+        suspend fun List<FuelTransaction>?.toConsumptionRate(): ObservableList<FuelTransaction> {
+            var rate: Double? = null
+            return try {
+                if (!this.isNullOrEmpty()) {
+                    withContext(Dispatchers.IO) {
+                        this@toConsumptionRate
+                            .filter { it.transactionTypeProperty.get().toLowerCase() == "dispense" }
+                            .groupBy { it.vehicle?.id ?: -1 }
+                            .forEach {
+                                val sorted = it.value.sortedByDescending { it.id }
+                                sorted.forEachIndexed { idx, trans ->
+                                    val distance = trans.distanceTravelledProperty.get().toDoubleOrNull() ?: 0.0
+                                    val dispensed =
+                                        sorted.getOrNull(idx + 1)?.quantityProperty?.get()?.toDoubleOrNull() ?: 0.0
+                                    rate = if (dispensed <= 0.0) 0.0 else distance / dispensed
+                                    trans.consumptionRateProperty.set(String.format("%.4f", rate))
+                                }
+                            }
+                        this@toConsumptionRate.asObservable()
+                    }
+                } else observableListOf()
+            } catch (e: Exception) {
+                observableListOf()
+            }
+        }
+
         /***
          * Export fuel transaction records to  excel for further processing
          * @param wkb the workbook to export
@@ -137,6 +164,21 @@ class ParseUtil {
                 UserGroup.Attendant.name -> attendantAccessType.contains(accessType)
 //                UserGroup.Driver.name -> driverAccessType.contains(accessType)
                 else -> false
+            }
+        }
+
+        fun String?.capitalize(): String {
+            return try {
+                when {
+                    this.isNullOrEmpty() -> ""
+                    this.length < 2 -> this.substring(0).toUpperCase()
+                    else -> {
+                        val lower = this.toLowerCase().split(" ")
+                        lower.joinToString(" ") { "${it[0].toUpperCase()}${it.substring(1)}" }
+                    }
+                }
+            } catch (e: Exception) {
+                ""
             }
         }
 

@@ -67,6 +67,9 @@ class FuelTransaction(
     @Convert(converter = SimpleUserConvertor::class)
     val driverProperty = SimpleObjectProperty<User>()
 
+    @Transient
+    val consumptionRateProperty = SimpleObjectProperty<String>()
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "driverId")
     var driver: User? = null
@@ -109,17 +112,19 @@ class FuelTransaction(
     val distanceTravelledProperty = SimpleStringProperty(distanceTravelled)
 
     fun data() = arrayListOf(
+        Pair("Entry No",id),
         Pair("Date", dateProperty.get()),
         Pair("Waybill Number", waybillNoProperty.get()),
-        Pair("Type", transactionTypeProperty.get()),
+//        Pair("Type", transactionTypeProperty.get()),
         Pair("Vehicle", vehicle ?: "N/A"),
         Pair("Attendant Name", attendant ?: "N/A"),
         Pair("Driver Name", driver ?: "N/A"),
+        Pair("Company",vehicle?.department?.company),
         Pair("Odometer (KM)", odometerProperty.get()),
         Pair("Distance travelled since last re-fill", distanceTravelledProperty.get()),
-        Pair("Opening balance(L)", openingBalanceProperty.get()),
+//        Pair("Opening balance(L)", openingBalanceProperty.get()),
         Pair("Quantity dispensed (L)", quantityProperty.get()),
-        Pair("Closing balance(L)", currentBalanceProperty.get())
+//        Pair("Closing balance(L)", currentBalanceProperty.get())
     )
 
     override fun equals(other: Any?): Boolean {

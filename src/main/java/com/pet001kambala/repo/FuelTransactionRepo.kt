@@ -30,7 +30,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         return try {
             withContext(Dispatchers.Default) {
                 session = sessionFactory!!.openSession()
-                val qryStr = "SELECT * FROM fueltransactions t ORDER BY t.transactionDate DESC LIMIT 50"
+                val qryStr = "SELECT * FROM fueltransactions t ORDER BY t.transactionDate DESC"
                 val data = session!!.createNativeQuery(qryStr, FuelTransaction::class.java).resultList.asObservable()
                 Results.Success(data = data, code = Results.Success.CODE.LOAD_SUCCESS)
             }
@@ -274,16 +274,26 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         var session: Session? = null
 
         val mainBuilder =
-            StringBuilder("SELECT DISTINCT t.* FROM fueltransactions t, vehicles v, users u WHERE t.attendantId IS NOT NULL")
+            StringBuilder("SELECT DISTINCT t.* FROM fueltransactions t")
+
+        val company = search.companyProperty.get()
+        if (company != null){
+            val query = " JOIN (select id AS v_id from vehicles v JOIN\n" +
+                    "  (select id as d_id,companyId from department where companyId=${company.id}) AS d" +
+                    "  on v.departmentId=d.d_id) AS h on t.vehicleId=h.v_id"
+            mainBuilder.append(query)
+        }
+
+        mainBuilder.append(" WHERE t.attendantId IS NOT NULL")
 
         if (!search.waybillNoProperty.get().isNullOrEmpty())
             mainBuilder.append(" AND t.waybillNo = ${search.waybillNoProperty.get()}")
 
-        if (!search.vehicleProperty.get().isNullOrEmpty())
-            mainBuilder.append(" AND t.vehicleId=(SELECT id FROM vehicles WHERE unit_number=\'${search.vehicleProperty.get()}\')")
+        if (search.vehicleProperty.get() != null)
+            mainBuilder.append(" AND t.vehicleId=${search.vehicleProperty.get().id}")
 
-        if (!search.driverProperty.get().isNullOrEmpty())
-            mainBuilder.append(" AND t.driverId=(SELECT id FROM users WHERE lastName LIKE '${search.driverProperty.get()}')")
+        if (search.driverProperty.get() != null)
+            mainBuilder.append(" AND t.driverId=${search.driverProperty.get().id}")
 
         val fromDate = search.fromDateProperty.get()?.minusHours(2)?._24()
         val toDate = search.toDateProperty.get()?.minusHours(2)?._24()
@@ -337,7 +347,7 @@ class FuelTransactionRepo : AbstractRepo<FuelTransaction>() {
         val search = FuelTransactionSearch().apply {
             fromDateProperty.set(thisDate)
             toDateProperty.set(tomorrow)
-            vehicleProperty.set(originalTrans.vehicle?.unitNumberProperty?.get())
+            vehicleProperty.set(originalTrans.vehicle)
         }
         //load all dispense for this vehicle from that date to today
         val vehicleTrans = loadFilteredModel(search)

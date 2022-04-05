@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 import org.hibernate.Session
 import tornadofx.*
 
-
 class UserRepo : AbstractRepo<User>() {
 
     suspend fun loadAllUsers(): Results {

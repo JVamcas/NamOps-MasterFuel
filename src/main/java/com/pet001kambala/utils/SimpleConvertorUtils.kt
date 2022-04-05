@@ -3,10 +3,8 @@ package com.pet001kambala.utils
 import com.pet001kambala.model.*
 import javafx.beans.property.*
 import javafx.util.StringConverter
-import java.sql.Date
 import java.sql.Timestamp
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.persistence.AttributeConverter
 
@@ -100,12 +98,12 @@ class SimpleDeptConvertor : AttributeConverter<SimpleObjectProperty<Department>,
     }
 }
 
-class SimpleDepartmentConvertor : AttributeConverter<SimpleObjectProperty<DepartmentC>, DepartmentC> {
-    override fun convertToDatabaseColumn(p0: SimpleObjectProperty<DepartmentC>): DepartmentC {
+class SimpleDepartmentConvertor : AttributeConverter<SimpleObjectProperty<Department>, Department> {
+    override fun convertToDatabaseColumn(p0: SimpleObjectProperty<Department>): Department {
         return p0.get()
     }
 
-    override fun convertToEntityAttribute(p0: DepartmentC): SimpleObjectProperty<DepartmentC> {
+    override fun convertToEntityAttribute(p0: Department): SimpleObjectProperty<Department> {
         return SimpleObjectProperty(p0)
     }
 }

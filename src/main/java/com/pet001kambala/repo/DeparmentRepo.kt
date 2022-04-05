@@ -2,7 +2,6 @@ package com.pet001kambala.repo
 
 import com.pet001kambala.model.Company
 import com.pet001kambala.model.Department
-import com.pet001kambala.model.DepartmentC
 import com.pet001kambala.utils.Results
 import javafx.beans.property.SimpleBooleanProperty
 import kotlinx.coroutines.Dispatchers
@@ -10,7 +9,7 @@ import kotlinx.coroutines.withContext
 import org.hibernate.Session
 import tornadofx.*
 
-class DepartmentRepo : AbstractRepo<DepartmentC>() {
+class DepartmentRepo : AbstractRepo<Department>() {
 
     suspend fun loadAllDepartments(company: Company): Results {
         var session: Session? = null
@@ -18,7 +17,7 @@ class DepartmentRepo : AbstractRepo<DepartmentC>() {
 
             withContext(Dispatchers.Default) {
                 session = sessionFactory!!.openSession()
-                val data = session!!.createQuery("FROM DepartmentC d WHERE d.deletedProperty=:deleted AND d.company=:company", DepartmentC::class.java)
+                val data = session!!.createQuery("FROM Department d WHERE d.deletedProperty=:deleted AND d.company=:company", Department::class.java)
                     .setParameter("deleted", SimpleBooleanProperty(false))
                     .setParameter("company", company)
                     .resultList
@@ -32,7 +31,7 @@ class DepartmentRepo : AbstractRepo<DepartmentC>() {
         }
     }
 
-    suspend fun deleteModel(model: DepartmentC): Results {
+    suspend fun deleteModel(model: Department): Results {
         model.deletedProperty.set(true)
         return updateModel(model)
     }

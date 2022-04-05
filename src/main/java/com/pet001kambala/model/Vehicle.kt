@@ -2,7 +2,6 @@ package com.pet001kambala.model
 
 import com.pet001kambala.utils.SimpleBooleanConvertor
 import com.pet001kambala.utils.SimpleDepartmentConvertor
-import com.pet001kambala.utils.SimpleDeptConvertor
 import com.pet001kambala.utils.SimpleStringConvertor
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -10,13 +9,6 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.ListCell
 import tornadofx.*
 import javax.persistence.*
-
-enum class Department(val value: String) {
-    LOCAL("Local Transport"),
-    DEPOT("Depot Operations"),
-    WORKSHOP("Workshop"),
-    SEANAM("SeaNam")
-}
 
 enum class VehicleType(val value: String) {
     PICKUP("Pick Up Bakkie"),
@@ -36,7 +28,7 @@ enum class VehicleType(val value: String) {
 class Vehicle(
     unitNumber: String? = null,
     plateNumber: String? = null,
-    department: DepartmentC? = null,
+    department: Department? = null,
     type: VehicleType = VehicleType.TRUCK,
     deleted: Boolean = false
 
@@ -64,11 +56,11 @@ class Vehicle(
 
     @Transient
     @Convert(converter = SimpleDepartmentConvertor::class)
-    val departmentProperty = SimpleObjectProperty<DepartmentC>()
+    val departmentProperty = SimpleObjectProperty<Department>()
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "departmentId", nullable = false)
-    var department: DepartmentC? = null
+    var department: Department? = null
         set(value) {
             field = value
             departmentProperty.set(value)

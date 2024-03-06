@@ -25,6 +25,7 @@ object SessionManager {
                 newInstance = meta.sessionFactoryBuilder.build()
             }
         } catch (e: Exception) {
+
             shutDown()
         }
 

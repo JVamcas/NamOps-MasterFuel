@@ -1,10 +1,7 @@
 package com.pet001kambala.utils
 
 
-import com.pet001kambala.model.FuelTransaction
-import com.pet001kambala.model.FuelTransactionType
-import com.pet001kambala.model.User
-import com.pet001kambala.model.UserGroup
+import com.pet001kambala.model.*
 import javafx.collections.ObservableList
 import javafx.scene.control.TextField
 import jxl.write.Label
@@ -167,17 +164,41 @@ class ParseUtil {
             }
         }
 
+        fun ObservableList<User>.cleanSortUser():ObservableList<User>{
+
+            this.removeIf { it.firstNameProperty.get().trim().isEmpty() }
+            this.sortWith(compareBy({ it.firstNameProperty.get().capitalize() }, {it.lastNameProperty.get().capitalize()}))
+            return this
+        }
+
+
+
+        fun ObservableList<Company>.cleanSortCompany(): ObservableList<Company>{
+
+            this.removeIf { it.nameProperty.get().trim().isEmpty() }
+            this.sortBy { it.nameProperty.get().capitalize() }
+            return this
+        }
+
+        fun ObservableList<Vehicle>.cleanSortVehicle(): ObservableList<Vehicle> {
+            this.removeIf { it.unitNumberProperty.get().trim().isEmpty() }
+            this.sortWith(compareBy({ it.unitNumberProperty.get()[0].toUpperCase() }, { it.unitNumberProperty.get().substring(1).toInt() }))
+            return this
+        }
+
+
         fun String?.capitalize(): String {
             return try {
                 when {
                     this.isNullOrEmpty() -> ""
                     this.length < 2 -> this.substring(0).toUpperCase()
                     else -> {
-                        val lower = this.toLowerCase().split(" ")
+                        val lower = this.toLowerCase().split(" ").filterNot { it.trim().isEmpty() }
                         lower.joinToString(" ") { "${it[0].toUpperCase()}${it.substring(1)}" }
                     }
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 ""
             }
         }

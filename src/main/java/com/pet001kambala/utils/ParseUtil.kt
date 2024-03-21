@@ -1,6 +1,8 @@
 package com.pet001kambala.utils
 
 
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 import com.pet001kambala.model.*
 import javafx.collections.ObservableList
 import javafx.scene.control.TextField
@@ -206,6 +208,11 @@ class ParseUtil {
         fun User?.isAdmin(): Boolean {
             return this != null && this.userGroupProperty.get() == UserGroup.Admin.name
         }
+
+        inline fun <reified O> String.convert(): O {
+            return Gson().fromJson(this, object : TypeToken<O>() {}.type)
+        }
+
     }
 }
 

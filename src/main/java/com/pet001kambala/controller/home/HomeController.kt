@@ -12,6 +12,9 @@ import com.pet001kambala.repo.VehicleRepo
 import com.pet001kambala.utils.*
 import com.pet001kambala.utils.ComboBoxEditingCell
 import com.pet001kambala.utils.ParseUtil.Companion.capitalize
+import com.pet001kambala.utils.ParseUtil.Companion.cleanSortCompany
+import com.pet001kambala.utils.ParseUtil.Companion.cleanSortUser
+import com.pet001kambala.utils.ParseUtil.Companion.cleanSortVehicle
 import com.pet001kambala.utils.ParseUtil.Companion.filterDispense
 import com.pet001kambala.utils.ParseUtil.Companion.filterRefill
 import com.pet001kambala.utils.ParseUtil.Companion.isAuthorised
@@ -274,10 +277,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                                                             val vehicleList = if (loadResults is Results.Success<*>) {
                                                                 val vehicles =
                                                                     loadResults.data as ObservableList<Vehicle>
-                                                                vehicles.sortBy {
-                                                                    it.unitNumberProperty.get().capitalize()
-                                                                }
-                                                                vehicles
+                                                                vehicles.cleanSortVehicle()
                                                             } else observableListOf()
                                                             items = vehicleList
                                                         }
@@ -295,10 +295,8 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                                                             val loadResults = UserRepo().loadDrivers()
                                                             val driverList = if (loadResults is Results.Success<*>) {
                                                                 val drivers = loadResults.data as ObservableList<User>
-                                                                drivers.sortBy {
-                                                                    it.firstNameProperty.get().capitalize()
-                                                                }
-                                                                drivers
+                                                                drivers.cleanSortUser()
+
                                                             } else observableListOf()
                                                             items = driverList
                                                         }
@@ -315,8 +313,7 @@ class HomeController : AbstractModelTableController<FuelTransaction>("Fuel Trans
                                                             val loadResults = CompanyRepo().loadAllCompanies()
                                                             val compList = if (loadResults is Results.Success<*>) {
                                                                 val comps = loadResults.data as ObservableList<Company>
-                                                                comps.sortBy { it.nameProperty.get().capitalize() }
-                                                                comps
+                                                                comps.cleanSortCompany()
                                                             } else observableListOf()
                                                             items = compList
                                                         }

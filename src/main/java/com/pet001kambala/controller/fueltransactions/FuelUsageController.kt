@@ -8,6 +8,7 @@ import com.pet001kambala.repo.FuelTransactionRepo
 import com.pet001kambala.repo.UserRepo
 import com.pet001kambala.repo.VehicleRepo
 import com.pet001kambala.utils.DateUtil
+import com.pet001kambala.utils.ParseUtil.Companion.capitalize
 import com.pet001kambala.utils.ParseUtil.Companion.isNumber
 import com.pet001kambala.utils.Results
 import javafx.collections.ObservableList
@@ -78,7 +79,12 @@ class FuelUsageController : AbstractView("Dispense fuel") {
             buttonCell = SimpleUserListCell()
             GlobalScope.launch {
                 val results = userRepo.loadDrivers()
-                asyncItems { if (results is Results.Success<*>) results.data as ObservableList<User> else observableListOf() }
+                asyncItems { if (results is Results.Success<*>){
+                    val users = results.data as ObservableList<User>
+                    users.removeIf { it.firstNameProperty.get().trim().isEmpty() }
+                    users.sortBy { it.firstNameProperty.get().capitalize() }
+                    users
+                } else observableListOf() }
             }
         }
 

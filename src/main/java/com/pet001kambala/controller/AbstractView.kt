@@ -88,7 +88,8 @@ abstract class AbstractView(private val viewTitle: String) : View(viewTitle) {
                     showError(
                         header = "Unknown Error", msg = "An unknown error has occurred. What to do:\n" +
                                 "1.  Restart the program.\n" +
-                                "2. If the error persists, please contact the system administrator at NamOps Logistics Pty Ldt."
+                                "2. If the error persists, please contact Petrus Kambala " +
+                                "@ 0813264666 or pet001kambala@gmail.com."
                     )
                 }
                 Results.Error.CODE.INSUFFICIENT_FUEL -> {
